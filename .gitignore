@@ -1,11 +1,5 @@
-*.iml
-.gradle
-local.properties
-.idea/workspace.xml
-.idea/libraries
-.DS_Store
-/android/build
-/android/captures
-.externalNativeBuild
+build
+~*
 .idea
+.vscode
 
