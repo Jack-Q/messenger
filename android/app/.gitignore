@@ -1,1 +1,4 @@
 /build
+/src/main/jni/opus
+/src/main/obj
+/src/main/libs/**/*.so

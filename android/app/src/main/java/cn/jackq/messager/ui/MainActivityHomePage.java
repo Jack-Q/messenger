@@ -10,7 +10,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.jackq.messager.R;
+import cn.jackq.messager.network.NetworkOperationStatus;
 import cn.jackq.messager.network.ServerConnection;
+import java8.util.function.Consumer;
 
 public class MainActivityHomePage {
     private View mRootView;
@@ -30,7 +32,12 @@ public class MainActivityHomePage {
 
     @OnClick(R.id.main_button_call)
     void buttonClickHandler() {
-        ServerConnection.get().testServer().thenAccept(status -> writeLog(status.getMessage()));
+        ServerConnection.get().testServer().thenAccept(new Consumer<NetworkOperationStatus>() {
+            @Override
+            public void accept(NetworkOperationStatus status) {
+                MainActivityHomePage.this.writeLog(status.getMessage());
+            }
+        });
     }
 
     public MainActivityHomePage(@NonNull Context context, @NonNull View rootView) {

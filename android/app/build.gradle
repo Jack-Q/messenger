@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId "cn.jackq.messager"
         minSdkVersion 21
@@ -12,6 +13,12 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
+        }
+        ndk {
+            // Specifies the ABI configurations of your native
+            // libraries Gradle should build and package with your APK.
+            // The ``armeabi'' is currently suffering problem when compi
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         }
     }
     buildTypes {
@@ -24,10 +31,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+//    task ndkBuild(type: Exec) {
+//        commandLine  "${android.ndkDirectory}/ndk-build", '-C', file('src/main/jni/').absolutePath
+//    }
+//
+//    tasks.withType(JavaCompile) {
+//        compileTask -> compileTask.dependsOn ndkBuild
+//    }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -43,4 +62,5 @@ dependencies {
     compile 'com.github.streamsupport.streamsupport:streamsupport-atomic:-SNAPSHOT'
     compile 'com.github.streamsupport.streamsupport:streamsupport-flow:-SNAPSHOT'
     compile 'com.github.streamsupport.streamsupport:streamsupport-literal:-SNAPSHOT'
+    compile 'org.bytedeco:javacpp:1.3.2'
 }
