@@ -1,7 +1,11 @@
 package cn.jackq.messenger.ui;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -25,6 +29,7 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
 
     @OnClick(R.id.main_message_button)
     void messageButtonClickHandler(ToggleButton toggleButton) {
+
         if (toggleButton.isChecked()) {
             writeLog("enable audio recording");
             if (mRecorder == null) mRecorder = new MessengerAudioRecorder(this);
