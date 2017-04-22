@@ -80,7 +80,7 @@ public class OpusCodecs
     }
 
 
-    public class Encoder implements IEncoder {
+    public static class Encoder implements IEncoder {
         private final byte[] mBuffer;
         private final short[] mAudioBuffer;
         private final int mFramesPerPacket;
@@ -157,7 +157,7 @@ public class OpusCodecs
         }
 
         @Override
-        public void getEncodedData(ByteBuffer packetBuffer) throws BufferUnderflowException {
+        public int getEncodedData(byte[] packetBuffer) throws BufferUnderflowException {
             if (!isReady()) {
                 throw new BufferUnderflowException();
             }
@@ -166,12 +166,14 @@ public class OpusCodecs
             if(mTerminated)
                 size |= 1 << 13;
 
-            packetBuffer.putLong(size);
-            packetBuffer.put(mBuffer, packetBuffer.position(), mEncodedLength);
+            // Copy encoded data
+            System.arraycopy(mBuffer, 0, packetBuffer, 0, mEncodedLength);
 
             mBufferedFrames = 0;
             mEncodedLength = 0;
             mTerminated = false;
+
+            return size;
         }
 
         @Override

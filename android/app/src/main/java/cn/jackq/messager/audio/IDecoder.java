@@ -12,7 +12,7 @@ public interface IDecoder {
      * @return The number of decoded samples.
      * @throws NativeAudioException if encoding failed.
      */
-    public int decodeFloat(ByteBuffer input, int inputSize, float[] output, int frameSize) throws NativeAudioException;
+    int decodeFloat(ByteBuffer input, int inputSize, float[] output, int frameSize) throws NativeAudioException;
 
     /**
      * Decodes the encoded data provided into short PCM data.
@@ -23,10 +23,10 @@ public interface IDecoder {
      * @return The number of decoded samples.
      * @throws NativeAudioException if encoding failed.
      */
-    public int decodeShort(ByteBuffer input, int inputSize, short[] output, int frameSize) throws NativeAudioException;
+    int decodeShort(ByteBuffer input, int inputSize, short[] output, int frameSize) throws NativeAudioException;
 
     /**
      * Deallocates native resources. The decoder must no longer be called after this.
      */
-    public void destroy();
+    void destroy();
 }

@@ -37,22 +37,19 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_home:
-                        mViewAnimator.setDisplayedChild(0);
-                        return true;
-                    case R.id.navigation_dashboard:
-                        mViewAnimator.setDisplayedChild(1);
-                        return true;
-                    case R.id.navigation_notifications:
-                        mViewAnimator.setDisplayedChild(2);
-                        return true;
-                }
-                return false;
+        navigation.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    mViewAnimator.setDisplayedChild(0);
+                    return true;
+                case R.id.navigation_dashboard:
+                    mViewAnimator.setDisplayedChild(1);
+                    return true;
+                case R.id.navigation_notifications:
+                    mViewAnimator.setDisplayedChild(2);
+                    return true;
             }
+            return false;
         });
 
         mHomePage = new MainActivityHomePage(this, mHomePageView);

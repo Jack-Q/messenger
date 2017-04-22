@@ -1,7 +1,8 @@
 package cn.jackq.messager.network;
 
 /**
- * Created by jackq on 4/18/17.
+ * Created on: 4/18/17.
+ * Creator: Jack Q <qiaobo@outlook.com>
  */
 public class NetworkOperationStatus {
     private String message;

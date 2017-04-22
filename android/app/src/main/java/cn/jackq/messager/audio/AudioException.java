@@ -18,7 +18,8 @@
 package cn.jackq.messager.audio;
 
 /**
- * Created by andrew on 28/04/14.
+ * Created on: 28/04/14.
+ * Creator: Jack Q <qiaobo@outlook.com>
  */
 public class AudioException extends Exception {
     public AudioException(String message) {
