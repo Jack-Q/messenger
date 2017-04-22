@@ -1,4 +1,4 @@
-# Message, Chat on multiple platforms
+# Messenger, Chat on multiple platforms
 
 ## Audio Encoding
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cn.jackq.messager.audio;
+package cn.jackq.messenger.audio;
 
 /**
  * Created on: 28/04/14.

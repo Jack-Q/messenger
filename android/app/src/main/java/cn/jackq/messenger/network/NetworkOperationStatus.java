@@ -1,4 +1,4 @@
-package cn.jackq.messager.network;
+package cn.jackq.messenger.network;
 
 /**
  * Created on: 4/18/17.

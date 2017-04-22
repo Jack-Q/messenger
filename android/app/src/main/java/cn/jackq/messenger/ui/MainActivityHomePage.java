@@ -1,4 +1,4 @@
-package cn.jackq.messager.ui;
+package cn.jackq.messenger.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,10 +9,10 @@ import android.widget.ToggleButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.jackq.messager.R;
-import cn.jackq.messager.audio.AudioException;
-import cn.jackq.messager.audio.MessengerAudioRecorder;
-import cn.jackq.messager.network.ServerConnection;
+import cn.jackq.messenger.R;
+import cn.jackq.messenger.audio.AudioException;
+import cn.jackq.messenger.audio.MessengerAudioRecorder;
+import cn.jackq.messenger.network.ServerConnection;
 
 public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAudioPackageListener {
     private View mRootView;

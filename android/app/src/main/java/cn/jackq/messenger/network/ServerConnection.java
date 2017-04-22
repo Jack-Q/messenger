@@ -1,15 +1,13 @@
-package cn.jackq.messager.network;
+package cn.jackq.messenger.network;
 
 import android.util.Log;
 
 import java8.util.concurrent.CompletableFuture;
-import java8.util.function.Supplier;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 public class ServerConnection {

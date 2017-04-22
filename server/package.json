@@ -1,7 +1,7 @@
 {
-  "name": "message-server",
+  "name": "messenger-server",
   "version": "0.0.1",
-  "description": "Server for Message",
+  "description": "Server for Messenger",
   "main": "index.js",
   "author": "Jack Q",
   "license": "ISC",

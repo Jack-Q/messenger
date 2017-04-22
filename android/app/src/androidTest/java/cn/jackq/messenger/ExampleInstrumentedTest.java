@@ -1,4 +1,4 @@
-package cn.jackq.messager;
+package cn.jackq.messenger;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

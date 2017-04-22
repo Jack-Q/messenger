@@ -1,4 +1,4 @@
-package cn.jackq.messager.audio;
+package cn.jackq.messenger.audio;
 
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.Loader;

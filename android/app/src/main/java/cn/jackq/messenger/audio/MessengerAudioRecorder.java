@@ -1,13 +1,10 @@
-package cn.jackq.messager.audio;
+package cn.jackq.messenger.audio;
 
-import android.graphics.Path;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Process;
 import android.util.Log;
-
-import java.nio.ByteBuffer;
 
 /**
  * Created on: 4/22/17.

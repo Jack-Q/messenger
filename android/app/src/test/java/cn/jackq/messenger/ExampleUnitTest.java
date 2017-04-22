@@ -1,4 +1,4 @@
-package cn.jackq.messager;
+package cn.jackq.messenger;
 
 import org.junit.Test;
 
