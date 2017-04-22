@@ -45,16 +45,19 @@ public class MessengerAudioRecorder implements Runnable {
 
     public void start() throws AudioException {
         if (mRecord == null) {
+            Log.d(TAG, "start: create new record instance");
+            Log.d(TAG, "start: buffer size " + bufferSize);
             mRecord = new AudioRecord(source, sampleRate, channelConfig, audioFormat, bufferSize);
         }
         if(mEncoder == null){
+            Log.d(TAG, "start: create new encoder instance");
             try {
                 int channels = 1;
-                int frameSize = sampleRate / 100;
+                int frameSize = bufferSize;
                 int framesPerPacket = 10;
                 int bitrate = 8 * 1024 * 64;
                 int maxBufferSize = bufferSize * framesPerPacket;
-                mEncoder = new OpusCodecs.Encoder(sampleRate, channels, frameSize, framesPerPacket, bitrate, maxBufferSize);
+                mEncoder = new OpusCodec.Encoder(sampleRate, channels, frameSize, framesPerPacket, bitrate, maxBufferSize);
             } catch (NativeAudioException e) {
                 e.printStackTrace();
                 throw e;
@@ -66,6 +69,7 @@ public class MessengerAudioRecorder implements Runnable {
             } else {
                 mThread = new Thread(this);
                 isRecording = true;
+                mThread.start();
                 Log.d(TAG, "start: start audio mRecord thread");
             }
         }
@@ -112,6 +116,7 @@ public class MessengerAudioRecorder implements Runnable {
      */
     @Override
     public void run() {
+        Log.d(TAG, "run: begin record thread");
 
         // Since the real-time requirement of the audio related feature,
         // the mRecord process requires some extra configuration of process
@@ -127,6 +132,7 @@ public class MessengerAudioRecorder implements Runnable {
 
         while(this.isRecording){
             int readLength = mRecord.read(buffer, 0, buffer.length);
+            Log.d(TAG, "run: receive raw audio frame of " + readLength + " bytes");
             try {
                 mEncoder.encode(buffer, readLength);
             } catch (NativeAudioException e) {
@@ -135,12 +141,15 @@ public class MessengerAudioRecorder implements Runnable {
             sendAudioPack(encodedDataBuffer);
         }
         try {
+            Log.d(TAG, "run: Terminate recorder");
             mEncoder.terminate();
         } catch (NativeAudioException e) {
             e.printStackTrace();
         }
         sendAudioPack(encodedDataBuffer);
         this.mRecord.stop();
+
+        Log.d(TAG, "run: quit record thread");
     }
 
     private void sendAudioPack(byte[] encodedDataBuffer) {
@@ -149,6 +158,8 @@ public class MessengerAudioRecorder implements Runnable {
             int dataSize = mEncoder.getEncodedData(encodedDataBuffer);
             Log.d(TAG, "run: Encoded " + bufferedFrames + " frames into a package of " + dataSize + " bytes");
             mListener.onAudioPackage(encodedDataBuffer, dataSize);
+        }else{
+            Log.d(TAG, "sendAudioPack: send request prematurely");
         }
     }
 }

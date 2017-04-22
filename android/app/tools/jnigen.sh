@@ -15,6 +15,6 @@
 # For example, this can be achieved by following command 
 # ./gradlew assembleDebug
 
-java -jar tools/javacpp-1.3.2.jar -cp build/intermediates/classes/debug/ -d src/main/jni/ -nocompile cn.jackq.messager.audio.OpusCodecs
+java -jar tools/javacpp-1.3.2.jar -cp build/intermediates/classes/debug/ -d src/main/jni/ -nocompile cn.jackq.messenger.audio.OpusCodec
 
-# NDK buiding is integrated into build process
+# NDK building is integrated into build process

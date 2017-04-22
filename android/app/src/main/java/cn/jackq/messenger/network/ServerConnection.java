@@ -1,14 +1,16 @@
 package cn.jackq.messenger.network;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
-
-import java8.util.concurrent.CompletableFuture;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.FutureTask;
+
+import java.util.concurrent.CompletableFuture;
 
 public class ServerConnection {
     private static final String TAG = "ServerConnection";
@@ -18,6 +20,7 @@ public class ServerConnection {
         return null;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public CompletableFuture<NetworkOperationStatus> testServer() {
         FutureTask<NetworkOperationStatus> task = new FutureTask<>(() -> NetworkOperationStatus.OK);
         return CompletableFuture.supplyAsync(() -> {

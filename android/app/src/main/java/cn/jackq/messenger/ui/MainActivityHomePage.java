@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -19,6 +20,7 @@ import cn.jackq.messenger.audio.MessengerAudioRecorder;
 import cn.jackq.messenger.network.ServerConnection;
 
 public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAudioPackageListener {
+    private static final String TAG = "MainActivityHomePage";
     private View mRootView;
     private Context mContext;
 
@@ -63,6 +65,7 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
 
     @Override
     public void onAudioPackage(byte[] buffer, int size) {
+        Log.d(TAG, "onAudioPackage: audio package received from audio recorder thread");
         writeLog("receive package of size " + size);
     }
 }

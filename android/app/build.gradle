@@ -11,9 +11,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        jackOptions {
-            enabled true
-        }
         ndk {
             // Specifies the ABI configurations of your native
             // libraries Gradle should build and package with your APK.
@@ -57,10 +54,10 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     // Backport Java 8 Features to Android
-    compile 'com.github.streamsupport.streamsupport:streamsupport:-SNAPSHOT'
-    compile 'com.github.streamsupport.streamsupport:streamsupport-cfuture:-SNAPSHOT'
-    compile 'com.github.streamsupport.streamsupport:streamsupport-atomic:-SNAPSHOT'
-    compile 'com.github.streamsupport.streamsupport:streamsupport-flow:-SNAPSHOT'
-    compile 'com.github.streamsupport.streamsupport:streamsupport-literal:-SNAPSHOT'
+//    compile 'com.github.streamsupport.streamsupport:streamsupport:-SNAPSHOT'
+//    compile 'com.github.streamsupport.streamsupport:streamsupport-cfuture:-SNAPSHOT'
+//    compile 'com.github.streamsupport.streamsupport:streamsupport-atomic:-SNAPSHOT'
+//    compile 'com.github.streamsupport.streamsupport:streamsupport-flow:-SNAPSHOT'
+//    compile 'com.github.streamsupport.streamsupport:streamsupport-literal:-SNAPSHOT'
     compile 'org.bytedeco:javacpp:1.3.2'
 }
