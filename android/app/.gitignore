@@ -1,5 +1,6 @@
 /build
 /src/main/jni/opus/*
+/src/main/jni/jniopus.cpp
 /src/main/obj
 /src/main/libs/**/*.so
 .project

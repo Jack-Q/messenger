@@ -17,4 +17,6 @@
 
 java -jar tools/javacpp-1.3.2.jar -cp build/intermediates/classes/debug/ -d src/main/jni/ -nocompile cn.jackq.messenger.audio.OpusCodec
 
+# Fix incompatibility with latest NDK
+sed -i 's/typedef long long jlong;//g' src/main/jni/jniopus.cpp
 # NDK building is integrated into build process
