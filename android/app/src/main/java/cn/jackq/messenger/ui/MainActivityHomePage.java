@@ -1,6 +1,7 @@
 package cn.jackq.messenger.ui;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -22,7 +23,7 @@ import cn.jackq.messenger.network.ServerConnection;
 public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAudioPackageListener {
     private static final String TAG = "MainActivityHomePage";
     private View mRootView;
-    private Context mContext;
+    private Activity mContext;
 
     @BindView(R.id.status_text)
     TextView mStatusText;
@@ -52,7 +53,7 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
         ServerConnection.get().testServer().thenAccept(status -> MainActivityHomePage.this.writeLog(status.getMessage()));
     }
 
-    public MainActivityHomePage(@NonNull Context context, @NonNull View rootView) {
+    public MainActivityHomePage(@NonNull Activity context, @NonNull View rootView) {
         mContext = context;
         mRootView = rootView;
         ButterKnife.bind(this, rootView);
@@ -66,6 +67,6 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
     @Override
     public void onAudioPackage(byte[] buffer, int size) {
         Log.d(TAG, "onAudioPackage: audio package received from audio recorder thread");
-        writeLog("receive package of size " + size);
+        mContext.runOnUiThread(()->writeLog("receive package of size " + size));
     }
 }

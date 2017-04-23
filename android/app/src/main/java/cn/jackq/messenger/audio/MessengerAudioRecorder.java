@@ -29,7 +29,12 @@ public class MessengerAudioRecorder implements Runnable {
     private int sampleRate = 8000;
     private int channelConfig = AudioFormat.CHANNEL_IN_MONO;
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-    private int bufferSize = 3 * AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+    // As the Opus codec requires, the bufferSize, which also determines the frame size, ought to be some selected discrete value
+    // Feasible value including: 400, 200, 100, 50, 25, 50/3. 50/4 (12.5), 10, 50/6;
+    private int packageRate = 25;
+    private int encoderFrameSize =  sampleRate / packageRate;
+    // The objective bit rate of the audio message to be encoded
+    private int bitrate = 8 * 1024;
 
     private AudioRecord mRecord;
     private IEncoder mEncoder;
@@ -46,18 +51,20 @@ public class MessengerAudioRecorder implements Runnable {
     public void start() throws AudioException {
         if (mRecord == null) {
             Log.d(TAG, "start: create new record instance");
-            Log.d(TAG, "start: buffer size " + bufferSize);
-            mRecord = new AudioRecord(source, sampleRate, channelConfig, audioFormat, bufferSize);
+            Log.d(TAG, "start: buffer size " + encoderFrameSize);
+            mRecord = new AudioRecord(source, sampleRate, channelConfig, audioFormat, encoderFrameSize);
         }
         if(mEncoder == null){
             Log.d(TAG, "start: create new encoder instance");
             try {
+                int framesPerPacket = 1;
                 int channels = 1;
-                int frameSize = bufferSize;
-                int framesPerPacket = 10;
-                int bitrate = 8 * 1024 * 64;
-                int maxBufferSize = bufferSize * framesPerPacket;
-                mEncoder = new OpusCodec.Encoder(sampleRate, channels, frameSize, framesPerPacket, bitrate, maxBufferSize);
+                mEncoder = new OpusCodec.Encoder(sampleRate,
+                        channels, // Current use single channel mode only
+                        encoderFrameSize,
+                        framesPerPacket,
+                        bitrate,
+                        encoderFrameSize * framesPerPacket);
             } catch (NativeAudioException e) {
                 e.printStackTrace();
                 throw e;
@@ -127,8 +134,8 @@ public class MessengerAudioRecorder implements Runnable {
         if (this.mRecord.getState() != AudioRecord.STATE_INITIALIZED)
             Log.e(TAG, "run: message record is not initialized on recording");
 
-        short[] buffer = new short[bufferSize];
-        byte[] encodedDataBuffer = new byte[bufferSize];
+        short[] buffer = new short[encoderFrameSize];
+        byte[] encodedDataBuffer = new byte[encoderFrameSize];
 
         while(this.isRecording){
             int readLength = mRecord.read(buffer, 0, buffer.length);
