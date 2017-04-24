@@ -1,6 +1,7 @@
 import net from 'net';
 
 import * as config from './server-config';
+import * as protocol from './lib/protocol';
 
 let timer = 0;
 
@@ -9,7 +10,7 @@ const sock = net.createConnection({
   host: config.host
 }, () => {
   console.log('connected to server');
-  timer = setInterval(() => sock.write('PING' + (new Date()).getMilliseconds()), 120);
+  timer = setInterval(() => sock.write(protocol.makePacket(protocol.packetType.SERVER_CHECK)), 1200);
 });
 
 sock.on('end', () => {
