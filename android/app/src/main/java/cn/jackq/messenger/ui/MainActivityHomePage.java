@@ -5,13 +5,11 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +28,9 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
     @BindView(R.id.status_text)
     TextView mStatusText;
 
+    @BindView(R.id.edit_peer_ip)
+    EditText mPeerIpEdit;
+
     MessengerAudioRecorder mRecorder;
     PeerTransmission mPeerTransmission;
 
@@ -38,28 +39,42 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
 
         if (toggleButton.isChecked()) {
             if (mPeerTransmission == null) {
+                mPeerTransmission = new PeerTransmission(this);
                 writeLog("start peer transmission");
                 Log.d(TAG, "messageButtonClickHandler: starting peer socket");
-                try {
-                    mPeerTransmission = new PeerTransmission(this);
-                } catch (SocketException | UnknownHostException e) {
-                    e.printStackTrace();
-                    writeLog("failed to initiate peer socket: " + e.getMessage());
-                    toggleButton.setChecked(false);
-                }
+                mPeerTransmission.create(mPeerIpEdit.getText().toString(), errorMessage -> {
+                    if (errorMessage != null) {
+                        writeLog("failed to initiate peer socket: " + errorMessage);
+                        toggleButton.setChecked(false);
+                        return;
+                    }
+                    enableAudioRecord();
+                });
+            } else {
+                enableAudioRecord();
             }
 
-            writeLog("enable audio recording");
-            if (mRecorder == null) mRecorder = new MessengerAudioRecorder(this);
-            try {
-                mRecorder.start();
-            } catch (AudioException e) {
-                e.printStackTrace();
-                writeLog(e.getMessage());
-            }
         } else {
+            disableAudioRecord();
+        }
+    }
+
+    private void disableAudioRecord() {
+        if (mRecorder != null) {
             writeLog("disable audio recording");
             mRecorder.stop();
+        }
+
+    }
+
+    private void enableAudioRecord() {
+        writeLog("enable audio recording");
+        if (mRecorder == null) mRecorder = new MessengerAudioRecorder(this);
+        try {
+            mRecorder.start();
+        } catch (AudioException e) {
+            e.printStackTrace();
+            writeLog(e.getMessage());
         }
     }
 
@@ -97,6 +112,17 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
     @Override
     public void onPackageReceived(byte[] data, int size) {
         writeLog("receive packet of size " + size + " from socket");
-        Log.d(TAG, "onPackageReceived: " + Arrays.toString(data));
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            s.append(String.format(" %d", data[i]));
+        }
+        Log.d(TAG, "onPackageReceived:" + s.toString());
+    }
+
+    @Override
+    public void onError() {
+        writeLog("socket connection error occurred");
+        Log.e(TAG, "onError: socket error");
+        disableAudioRecord();
     }
 }
