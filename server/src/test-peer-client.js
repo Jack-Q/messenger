@@ -9,19 +9,20 @@ const remote = {
   port: undefined
 }
 
-sock.on('message', (msg, rinfo) => {
-  console.log(`${rinfo.address}:${rinfo.port}`);
+sock.on('message', (msg, { address, port}) => {
+  console.log(`${address}:${port}`);
   console.log(`Message: ${msg}`);
-  remote.address = rinfo.address;
-  remote.port = rinfo.port;
+  remote.address = address;
+  remote.port = port;
+  sock.send(msg, port, address);
 });
 
 sock.on('error', err => {
   console.log(err.message);
 })
 
-setInterval(() => {
-  if (remote.address && remote.port)
-    sock.send('ACK', remote.port, remote.address);
-}, 1000 / 20);
+// setInterval(() => {
+//   if (remote.address && remote.port)
+//     sock.send('ACK', remote.port, remote.address);
+// }, 1000 / 20);
 sock.bind(PORT);

@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.jackq.messenger.R;
 import cn.jackq.messenger.audio.AudioException;
+import cn.jackq.messenger.audio.MessengerAudioOutput;
 import cn.jackq.messenger.audio.MessengerAudioRecorder;
 import cn.jackq.messenger.network.PeerTransmission;
 import cn.jackq.messenger.network.ServerConnection;
@@ -32,7 +33,13 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
     EditText mPeerIpEdit;
 
     MessengerAudioRecorder mRecorder;
+    MessengerAudioOutput mOutput;
     PeerTransmission mPeerTransmission;
+
+    @OnClick(R.id.main_clear_button)
+    void clearLog() {
+        mStatusText.setText("");
+    }
 
     @OnClick(R.id.main_message_button)
     void messageButtonClickHandler(ToggleButton toggleButton) {
@@ -56,6 +63,21 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
 
         } else {
             disableAudioRecord();
+        }
+    }
+
+    @OnClick(R.id.main_output_button)
+    void playButtonClickHandler(ToggleButton toggleButton) {
+        if (toggleButton.isChecked()) {
+            // enable packet output
+            if (mOutput == null) {
+                mOutput = new MessengerAudioOutput();
+                mOutput.init();
+            }
+            mOutput.start();
+        } else {
+            // disable packet output
+            mOutput.stop();
         }
     }
 
@@ -111,12 +133,9 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
 
     @Override
     public void onPackageReceived(byte[] data, int size) {
-        writeLog("receive packet of size " + size + " from socket");
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            s.append(String.format(" %d", data[i]));
+        if (mOutput != null) {
+            mOutput.bufferPacket(data, 0, size);
         }
-        Log.d(TAG, "onPackageReceived:" + s.toString());
     }
 
     @Override
