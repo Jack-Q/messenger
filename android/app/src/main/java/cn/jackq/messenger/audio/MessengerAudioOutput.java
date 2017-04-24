@@ -57,9 +57,7 @@ public class MessengerAudioOutput {
         short[] decoderBuffer = new short[320];
         int decodeSize;
         try {
-            Log.d(TAG, "bufferPacket: decode packet of size " + size);
             decodeSize = mDecoder.decodeShort(ByteBuffer.wrap(buffer, offset, size), size, decoderBuffer, 320);
-            Log.d(TAG, "bufferPacket: write decoded packet to audio track with size " + decodeSize);
             mTrack.write(decoderBuffer, 0, decodeSize);
         } catch (NativeAudioException e) {
             e.printStackTrace();
