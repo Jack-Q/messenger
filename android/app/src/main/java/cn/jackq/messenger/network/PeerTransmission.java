@@ -18,7 +18,7 @@ public class PeerTransmission implements Runnable {
     private static final String TAG = "PeerTransmission";
 
     public interface PeerTransmissionListener {
-        void onPackageReceived(byte[] data);
+        void onPackageReceived(byte[] data, int size);
     }
 
     private int localPort = 42001;
@@ -42,8 +42,9 @@ public class PeerTransmission implements Runnable {
         thread.start();
     }
 
-    public void createPackage() {
-
+    public void sendPacket(byte[] payload, int length) throws IOException {
+        DatagramPacket packet = new DatagramPacket(payload, length);
+        socket.send(packet);
     }
 
     public void terminate(){
@@ -67,20 +68,20 @@ public class PeerTransmission implements Runnable {
         byte[] receiveBuffer = new byte[1024];
 
         while (running) {
-            DatagramPacket receivePackage = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
 
             try {
-                socket.receive(receivePackage);
+                socket.receive(receivePacket);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
             }
 
-            Log.d(TAG, "run: receive UDP package from " + receivePackage.getAddress() + ":" + receivePackage.getPort());
+            Log.d(TAG, "run: receive UDP packet from " + receivePacket.getAddress() + ":" + receivePacket.getPort());
             if(this.listener != null)
-                listener.onPackageReceived(receivePackage.getData());
+                listener.onPackageReceived(receivePacket.getData(), receivePacket.getLength());
         }
 
-        Log.d(TAG, "run: UDP package closed");
+        Log.d(TAG, "run: UDP receiving thread closed");
     }
 }
