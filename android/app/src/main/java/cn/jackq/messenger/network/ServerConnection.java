@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ServerConnection {
     private static final String TAG = "ServerConnection";
-    private Protocol serverProtocol = new Protocol();
+    private ServerProtocol serverProtocol = new ServerProtocol();
 
     public CompletableFuture<NetworkOperationStatus> connectServer() {
         return null;

@@ -2,8 +2,8 @@ package cn.jackq.messenger.network;
 
 import java.nio.ByteBuffer;
 
-public class Protocol {
-    private static final String TAG = "Protocol";
+public class ServerProtocol {
+    private static final String TAG = "ServerProtocol";
 
     private static final byte[] HEADER = new byte[]{0x4a, 0x51, 0x49, 0x4d};
     private static final int HEADER_LENGTH = HEADER.length;
