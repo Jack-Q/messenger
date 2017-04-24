@@ -40,6 +40,8 @@ public class MessengerAudioOutput {
     }
 
     public void start() {
+        // first clean all of the pending audio data that was recorded during the pause
+        mTrack.flush();
         mTrack.play();
     }
 
@@ -54,11 +56,16 @@ public class MessengerAudioOutput {
             mTrack.write(decoderBuffer, 0, decodeSize);
         } catch (NativeAudioException e) {
             e.printStackTrace();
+        } catch (NullPointerException e){
+            Log.e(TAG, "bufferPacket: Threads un-synchronized and null pointer exception occurred", e);
         }
     }
 
     public void stop() {
-        mTrack.stop();
+        // In order to stop playing the the streaming data, the data should be paused then usd flush to clear
+        // the data content. For static audio files, the stop method should be used.
+        mTrack.pause();
+        mTrack.flush();
     }
 
 }

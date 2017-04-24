@@ -117,7 +117,6 @@ public class PeerTransmission implements Runnable {
                 continue;
             }
 
-            Log.d(TAG, "run: receive UDP packet from " + receivePacket.getAddress() + ":" + receivePacket.getPort());
             if (this.listener != null)
                 listener.onPackageReceived(receivePacket.getData(), receivePacket.getLength());
         }

@@ -139,7 +139,6 @@ public class MessengerAudioRecorder implements Runnable {
 
         while(this.isRecording){
             int readLength = mRecord.read(buffer, 0, buffer.length);
-            Log.d(TAG, "run: receive raw audio frame of " + readLength + " bytes");
             try {
                 mEncoder.encode(buffer, readLength);
             } catch (NativeAudioException e) {
@@ -161,9 +160,8 @@ public class MessengerAudioRecorder implements Runnable {
 
     private void sendAudioPack(byte[] encodedDataBuffer) {
         if(mEncoder.isReady()){
-            int bufferedFrames = mEncoder.getBufferedFrames();
+            // int bufferedFrames = mEncoder.getBufferedFrames();
             int dataSize = mEncoder.getEncodedData(encodedDataBuffer);
-            Log.d(TAG, "run: Encoded " + bufferedFrames + " frames into a package of " + dataSize + " bytes");
             mListener.onAudioPackage(encodedDataBuffer, dataSize);
         }else{
             Log.d(TAG, "sendAudioPack: send request prematurely");

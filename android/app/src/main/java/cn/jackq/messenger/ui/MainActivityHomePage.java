@@ -1,7 +1,6 @@
 package cn.jackq.messenger.ui;
 
 import android.app.Activity;
-import android.app.IntentService;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -126,8 +125,6 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
 
     @Override
     public void onAudioPackage(byte[] buffer, int size) {
-        Log.d(TAG, "onAudioPackage: audio package received from audio recorder thread");
-        writeLog("receive package of size " + size + " from recorder");
         try {
             mPeerTransmission.sendPacket(buffer, size);
         } catch (IOException e) {
