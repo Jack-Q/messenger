@@ -1,6 +1,7 @@
 package cn.jackq.messenger.ui;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -32,6 +33,9 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
     @BindView(R.id.edit_peer_ip)
     EditText mPeerIpEdit;
 
+    @BindView(R.id.edit_peer_port)
+    EditText mPeerPortEdit;
+
     MessengerAudioRecorder mRecorder;
     MessengerAudioOutput mOutput;
     PeerTransmission mPeerTransmission;
@@ -49,7 +53,7 @@ public class MainActivityHomePage implements MessengerAudioRecorder.MessengerAud
                 mPeerTransmission = new PeerTransmission(this);
                 writeLog("start peer transmission");
                 Log.d(TAG, "messageButtonClickHandler: starting peer socket");
-                mPeerTransmission.create(mPeerIpEdit.getText().toString(), errorMessage -> {
+                mPeerTransmission.create(mPeerIpEdit.getText().toString(), Integer.parseInt(mPeerPortEdit.getText().toString()), errorMessage -> {
                     if (errorMessage != null) {
                         writeLog("failed to initiate peer socket: " + errorMessage);
                         toggleButton.setChecked(false);

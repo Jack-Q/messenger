@@ -19,6 +19,7 @@ public class PeerTransmission implements Runnable {
 
     public interface PeerTransmissionListener {
         void onPackageReceived(byte[] data, int size);
+
         void onError();
     }
 
@@ -37,14 +38,16 @@ public class PeerTransmission implements Runnable {
     private PeerConnectionCallback createCallback;
 
     private String peerHost;
+    private int peerPort;
     private InetAddress inetAddress;
 
     public PeerTransmission(PeerTransmissionListener listener) {
         this.listener = listener;
     }
 
-    public void create(String peerHost, PeerConnectionCallback createCallback) {
+    public void create(String peerHost, int peerPort, PeerConnectionCallback createCallback) {
         this.peerHost = peerHost;
+        this.peerPort = peerPort == 0 ? 42001 : peerPort;
         this.createCallback = createCallback;
 
         synchronized (runLock) {
@@ -87,9 +90,9 @@ public class PeerTransmission implements Runnable {
             inetAddress = InetAddress.getByName(peerHost);
 
 
-            socket.connect(inetAddress, 42001);
+            socket.connect(inetAddress, peerPort);
 
-            if(createCallback != null)
+            if (createCallback != null)
                 createCallback.finish(null);
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
@@ -97,7 +100,7 @@ public class PeerTransmission implements Runnable {
             synchronized (runLock) {
                 running = false;
             }
-            if(createCallback != null)
+            if (createCallback != null)
                 createCallback.finish(e.getMessage());
             return;
         }
