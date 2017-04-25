@@ -47,6 +47,9 @@ const parsePacketByType = {
 }
 
 export const checkPacket = (buf, low, high) => {
+  if (low === undefined) {
+    low = 0, high = buf.length;
+  }
   let valid, complete, i = low, len = high - low;
   const inRange = i => { if (i < low || i - low > len) throw 'OUT_OF_BOUND'; }
   const eq = (i, p) => { inRange(i); if (!p(i)) throw 'INVALID';}
@@ -82,6 +85,9 @@ export const checkPacket = (buf, low, high) => {
 }
 
 export const readPacket = (buffer, low, high) => {
+  if (low === undefined) {
+    low = 0, high = buffer.length;
+  }
   let length = 0, type, payload;
   type = Object.keys(packetType).map(k => packetType[k]).filter(k => k.value === buffer[low + 5])[0];
   length = buffer.readUInt16BE(low + 6);

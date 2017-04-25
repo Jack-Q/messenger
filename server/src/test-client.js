@@ -18,7 +18,13 @@ sock.on('end', () => {
   if (timer) {clearInterval(timer); timer = 0;}
 })
 
-sock.on('data', buffer => console.log(buffer));
+sock.on('data', buffer => {
+  if (protocol.checkPacket(buffer).valid) {
+    console.log(protocol.readPacket(buffer));
+  } else {
+    console.log(buffer)
+  }
+});
 
 sock.on('error', err => {
   console.log(err.name, err.message, err.stack);
