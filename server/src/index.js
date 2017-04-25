@@ -48,7 +48,7 @@ const createClient = sock => {
 
     const { data: { type, payload }, length } = protocol.readPacket(readBuffer, bufferLow, bufferHigh);
 
-    console.log("receive data:" + type + ":" + payload);
+    console.log("receive data:" + type.type + ":" + payload);
     
     bufferLow += length;
     if (bufferLow == bufferHigh)

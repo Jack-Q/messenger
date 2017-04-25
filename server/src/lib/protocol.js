@@ -60,6 +60,9 @@ export const checkPacket = (buf, low, high) => {
 
 export const readPacket = (buffer, low, high) => {
   let length = 0, type, payload;
+  type = Object.keys(packetType).map(k => packetType[k]).filter(k => k.value === buffer[low + 5])[0];
+  length = buffer.readUInt16BE(low + 6);
+  payload = buffer.slice(low + 8, high);
   return { data: { type, payload }, length };
 }
 
