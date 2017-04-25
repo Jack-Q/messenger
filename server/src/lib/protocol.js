@@ -20,9 +20,32 @@ export const packetType = {
   // Call Management
   CALL_INIT: { type: 'CALL_INIT', value: 0x11 },
   CALL_WAIT: { type: 'CALL_WAIT', value: 0x12 },
-  CALL_CONN: {type: 'CALL_CONN', value: 0x13},
-  CALL_END: {type: 'CALL_END', value: 0x14},
+  CALL_CONN: { type: 'CALL_CONN', value: 0x13 },
+  CALL_END: { type: 'CALL_END', value: 0x14 },
 }
+
+const makePacketByType = {
+  SERVER_CHECK: data => "PING",
+  SERVER_STATUS: data => data.toString(),
+  USER_ADD_REQ: data => JSON.stringify({ n: data.name, t: data.token }),
+  USER_ADD_RESP: data => JSON.stringify({ s: data.status, m: data.message }),
+  USER_LOGIN_REQ: data => JSON.stringify({ n: data.name, t: data.token }),
+  USER_LOGIN_RESP: data => JSON.stringify({ s: data.status, m: data.message, k: data.sessionKey }),
+  INFO_QUERY: data => JSON.stringify({ q: data.queryType, p: data.params }),
+  INFO_RESP: data => JSON.stringify({ s: data.status, m: data.message, p: data.payload }),
+}
+
+const parsePacketByType = {
+  SERVER_CHECK: payload => payload.toString(),
+  SERVER_STATUS: payload => payload.toString(),
+  USER_ADD_REQ: payload => (d => ({name: d.n, token: d.t}))(JSON.parse(payload.toString())),
+  USER_ADD_RESP: payload => (d => ({ status: d.s, message: d.m }))(JSON.parse(payload.toString())),
+  USER_LOGIN_REQ: payload => (d => ({ name: d.n, token: d.t }))(JSON.parse(payload.toString())),
+  USER_LOGIN_RESP: payload => (d => ({ status: d.s, message: d.m, sessionKey: d.k }))(JSON.parse(payload.toString())),
+  INFO_QUERY: payload => (d => ({ queryType: d.q, params: d.p }))(JSON.parse(payload.toString())),
+  INFO_RESP: payload => (d => ({ status: d.s, message: d.m, payload: d.p }))(JSON.parse(payload.toString())),
+}
+
 export const checkPacket = (buf, low, high) => {
   let valid, complete, i = low, len = high - low;
   const inRange = i => { if (i < low || i - low > len) throw 'OUT_OF_BOUND'; }
@@ -63,6 +86,8 @@ export const readPacket = (buffer, low, high) => {
   type = Object.keys(packetType).map(k => packetType[k]).filter(k => k.value === buffer[low + 5])[0];
   length = buffer.readUInt16BE(low + 6);
   payload = buffer.slice(low + 8, high);
+  if (parsePacketByType[type.type])
+    payload = parsePacketByType[type.type](payload)
   return { data: { type, payload }, length };
 }
 
@@ -87,10 +112,6 @@ const writeBuffer = (buf, type, data) => {
   data.copy(buf, i, 0, data.length);
 
   return size;
-}
-
-const makePacketByType = {
-  SERVER_CHECK: data => "PING",
 }
 
 export const makePacketToBuffer = (buf, type, data) => {

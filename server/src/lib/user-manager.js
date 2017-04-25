@@ -14,11 +14,6 @@ class UserStorage {
 
 const userStorage = new UserStorage();
 
-const createUser = (name, token) => userStorage.add(name, token);
+export const createUser = (name, token) => userStorage.add(name, token);
 
-const checkUser = (name, token) => userStorage.check(name, token);
-
-export const Manager = {
-  createUser,
-  checkUser
-};
+export const checkUser = (name, token) => userStorage.check(name, token);
