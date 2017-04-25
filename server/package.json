@@ -26,6 +26,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "node-opus": "^0.2.6"
+    "node-opus": "^0.2.6",
+    "speaker": "^0.3.0"
   }
 }

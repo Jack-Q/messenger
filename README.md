@@ -33,3 +33,11 @@ http://www.deadcoderising.com/java8-writing-asynchronous-code-with-completablefu
 
 ## UI Binding 
 http://jakewharton.github.io/butterknife/
+
+## Audio Module
+`MediaRecorder` DOM API:
+[https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API/Using_the_MediaStream_Recording_API]()
+
+```bash
+sudo apt-get install libasound2-dev
+```
