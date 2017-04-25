@@ -30,8 +30,9 @@ const createClient = sock => {
         return;
       }
     }
-    data.copy(readBuffer, bufferHigh);
+    data.copy(readBuffer, bufferHigh, 0, data.length);
     bufferHigh += data.length;
+    console.log(readBuffer, readBuffer.toString(null, bufferLow, bufferHigh));
 
     const { valid, complete } = protocol.checkPacket(readBuffer, bufferLow, bufferHigh);
     if (!valid) {
@@ -40,8 +41,10 @@ const createClient = sock => {
       return;
     }
 
-    if (!complete)
-      return;  
+    if (!complete) {
+      console.warn("incomplete package received, waiting for later package")
+      return;
+    }
 
     const { data: { type, payload }, length } = protocol.readPacket(readBuffer, bufferLow, bufferHigh);
 

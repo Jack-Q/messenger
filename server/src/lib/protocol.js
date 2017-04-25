@@ -20,13 +20,42 @@ export const packetType = {
   // Call Management
   CALL_INIT: { type: 'CALL_INIT', value: 0x11 },
   CALL_WAIT: { type: 'CALL_WAIT', value: 0x12 },
-  CALL_CONN: {type: 'CALL_CONN', valid: 0x13},
+  CALL_CONN: {type: 'CALL_CONN', value: 0x13},
   CALL_END: {type: 'CALL_END', value: 0x14},
 }
-
-export const checkPacket = (buffer, low, high) => {
-  let valid, complete;
-  return { valid, complete };
+export const checkPacket = (buf, low, high) => {
+  let valid, complete, i = low, len = high - low;
+  const inRange = i => { if (i < low || i - low > len) throw 'OUT_OF_BOUND'; }
+  const eq = (i, p) => { inRange(i); if (!p(i)) throw 'INVALID';}
+  const eqInt = (i, b) => eq(i, v => buf.readUInt8(v) === b);
+  try {
+    // header
+    eqInt(i++, 0x4a);
+    eqInt(i++, 0x51);
+    eqInt(i++, 0x49);
+    eqInt(i++, 0x4d);
+    // protocol version
+    eqInt(i++, PROTOCOL_VERSION);
+    // package type
+    eq(i++, v => {
+      const val = buf.readUInt8(v);
+      return Object.keys(packetType).some(k => packetType[k].value == val);
+    })
+    // length
+    inRange(i + 1);
+    const len = buf.readUInt16BE(i);
+    if (i < 0 || i > MAXIMUM_PACKET_SIZE) throw "INVALID";
+    // package length
+    inRange(low + len);
+    valid = true, complete = true;
+  } catch (e) {
+    console.log(e)
+    if (e === 'INVALID') 
+      valid = false, complete = false;
+    else 
+      valid = true, complete = false;
+    }
+  return {valid, complete};
 }
 
 export const readPacket = (buffer, low, high) => {
