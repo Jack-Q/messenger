@@ -8,7 +8,9 @@
       <div class="left-center">
         <transition name="fade">
           <div class="left-buddy-list">
-            <buddy-view v-for="buddy in buddyList" :buddy="buddy" @click.native="buddyList.splice(buddyList.indexOf(buddy), 1)"></buddy-view>
+            <transition-group name="list">
+              <buddy-view v-for="buddy in buddyList" :key="buddy.id" :buddy="buddy" @click.native="buddyList.splice(buddyList.indexOf(buddy), 1)"></buddy-view>
+            </transition-group>
           </div>
         </transition>
       </div>
@@ -43,7 +45,8 @@ import SettingView from './SettingView';
 import BuddyView from './BuddyView';
 
 const rnd = () => (Math.random() * 255).toFixed(0);
-const buddyList = (new Array(20)).fill(0).map(() => ({
+const buddyList = (new Array(20)).fill(0).map((_, id) => ({
+  id,
   name: `Buddy ${rnd()}`,
   ip: `${rnd()}.${rnd()}.${rnd()}.${rnd()}`,
 }));
@@ -132,5 +135,15 @@ export default {
 .fade-enter, .fade-leave-active{
   transform: translateY(50px);
   opacity: 0;
+}
+.list-enter, .list-leave-active {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.list-enter-active, .list-leave, .list-move{
+  transition: all ease 400ms;
+}
+.list-leave-active{
+  position: absolute;
 }
 </style>
