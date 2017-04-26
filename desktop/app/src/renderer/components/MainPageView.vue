@@ -25,8 +25,12 @@
         <div key="instruction" class="center-page" v-if="centerPageIndex % 4 === 0">
           <instruction-view></instruction-view>
         </div>
-        <div key="audio" class="center-page" v-if="centerPageIndex % 4 === 1">Audio View</div>
-        <div key="message" class="center-page" v-if="centerPageIndex % 4 === 2">Message View</div>
+        <div key="audio" class="center-page" v-if="centerPageIndex % 4 === 1">
+          <audio-view></audio-view>
+        </div>
+        <div key="message" class="center-page" v-if="centerPageIndex % 4 === 2">
+          <message-view></message-view>
+        </div>
         <div key="setting" class="center-page" v-if="centerPageIndex % 4 === 3">
           <setting-view></setting-view>
         </div>
@@ -42,6 +46,8 @@
 import InstructionView from './InstructionView';
 import SettingView from './SettingView';
 import BuddyView from './BuddyView';
+import AudioView from './AudioView';
+import MessageView from './MessageView';
 
 const rnd = () => (Math.random() * 255).toFixed(0);
 const createBuddy = (function *c() {
@@ -73,6 +79,8 @@ export default {
     InstructionView,
     SettingView,
     BuddyView,
+    AudioView,
+    MessageView,
   },
 };
 </script>
@@ -108,6 +116,7 @@ export default {
   overflow-y: auto;
   width: 100%;
   position: relative;
+  overflow-x: hidden;
 }
 .left-footer{
   text-align: center;
