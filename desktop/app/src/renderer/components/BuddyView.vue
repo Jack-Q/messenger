@@ -1,7 +1,8 @@
 <template>
-  <div class="buddy">
+  <div class="buddy" ref="buddy-root">
     <div class="name">{{buddy.name}}</div>
     <div class="ip">{{buddy.ip}}</div>
+    <ui-ripple-ink trigger="buddy-root" ></ui-ripple-ink> 
   </div>
 </template>
 
@@ -24,6 +25,7 @@ export default {
   transition: all ease 400ms;
   cursor: pointer;
   margin: 0;
+  position: relative;
 }
 .buddy:hover {
   background: rgba(150, 150, 150, 0.3);

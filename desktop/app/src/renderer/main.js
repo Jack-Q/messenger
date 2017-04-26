@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Electron from 'vue-electron';
 import Resource from 'vue-resource';
 import Router from 'vue-router';
+import KeenUI from 'keen-ui';
+import 'keen-ui/dist/keen-ui.css';
 
 import App from './App';
 import routes from './routes';
@@ -9,6 +11,7 @@ import routes from './routes';
 Vue.use(Electron);
 Vue.use(Resource);
 Vue.use(Router);
+Vue.use(KeenUI);
 Vue.config.debug = true;
 
 const router = new Router({
