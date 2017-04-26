@@ -7,6 +7,7 @@
   "dependencies": {
     "babel-runtime": "^6.23.0",
     "keen-ui": "^1.0.0",
+    "messenger-server": "file:../../server",
     "vue": "^2.1.10",
     "vue-electron": "^1.0.6",
     "vue-resource": "^1.0.3",
