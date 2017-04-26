@@ -1,5 +1,6 @@
 import { BUFFER_SIZE, SERVER_NAME } from '../server-config';
 import * as protocol from './protocol';
+import { checkUser, createUser } from './user-manager';
 
 const createBuffer = () => ({bufferLow: 0, bufferHigh: 0, readBuffer: Buffer.allocUnsafe(BUFFER_SIZE), writeBuffer: Buffer.allocUnsafe(BUFFER_SIZE)});
 
@@ -55,7 +56,19 @@ export class ClientConnection {
 
     const { data: { type, payload }, length } = protocol.readPacket(buf.readBuffer, buf.bufferLow, buf.bufferHigh);
 
-    console.log("receive data:" + type.type + ":" + payload);
+    console.log("receive data:", type.type, ":", payload);
+
+    switch (type.type) {
+      case protocol.packetType.USER_ADD_REQ.type:
+        createUser(payload.name, payload.token);
+        this.send(protocol.packetType.USER_ADD_RESP, { status: true, message: 'ok' });
+        break;
+      case protocol.packetType.USER_LOGIN_REQ.type:
+        if (checkUser(payload.name, payload.token))
+          this.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: ')AS(0' });
+        else
+          this.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
+    }
 
     buf.bufferLow += length;
     if (buf.bufferLow == buf.bufferHigh) 
