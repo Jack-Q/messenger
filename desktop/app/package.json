@@ -1,0 +1,23 @@
+{
+  "name": "messenger",
+  "productName": "Messenger",
+  "version": "0.0.0",
+  "description": "Desktop client for Messenger",
+  "main": "./dist/main.js",
+  "dependencies": {
+    "babel-runtime": "^6.23.0",
+    "vue": "^2.1.10",
+    "vue-electron": "^1.0.6",
+    "vue-resource": "^1.0.3",
+    "vue-router": "^2.1.2",
+    "vuex": "^2.1.1"
+  },
+  "devDependencies": {},
+  "homepage": "https://github.com/Jack-Q/messenger/",
+  "author": {
+    "name": "Jack Q",
+    "email": "qiaobo@outlook.com",
+    "url": "https://jack-q.github.io/"
+  },
+  "license": "MIT"
+}
