@@ -6,9 +6,11 @@
         connected to {{serverName}}
       </div>
       <div class="left-center">
-        <div class="left-buddy-list">
-          
-        </div>
+        <transition name="fade">
+          <div class="left-buddy-list">
+            <buddy-view v-for="buddy in buddyList" :buddy="buddy" @click.native="buddyList.splice(buddyList.indexOf(buddy), 1)"></buddy-view>
+          </div>
+        </transition>
       </div>
       <div>
         <button @click="centerPageIndex++">change</button>
@@ -24,7 +26,9 @@
         </div>
         <div key="audio" class="center-page" v-if="centerPageIndex % 4 === 1">Audio View</div>
         <div key="message" class="center-page" v-if="centerPageIndex % 4 === 2">Message View</div>
-        <div key="setting" class="center-page" v-if="centerPageIndex % 4 === 3">Setting</div>
+        <div key="setting" class="center-page" v-if="centerPageIndex % 4 === 3">
+          <setting-view></setting-view>
+        </div>
       </transition>
     </div>
     <div class="right-aside">
@@ -35,15 +39,28 @@
 
 <script>
 import InstructionView from './InstructionView';
+import SettingView from './SettingView';
+import BuddyView from './BuddyView';
+
+const rnd = () => (Math.random() * 255).toFixed(0);
+const buddyList = (new Array(20)).fill(0).map(() => ({
+  name: `Buddy ${rnd()}`,
+  ip: `${rnd()}.${rnd()}.${rnd()}.${rnd()}`,
+}));
+
+
 export default {
   data() {
     return {
       serverName: 'Server',
-      centerPageIndex: 0,
+      centerPageIndex: 3,
+      buddyList,
     };
   },
   components: {
     InstructionView,
+    SettingView,
+    BuddyView,
   },
 };
 </script>
@@ -73,6 +90,15 @@ export default {
 }
 .left-center{
   flex: 1;
+  display: flex;
+}
+.left-buddy-list {
+  overflow-y: auto;
+  display: flex;
+  /* disable this due to the problematic center feature */
+  /*justify-content: center;*/
+  width: 100%;
+  flex-direction: column;
 }
 .left-footer{
   text-align: center;

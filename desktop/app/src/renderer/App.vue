@@ -14,6 +14,24 @@
 <style>
   @import url(https://fonts.googleapis.com/css?family=Lato:300);
 
+  ::-webkit-scrollbar {
+    background: transparent;
+    width: 8px;
+    height: 8px;
+    overflow: visible; 
+  }
+
+  ::-webkit-scrollbar-corner{
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color:rgba(220,220,220,0.5);
+    border: solid 1px rgba(0,0,0,0.3);
+  }
+
+
   * {
     margin: 0;
     padding: 0;
@@ -30,6 +48,9 @@
     display: flex;
     font-family: Lato, Helvetica, sans-serif;
     justify-content: center;
+    /*disable selection by default*/
+    user-select: none;
+    cursor: default;
   }
 
   #app{
