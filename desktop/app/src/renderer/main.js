@@ -8,6 +8,8 @@ import 'keen-ui/dist/keen-ui.css';
 import App from './App';
 import routes from './routes';
 
+import { createSock } from './server/network';
+
 Vue.use(Electron);
 Vue.use(Resource);
 Vue.use(Router);
@@ -24,3 +26,8 @@ new Vue({
   router,
   ...App,
 }).$mount('#app');
+
+createSock('0.0.0.0', 12121, serverSock => {
+  console.log('connected', serverSock);
+  // serverSock.register()
+});
