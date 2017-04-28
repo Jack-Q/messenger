@@ -1,7 +1,10 @@
 <template>
   <div class="wrapper">
     <div class="left-aside">
-      <div class="left-header">Messenger</div>
+      <div class="left-header">
+        <div class="left-header-close" @click="closeWindow">x</div>
+        <span>Messenger</span>
+      </div>
       <div class="left-status">
         connected to {{serverName}}
       </div>
@@ -74,6 +77,9 @@ export default {
     addBuddy() {
       this.buddyList.splice(Math.min(5, this.buddyList.length), 0, createBuddy.next().value);
     },
+    closeWindow() {
+      window.close();
+    },
   },
   components: {
     InstructionView,
@@ -100,6 +106,34 @@ export default {
 .left-header{
   font-size: 1.8em;
   padding: 25px;
+  /*let left header aside to be dragable*/
+  -webkit-app-region: drag;
+  display: flex;
+  position: relative;
+}
+.left-header-close{
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  cursor: pointer;
+  z-index: 10;
+  background: #cc5555;
+  transition: all ease 400ms;
+  flex: 0;
+  border: solid 1px #666;
+  font-family: monospace;
+  font-size: 18px;
+  /*let left header aside to be dragable*/
+  -webkit-app-region: no-drag;
+}
+.left-header-close:hover{
+  background: #f55;
 }
 .left-status{
   margin: 0 30px;

@@ -38,12 +38,13 @@
   }
 
   html,
-  body { height: 100%; }
+  body { 
+    height: 100%;
+    background: transparent;
+  }
 
   body {
     align-items: center;
-    color: #eee;
-    background: #555;
     background-position: center;
     display: flex;
     font-family: Lato, Helvetica, sans-serif;
@@ -54,7 +55,11 @@
   }
 
   #app{
+    color: #eee;
+    background: #555;
     width: 100%;
     height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
   }
 </style>
