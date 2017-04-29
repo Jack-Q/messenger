@@ -6,13 +6,18 @@
         <span>Messenger</span>
       </div>
       <div class="left-status">
-        connected to {{serverName}}
+        <span v-if="isConnected()"> connected to {{serverName}} </span>
+        <span v-else>not connected</span>
       </div>
       <div class="left-center">
         <transition name="fade">
-          <transition-group class="left-buddy-list" name="list">
-            <buddy-view v-for="buddy in buddyList" :key="buddy.id" :buddy="buddy" @click.native="buddyList.splice(buddyList.indexOf(buddy), 1)"></buddy-view>
+          <transition-group v-if="getBuddyList() && getBuddyList().length" class="left-buddy-list" name="list">
+            <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" @click.native="getBuddyList().splice(buddyList.indexOf(buddy), 1)"></buddy-view>
           </transition-group>
+          <div v-else class="left-center-tip">
+            <ui-icon>face</ui-icon>
+            you're kind of alone...
+          </div>
         </transition>
       </div>
       <div>
@@ -52,6 +57,8 @@ import BuddyView from './BuddyView';
 import AudioView from './AudioView';
 import MessageView from './MessageView';
 
+import AppState from '../app-state';
+
 const rnd = () => (Math.random() * 255).toFixed(0);
 const createBuddy = (function *c() {
   for (let i = 0; ;i++) {
@@ -63,14 +70,13 @@ const createBuddy = (function *c() {
   }
 }());
 const buddyList = (new Array(20)).fill(0).map(() => createBuddy.next().value);
-
+console.log(buddyList);
 
 export default {
   data() {
     return {
       serverName: 'Server',
       centerPageIndex: 3,
-      buddyList,
     };
   },
   methods: {
@@ -80,6 +86,8 @@ export default {
     closeWindow() {
       window.close();
     },
+    isConnected: () => AppState.connected,
+    getBuddyList: () => AppState.buddyList,
   },
   components: {
     InstructionView,
@@ -92,6 +100,7 @@ export default {
 </script>
 
 <style>
+
 .wrapper{
   width: 100%;
   height: 100%;
@@ -145,6 +154,17 @@ export default {
 .left-center{
   flex: 1;
   display: flex;
+}
+.left-center-tip{
+  margin: auto;
+  font-size: 1.5em;
+  color: #888;
+}
+.left-center-tip .ui-icon{
+  color: #777;
+  font-size: 3em;
+  display: block;
+  margin: auto;
 }
 .left-buddy-list {
   overflow-y: auto;

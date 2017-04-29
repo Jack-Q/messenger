@@ -82,6 +82,10 @@ class ServerConnection {
       this.timer = 0;
     }
   }
+
+  on(event, callback) {
+    this.callbackHub.listen(event, callback);
+  }
 }
 
 export const createSock = (host, port) => new Promise((res, rej) => {

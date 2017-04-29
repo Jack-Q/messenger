@@ -3,9 +3,11 @@
     <div class="title">Server &amp; Account</div>
     <div class="form">
       <div class="form-row">
-        <ui-textbox floating-label label="Server Address" placeholder="Enter server address" v-model="host"></ui-textbox>
+        <div class="host"><ui-textbox floating-label label="Server Address" placeholder="Enter server address" v-model="host"></ui-textbox></div>
         <span>:</span>
-        <ui-textbox floating-label label="Port" type="number" :min="1024" step="1" :max="65535" placeholder="Enter your name" v-model="port"></ui-textbox>
+        <div class="port">
+          <ui-textbox floating-label label="Port" type="number" :min="1024" step="1" :max="65535" placeholder="Enter your name" v-model="port"></ui-textbox>
+        </div>
       </div>
       <ui-textbox floating-label label="User name" placeholder="Enter your user name" v-model="username"></ui-textbox>
       <ui-textbox floating-label label="Password" placeholder="Enter your password" v-model="password" type="password"></ui-textbox>
@@ -52,7 +54,12 @@ export default {
   display: flex;
   align-items: center;
 }
-
+.host {
+  flex: 4;
+}
+.port {
+  flex: 1;
+}
 .form-row span {
   color: #555;
   margin: 10px;
