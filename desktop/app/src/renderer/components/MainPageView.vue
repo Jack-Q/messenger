@@ -20,32 +20,26 @@
           </div>
         </transition>
       </div>
-      <div>
-        <ui-button @click="centerPageIndex++">change</ui-button>
-        <ui-button @click="addBuddy">add buddy</ui-button>
-      </div>
       <div class="left-footer">
         2017 &copy; Jack Q
       </div>
     </div>
     <div class="center">
       <transition name="fade">
-        <div key="instruction" class="center-page" v-if="centerPageIndex % 4 === 0">
-          <instruction-view></instruction-view>
-        </div>
-        <div key="audio" class="center-page" v-if="centerPageIndex % 4 === 1">
-          <audio-view></audio-view>
-        </div>
-        <div key="message" class="center-page" v-if="centerPageIndex % 4 === 2">
-          <message-view></message-view>
-        </div>
-        <div key="setting" class="center-page" v-if="centerPageIndex % 4 === 3">
+        <div key="setting" class="center-page" v-if="!isConnected() && !isLogin()">
           <setting-view></setting-view>
         </div>
+        <div key="audio" class="center-page" v-else-if="isAudioMode()">
+          <audio-view></audio-view>
+        </div>
+        <div key="message" class="center-page" v-else-if="messageOpen">
+          <message-view></message-view>
+        </div>
+        <!-- default view -->
+        <div key="instruction" class="center-page" v-else>
+          <instruction-view></instruction-view>
+        </div>
       </transition>
-    </div>
-    <div class="right-aside">
-      <div class="right"></div>
     </div>
   </div>
 </template>
@@ -76,7 +70,7 @@ export default {
   data() {
     return {
       serverName: 'Server',
-      centerPageIndex: 3,
+      messageOpen: false,
     };
   },
   methods: {
@@ -87,7 +81,9 @@ export default {
       window.close();
     },
     isConnected: () => AppState.connected,
+    isAudioMode: () => AppState.isAudioMode,
     getBuddyList: () => AppState.buddyList,
+    isLogin: () => AppState.isLogin,
   },
   components: {
     InstructionView,

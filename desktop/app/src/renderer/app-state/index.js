@@ -2,6 +2,8 @@ import { createSock } from '../server/network';
 
 export default {
   connected: false,
+  isLogin: false,
+  isAudioMode: false,
   serverConnection: undefined,
   buddyList: [],
 
@@ -16,5 +18,10 @@ export default {
         this.serverConnection = null;
       });
     });
+  },
+
+  login(user, pass) {
+    return this.connected ? this.serverConnection.login(user, pass)
+      : Promise.reject('no server configured');
   },
 };
