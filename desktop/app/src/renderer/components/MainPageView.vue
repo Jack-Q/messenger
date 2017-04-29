@@ -26,7 +26,7 @@
     </div>
     <div class="center">
       <transition name="fade">
-        <div key="setting" class="center-page" v-if="!isConnected() && !isLogin()">
+        <div key="setting" class="center-page" v-if="!isConnected() || !isLogin()">
           <setting-view></setting-view>
         </div>
         <div key="audio" class="center-page" v-else-if="isAudioMode()">
@@ -72,6 +72,9 @@ export default {
       serverName: 'Server',
       messageOpen: false,
     };
+  },
+  created() {
+    AppState.onUpdate(() => this.$forceUpdate());
   },
   methods: {
     addBuddy() {

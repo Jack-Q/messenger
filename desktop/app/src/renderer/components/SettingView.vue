@@ -1,21 +1,25 @@
 <template>
   <div class="page">
     <div class="title">Server &amp; Account</div>
-    <div class="form">
+    <form class="form" @submit="connect">
       <div class="form-row">
-        <div class="host"><ui-textbox floating-label label="Server Address" placeholder="Enter server address" v-model="host"></ui-textbox></div>
+        <div class="host">
+          <ui-textbox required :disabled="connecting" floating-label label="Server Address" placeholder="Enter server address" v-model="host"></ui-textbox>
+        </div>
         <span>:</span>
         <div class="port">
-          <ui-textbox floating-label label="Port" type="number" :min="1024" step="1" :max="65535" placeholder="Enter your name" v-model="port"></ui-textbox>
+          <ui-textbox required :disabled="connecting" floating-label label="Port" type="number" :min="1024" step="1" :max="65535" placeholder="Enter your name" v-model="port"></ui-textbox>
         </div>
       </div>
-      <ui-textbox floating-label label="User name" placeholder="Enter your user name" v-model="username"></ui-textbox>
-      <ui-textbox floating-label label="Password" placeholder="Enter your password" v-model="password" type="password"></ui-textbox>
+      <ui-textbox required :disabled="connecting" floating-label label="User name" placeholder="Enter your user name" v-model="username"></ui-textbox>
+      <ui-textbox required :disabled="connecting" floating-label label="Password" placeholder="Enter your password" v-model="password" type="password"></ui-textbox>
       <ui-button type="secondary" :loading="connecting">connect</ui-button>
-    </div>
+    </form>
   </div>
 </template>
 <script>
+import AppState from '../app-state';
+
 export default {
   data() {
     return {
@@ -25,6 +29,21 @@ export default {
       password: '',
       connecting: false,
     };
+  },
+  created() {
+    AppState.onUpdate(() => this.$forceUpdate());
+  },
+  methods: {
+    connect() {
+      this.connecting = true;
+      AppState.connect(this.host, this.port).then(e => {
+        console.log('connected to server', e);
+        this.connecting = false;
+      }).catch(e => {
+        console.log(e);
+        this.connecting = false;
+      });
+    },
   },
 };
 </script>
@@ -54,12 +73,15 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .host {
   flex: 4;
 }
+
 .port {
   flex: 1;
 }
+
 .form-row span {
   color: #555;
   margin: 10px;

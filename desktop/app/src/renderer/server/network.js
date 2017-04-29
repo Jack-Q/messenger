@@ -92,10 +92,14 @@ export const createSock = (host, port) => new Promise((res, rej) => {
   const sock = net.createConnection({ port, host }, (err) => {
     if (err) {
       console.log('failed to connect to server', err);
-      rej(err); return;
+      rej(err);
+      return;
     }
 
     console.log('connected to server');
     res(new ServerConnection(host, port, sock));
+  });
+  sock.on('error', e => {
+    rej(e);
   });
 });
