@@ -1,22 +1,135 @@
 <template>
-<div class="page">
-  <div class="title">Message</div>
-  <div>click user label on left panel to begin conversation</div>
-</div>
+  <div class="page">
+    <div class="title">Message</div>
+    <div class="sub-title">with {{peername}}</div>
+    <div class="message-list">
+      <div v-for="msg in messages" class="message-row" :class="msg.type">
+        <div class="message-box" :class="msg.type">
+          <div class="content">{{msg.content}}</div>
+          <div class="footer">{{msg.time}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="editor">
+      <div class="message-text-edit">
+        <ui-textbox type="text" v-model="currentMessage"></ui-textbox>
+      </div>
+      <div>
+        <ui-button :type="currentMessage?'primary':'secondary'" :disabled="!currentMessage">send</ui-button>
+      </div>
+    </div>
+  </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      peername: 'Jack Q',
+      currentMessage: '',
+      messages: [
+        { time: new Date(), content: 'Hello', type: 'send' },
+        { time: new Date(), content: 'Hi~ \n Nice to see you here', type: 'recv' },
+        {
+          time: new Date(),
+          content: 'Yeah, it quite a suprise to be talking on a self-hosted platform',
+          type: 'send',
+        },
+        {
+          time: new Date(),
+          content: 'Yeah, it quite a suprise to be talking on a self-hosted platform',
+          type: 'recv',
+        },
+        {
+          time: new Date(),
+          content: 'Yeah, it quite a suprise to be talking on a self-hosted platform',
+          type: 'send',
+        },
+        { time: new Date(), content: 'Hello', type: 'recv' },
+        { time: new Date(), content: 'Hello', type: 'recv' },
+        { time: new Date(), content: 'Hello', type: 'send' },
+        { time: new Date(), content: 'Hello', type: 'recv' },
+        { time: new Date(), content: 'Hello', type: 'send' },
+      ],
+    };
+  },
+};
+</script>
 <style>
-.page{
+.page {
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
   font-size: 1.5em;
   text-align: center;
-  color: #aaa;
+  color: #999;
   width: 100%;
   height: 100%;
   justify-content: center;
 }
-.title{
+
+.title {
   font-size: 2em;
   margin: 30px;
+}
+
+.sub-title {
+  color: #888;
+  margin: -30px auto 20px;
+}
+
+.message-list {
+  width: 100%;
+  max-height: 450px;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: auto;
+  border-top: dashed 1px #aaa;
+  border-bottom: dashed 1px #aaa;
+}
+
+.message-row{
+  margin: 20px 0;
+  padding: 0 30px;
+  display: flex;
+}
+
+.message-box{
+  background: rgba(240,240,240,0.3);
+  width: 60%;
+  max-width: 500px;
+  font-size: 0.8em;
+  border-radius: 10px;
+  text-align: left;
+  padding: 10px 20px;
+  color: #555;
+}
+.message-row.recv::before, .message-row.send::after{
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: auto 2px;
+  background: rgba(240,240,240,0.5);
+  border-radius: 50%;
+}
+.message-box.send{
+  margin-left: auto;
+  text-align: right;
+}
+
+.message-box .footer{
+  margin-bottom: -10px;
+  font-size: 0.7em;
+  text-align: center;
+  color: #999;
+}
+.editor{
+  width: 100%;
+  height: 80px;
+  max-width: 600px;
+  margin: 5px auto;
+  display: flex;
+}
+.message-text-edit{
+  flex: 1;
 }
 </style>
