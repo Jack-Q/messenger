@@ -40,7 +40,7 @@ export default class Server {
         break;
       case protocol.packetType.USER_LOGIN_REQ.type:
         if (checkUser(payload.name, payload.token))
-          connection.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: ')AS(0' });
+          connection.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: connection.id });
         else
           connection.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
     }
