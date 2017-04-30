@@ -1,11 +1,14 @@
 import { BUFFER_SIZE, SERVER_NAME } from '../server-config';
+import CallbackHub from './callback-hub';
 import * as protocol from './protocol';
 import { checkUser, createUser } from './user-manager';
 
 const createBuffer = () => ({bufferLow: 0, bufferHigh: 0, readBuffer: Buffer.allocUnsafe(BUFFER_SIZE), writeBuffer: Buffer.allocUnsafe(BUFFER_SIZE)});
 
-export class ClientConnection {
-  constructor(sock) {
+export default class ClientConnection {
+  constructor(id, sock) {
+    this.id = id;
+    this.hub = new CallbackHub();
     this.sock = sock;
     this.remoteAddress = sock.remoteAddress;
     this.remotePort = sock.remotePort;
@@ -20,6 +23,20 @@ export class ClientConnection {
   send(type, data) {
     const len = protocol.makePacketToBuffer(this.buffer.writeBuffer, type, data);
     this.sock.write(this.buffer.writeBuffer.slice(0, len));
+  }
+
+  // Bind Listener
+  listenData(callback) {
+    this.listen(ClientConnection.EventType.DataAction, (type, payload) => callback(this, type, payload));
+  }
+
+  listenClose(callback) {
+    this.listen(ClientConnection.EventType.ConnectionClose, () => callback(this));
+    this.listen(ClientConnection.EventType.ConnectionTimeout, () => callback(this));
+  }
+
+  listen(event, callback) {
+    this.hub.listen(event, callback);
   }
 
   // Client send data
@@ -61,17 +78,7 @@ export class ClientConnection {
 
       console.log("receive data:", type.type, ":", payload);
 
-      switch (type.type) {
-        case protocol.packetType.USER_ADD_REQ.type:
-          createUser(payload.name, payload.token);
-          this.send(protocol.packetType.USER_ADD_RESP, { status: true, message: 'ok' });
-          break;
-        case protocol.packetType.USER_LOGIN_REQ.type:
-          if (checkUser(payload.name, payload.token))
-            this.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: ')AS(0' });
-          else
-            this.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
-      }
+      this.hub.pub(ClientConnection.EventType.DataAction, type, payload);
 
       buf.bufferLow += length;
       if (buf.bufferLow == buf.bufferHigh) 
@@ -86,9 +93,17 @@ export class ClientConnection {
   // Client disconnected from server
   onClose() {
     console.log(this.remoteAddress + ':' + this.remotePort + ' closed');
+    this.hub.pub(ClientConnection.EventType.ConnectionClose);
   }
 
   onTimeout() {
     console.log(this.remoteAddress + ':' + this.remotePort + ' closed');
+    this.hub.pub(ClientConnection.EventType.ConnectionTimeout);
   }
+}
+
+ClientConnection.EventType = {
+  ConnectionClose: "connection-close",
+  ConnectionTimeout: "connection-timeout",
+  DataAction: "data-action",
 }

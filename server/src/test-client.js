@@ -3,7 +3,7 @@ import net from 'net';
 import * as config from './server-config';
 import * as protocol from './lib/protocol';
 
-import { CallbackHub } from './lib/callback-hub';
+import CallbackHub from './lib/callback-hub';
 
 let timer = 0;
 

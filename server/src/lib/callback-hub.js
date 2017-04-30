@@ -3,7 +3,7 @@ const addCallback = (map, type, callback) => {
     map[type].push(callback);
 }
 
-export class CallbackHub {
+export default class CallbackHub {
   constructor() {
     this.once = {};
     this.each = {};
@@ -17,7 +17,7 @@ export class CallbackHub {
     addCallback(this.once, type, callback);
   }
 
-  pub(type, args) {
+  pub(type, ...args) {
     if (this.once[type] && this.once[type].length > 0) {
       this.once[type].map(cb => cb.apply(null, args));
       this.once[type] = [];

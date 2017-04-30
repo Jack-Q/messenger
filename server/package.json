@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "node-opus": "^0.2.6",
+    "shortid": "^2.2.8",
     "speaker": "^0.3.0"
   }
 }

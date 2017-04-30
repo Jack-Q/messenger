@@ -1,7 +1,7 @@
 import net from 'net';
 
 import * as protocol from '../../../../../server/src/lib/protocol';
-import { CallbackHub } from '../../../../../server/src/lib/callback-hub';
+import CallbackHub from '../../../../../server/src/lib/callback-hub';
 
 const BUFFER_SIZE = 10240;
 

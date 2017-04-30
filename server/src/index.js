@@ -1,15 +1,10 @@
 import net from 'net';
 import dgram from 'dgram';
 
-import * as userManager from './lib/user-manager';
-import * as protocol from './lib/protocol';
+import Server from './lib/server';
 
-import { ClientConnection } from './lib/client-connection';
+import { host, port } from './server-config';
 
-const server = net.createServer(sock => new ClientConnection(sock));
+const server = new Server(host, port);
 
-server.addListener('error', err => console.log(err));
-
-server.listen('12121', '0.0.0.0', () => {
-  console.log("Server listening ", server.address());
-});
+server.initServer();
