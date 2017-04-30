@@ -50,7 +50,7 @@ export default {
     connect() {
       this.connecting = true;
       AppState.connect(this.host, this.port)
-        .catch(e => {
+        .catch((e) => {
           if (e) {
             UiService.sendNotification('Network Error',
               (e && e.message) || 'Something went wrong...');
@@ -58,16 +58,17 @@ export default {
           }
           return Promise.reject(false);
         })
-        .then(e => {
+        .then((e) => {
           console.log(e);
           return this.createNewUser ? AppState.register(this.username, this.password)
             : AppState.login(this.username, this.password);
         })
-        .then(info => {
+        .then((info) => {
           UiService.sendNotification(`Welcome ${info.name}`, 'welcome to messenger');
           this.connecting = false;
+          this.createNewUser = false;
         })
-        .catch(e => {
+        .catch((e) => {
           if (e) {
             UiService.sendNotification('Login Error', e && e.message);
             this.connecting = false;

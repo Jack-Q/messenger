@@ -47,6 +47,6 @@ export default class Server {
   }
 
   handleClientClose(connection) {
-    console.log(connection, 'closed');
+    console.log(connection.id, 'closed');
   }
 }

@@ -12,7 +12,25 @@ const createBuffer = () => ({
   writeBuffer: Buffer.allocUnsafe(BUFFER_SIZE),
 });
 
-class ServerConnection {
+export default class ServerConnection {
+  static createSock(host, port) {
+    return new Promise((res, rej) => {
+      const sock = net.createConnection({ port, host }, (err) => {
+        if (err) {
+          console.log('failed to connect to server', err);
+          rej(err);
+          return;
+        }
+
+        console.log('connected to server');
+        res(new ServerConnection(host, port, sock));
+      });
+      sock.once('error', (e) => {
+        rej(e);
+      });
+    });
+  }
+
   constructor(host, port, sock) {
     this.callbackHub = new CallbackHub();
     this.host = host;
@@ -52,7 +70,7 @@ class ServerConnection {
       }));
       this.sock.once('error', e => rej(e));
       this.callbackHub.listenOnce(protocol.packetType.USER_LOGIN_RESP.type, (data) => {
-        console.log(data);
+        console.log('hub-resp', data);
         res(data);
       });
     });
@@ -109,15 +127,14 @@ class ServerConnection {
         this.buffer.bufferLow = this.buffer.bufferHigh = 0;
       }
 
-      console.log(type, payload);
-      this.callbackHub.pub(type.type || type, [payload]);
+      this.callbackHub.pub(type.type || type, payload);
     }
   }
 
   startPing() {
     this.stopPing();
     this.timer = setInterval(() =>
-      this.sock.write(protocol.makePacket(protocol.packetType.SERVER_CHECK)), 1200);
+      this.sock.write(protocol.makePacket(protocol.packetType.SERVER_CHECK)), 20000);
   }
 
   stopPing() {
@@ -128,10 +145,10 @@ class ServerConnection {
   }
 
   bindPacketHandler() {
-    this.callbackHub.listen(protocol.packetType.MSG_RECV.type, msg => {
+    this.callbackHub.listen(protocol.packetType.MSG_RECV.type, (msg) => {
       this.callbackHub.pub('data-message', { user: '', message: msg });
     });
-    this.callbackHub.listen(protocol.packetType.INFO_RESP, info => {
+    this.callbackHub.listen(protocol.packetType.INFO_RESP, (info) => {
       switch (info.type) {
         case 'buddy-list':
           this.callbackHub.pub('data-buddy-hub', info.data);
@@ -146,19 +163,3 @@ class ServerConnection {
     this.callbackHub.listen(event, callback);
   }
 }
-
-export const createSock = (host, port) => new Promise((res, rej) => {
-  const sock = net.createConnection({ port, host }, (err) => {
-    if (err) {
-      console.log('failed to connect to server', err);
-      rej(err);
-      return;
-    }
-
-    console.log('connected to server');
-    res(new ServerConnection(host, port, sock));
-  });
-  sock.once('error', e => {
-    rej(e);
-  });
-});

@@ -1,4 +1,4 @@
-import { createSock } from '../server/network';
+import ServerConnection from '../server/server-connection';
 
 const updateCallback = [];
 
@@ -15,7 +15,7 @@ export default {
       return Promise.resolve();
     }
 
-    return createSock(host, port).then(sock => {
+    return ServerConnection.createSock(host, port).then((sock) => {
       console.log('connected to server');
       this.serverConnection = sock;
       this.connected = true;
@@ -32,7 +32,7 @@ export default {
   },
 
   login(user, pass) {
-    return this.connected ? this.serverConnection.login(user, pass).then(resp => {
+    return this.connected ? this.serverConnection.login(user, pass).then((resp) => {
       if (resp.status) {
         this.isLogin = true;
         this.username = user;

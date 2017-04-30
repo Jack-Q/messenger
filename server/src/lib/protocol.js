@@ -75,7 +75,6 @@ export const checkPacket = (buf, low, high) => {
     inRange(low + len);
     valid = true, complete = true;
   } catch (e) {
-    console.log(e)
     if (e === 'INVALID') 
       valid = false, complete = false;
     else 

@@ -19,10 +19,10 @@ export default class CallbackHub {
 
   pub(type, ...args) {
     if (this.once[type] && this.once[type].length > 0) {
-      this.once[type].map(cb => cb.apply(null, args));
+      this.once[type].map(cb => cb.call(null, ...args));
       this.once[type] = [];
     }
 
-    this.each[type] && this.each[type].map(cb => cb.apply(null, args));
+    this.each[type] && this.each[type].map(cb => cb.call(null, ...args));
   }
 }

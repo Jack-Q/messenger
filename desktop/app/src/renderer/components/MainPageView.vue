@@ -54,7 +54,7 @@ import MessageView from './MessageView';
 import AppState from '../app-state';
 
 const rnd = () => (Math.random() * 255).toFixed(0);
-const createBuddy = (function *c() {
+const createBuddy = (function* c() {
   for (let i = 0; ;i++) {
     yield {
       id: i,

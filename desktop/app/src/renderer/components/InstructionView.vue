@@ -6,6 +6,7 @@
 </template>
 <script>
 import AppState from '../app-state';
+
 export default {
   created() {
     AppState.onUpdate(() => this.$forceUpdate());
