@@ -29,7 +29,7 @@ export default {
 
   login(user, pass) {
     return this.connected ? this.serverConnection.login(user, pass)
-      : Promise.reject('no server configured');
+      : Promise.reject({ message: 'no server configured' });
   },
 
   onUpdate(callback) {

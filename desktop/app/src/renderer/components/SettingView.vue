@@ -19,14 +19,18 @@
 </template>
 <script>
 import AppState from '../app-state';
+import UiService from '../ui-service';
 
 export default {
   data() {
     return {
-      host: '',
-      port: '',
-      username: '',
-      password: '',
+      created() {
+        AppState.onUpdate(() => this.$forceUpdate());
+      },
+      host: '0.0.0.0',
+      port: 12121,
+      username: 'jack',
+      password: 'jack',
       connecting: false,
     };
   },
@@ -36,11 +40,20 @@ export default {
   methods: {
     connect() {
       this.connecting = true;
-      AppState.connect(this.host, this.port).then(e => {
-        console.log('connected to server', e);
+      AppState.connect(this.host, this.port).catch(e => {
+        UiService.sendNotification('Network Error', (e && e.message) || 'Something went wrong...');
         this.connecting = false;
-      }).catch(e => {
-        console.log(e);
+      })
+      .then(e => {
+        UiService.sendNotification('Success', `connected to server ${e}`);
+        return AppState.login(this.username, this.password);
+      })
+      .catch(e => {
+        UiService.sendNotification('Login Error', e && e.message);
+        this.connecting = false;
+      })
+      .then(info => {
+        UiService.sendNotification(`Welcome ${info.name}`, 'welcome to messenger');
         this.connecting = false;
       });
     },

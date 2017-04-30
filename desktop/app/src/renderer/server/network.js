@@ -39,14 +39,17 @@ class ServerConnection {
     });
   }
 
-  login(info, cb) {
-    this.sock.write(protocol.makePacket(protocol.packetType.USER_LOGIN_REQ, {
-      name: info.name,
-      token: info.token,
-    }));
-    this.callbackHub.listenOnce(protocol.packetType.USER_LOGIN_RESP.type, (data) => {
-      console.log(data);
-      cb(data);
+  login(user, pass) {
+    return new Promise((res, rej) => {
+      this.sock.write(protocol.makePacket(protocol.packetType.USER_LOGIN_REQ, {
+        name: user,
+        token: pass,
+      }));
+      this.sock.once('error', e => rej(e));
+      this.callbackHub.listenOnce(protocol.packetType.USER_LOGIN_RESP.type, (data) => {
+        console.log(data);
+        res(data);
+      });
     });
   }
 
@@ -99,7 +102,7 @@ export const createSock = (host, port) => new Promise((res, rej) => {
     console.log('connected to server');
     res(new ServerConnection(host, port, sock));
   });
-  sock.on('error', e => {
+  sock.once('error', e => {
     rej(e);
   });
 });
