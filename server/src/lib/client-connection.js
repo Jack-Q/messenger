@@ -39,42 +39,47 @@ export class ClientConnection {
         return;
       }
     }
+
     data.copy(buf.readBuffer, buf.bufferHigh, 0, data.length);
     buf.bufferHigh += data.length;
 
-    const {valid, complete} = protocol.checkPacket(buf.readBuffer, buf.bufferLow, buf.bufferHigh);
-    if (!valid) {
-      console.error("invalid package received, reset package");
-      // TODO: close or ignore this invalid packet
-      return;
+    for (; ;){
+
+      const {valid, complete} = protocol.checkPacket(buf.readBuffer, buf.bufferLow, buf.bufferHigh);
+      if (!valid) {
+        console.error("invalid package received, reset package");
+        // TODO: close or ignore this invalid packet
+        return;
+      }
+
+      if (!complete) {
+        console.warn("incomplete package received, waiting for later package")
+        return;
+      }
+
+      const { data: { type, payload }, length } = protocol.readPacket(buf.readBuffer, buf.bufferLow, buf.bufferHigh);
+
+      console.log("receive data:", type.type, ":", payload);
+
+      switch (type.type) {
+        case protocol.packetType.USER_ADD_REQ.type:
+          createUser(payload.name, payload.token);
+          this.send(protocol.packetType.USER_ADD_RESP, { status: true, message: 'ok' });
+          break;
+        case protocol.packetType.USER_LOGIN_REQ.type:
+          if (checkUser(payload.name, payload.token))
+            this.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: ')AS(0' });
+          else
+            this.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
+      }
+
+      buf.bufferLow += length;
+      if (buf.bufferLow == buf.bufferHigh) 
+        buf.bufferLow = buf.bufferHigh = 0;
+      
+      this.send(protocol.packetType.SERVER_STATUS, SERVER_NAME);
+
     }
-
-    if (!complete) {
-      console.warn("incomplete package received, waiting for later package")
-      return;
-    }
-
-    const { data: { type, payload }, length } = protocol.readPacket(buf.readBuffer, buf.bufferLow, buf.bufferHigh);
-
-    console.log("receive data:", type.type, ":", payload);
-
-    switch (type.type) {
-      case protocol.packetType.USER_ADD_REQ.type:
-        createUser(payload.name, payload.token);
-        this.send(protocol.packetType.USER_ADD_RESP, { status: true, message: 'ok' });
-        break;
-      case protocol.packetType.USER_LOGIN_REQ.type:
-        if (checkUser(payload.name, payload.token))
-          this.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: ')AS(0' });
-        else
-          this.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
-    }
-
-    buf.bufferLow += length;
-    if (buf.bufferLow == buf.bufferHigh) 
-      buf.bufferLow = buf.bufferHigh = 0;
-    
-    this.send(protocol.packetType.SERVER_STATUS, SERVER_NAME);
 
   }
 

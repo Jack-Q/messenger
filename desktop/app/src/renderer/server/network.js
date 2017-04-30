@@ -25,17 +25,22 @@ class ServerConnection {
     this.sock.on('timeout', () => this.onError('timeout'));
     this.sock.on('data', data => this.onData(data));
 
+    this.bindPacketHandler();
+
     this.startPing();
   }
 
-  register(info, cb) {
-    this.sock.write(protocol.makePacket(protocol.packetType.USER_ADD_REQ, {
-      name: info.name,
-      token: info.token,
-    }));
-    this.callbackHub.listenOnce(protocol.packetType.USER_ADD_RESP.type, (data) => {
-      console.log(data);
-      cb(data);
+  register(user, pass) {
+    return new Promise((res, rej) => {
+      this.sock.write(protocol.makePacket(protocol.packetType.USER_ADD_REQ, {
+        name: user,
+        token: pass,
+      }));
+      this.sock.once('error', e => rej(e));
+      this.callbackHub.listenOnce(protocol.packetType.USER_ADD_RESP.type, (data) => {
+        console.log(data);
+        res(data);
+      });
     });
   }
 
@@ -60,6 +65,7 @@ class ServerConnection {
 
   onClose() {
     console.log('connection closed');
+    this.callbackHub.pub('connection-close');
     this.stopPing();
   }
 
@@ -119,6 +125,21 @@ class ServerConnection {
       clearInterval(this.timer);
       this.timer = 0;
     }
+  }
+
+  bindPacketHandler() {
+    this.callbackHub.listen(protocol.packetType.MSG_RECV.type, msg => {
+      this.callbackHub.pub('data-message', { user: '', message: msg });
+    });
+    this.callbackHub.listen(protocol.packetType.INFO_RESP, info => {
+      switch (info.type) {
+        case 'buddy-list':
+          this.callbackHub.pub('data-buddy-hub', info.data);
+          break;
+        default:
+          console.log('unknown info received', info.type, info.data);
+      }
+    });
   }
 
   on(event, callback) {

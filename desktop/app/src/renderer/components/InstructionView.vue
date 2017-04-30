@@ -1,9 +1,20 @@
 <template>
 <div class="page">
-  <div class="title">Welcome</div>
+  <div class="title">Welcome {{getUsername()}}</div>
   <div>click user label on left panel to begin conversation</div>
 </div>
 </template>
+<script>
+import AppState from '../app-state';
+export default {
+  created() {
+    AppState.onUpdate(() => this.$forceUpdate());
+  },
+  methods: {
+    getUsername: () => AppState.username,
+  },
+};
+</script>
 <style>
 .page{
   display: flex;

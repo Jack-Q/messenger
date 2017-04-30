@@ -7,6 +7,7 @@ export default {
   isLogin: false,
   isAudioMode: false,
   serverConnection: undefined,
+  username: '',
   buddyList: [],
 
   connect(host, port) {
@@ -24,11 +25,27 @@ export default {
         this.serverConnection = null;
         this.update();
       });
+      this.serverConnection.on('data-buddy-list', (list) => {
+        this.buddyList = list;
+      });
     });
   },
 
   login(user, pass) {
-    return this.connected ? this.serverConnection.login(user, pass)
+    return this.connected ? this.serverConnection.login(user, pass).then(resp => {
+      if (resp.status) {
+        this.isLogin = true;
+        this.username = user;
+        this.update();
+        return Promise.resolve({ name: user });
+      }
+      return Promise.reject(resp);
+    }) : Promise.reject({ message: 'no server configured' });
+  },
+
+  register(user, pass) {
+    return this.connected ? this.serverConnection.register(user, pass)
+        .then(() => this.login(user, pass))
       : Promise.reject({ message: 'no server configured' });
   },
 

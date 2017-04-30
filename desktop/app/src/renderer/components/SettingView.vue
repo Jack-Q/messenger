@@ -13,6 +13,14 @@
       </div>
       <ui-textbox required :disabled="connecting" floating-label label="User name" placeholder="Enter your user name" v-model="username"></ui-textbox>
       <ui-textbox required :disabled="connecting" floating-label label="Password" placeholder="Enter your password" v-model="password" type="password"></ui-textbox>
+      <div ref="createNewUser" style="position: relative">
+        <ui-checkbox v-model="createNewUser">
+          Create new user
+        </ui-checkbox>
+      </div>
+      <ui-tooltip trigger="createNewUser">
+        check this option to create a new user. after which you can reserve this username and login with the password
+      </ui-tooltip>
       <ui-button type="secondary" :loading="connecting">connect</ui-button>
     </form>
   </div>
@@ -31,6 +39,7 @@ export default {
       port: 12121,
       username: 'jack',
       password: 'jack',
+      createNewUser: false,
       connecting: false,
     };
   },
@@ -40,22 +49,32 @@ export default {
   methods: {
     connect() {
       this.connecting = true;
-      AppState.connect(this.host, this.port).catch(e => {
-        UiService.sendNotification('Network Error', (e && e.message) || 'Something went wrong...');
-        this.connecting = false;
-      })
-      .then(e => {
-        UiService.sendNotification('Success', `connected to server ${e}`);
-        return AppState.login(this.username, this.password);
-      })
-      .catch(e => {
-        UiService.sendNotification('Login Error', e && e.message);
-        this.connecting = false;
-      })
-      .then(info => {
-        UiService.sendNotification(`Welcome ${info.name}`, 'welcome to messenger');
-        this.connecting = false;
-      });
+      AppState.connect(this.host, this.port)
+        .catch(e => {
+          if (e) {
+            UiService.sendNotification('Network Error',
+              (e && e.message) || 'Something went wrong...');
+            this.connecting = false;
+          }
+          return Promise.reject(false);
+        })
+        .then(e => {
+          console.log(e);
+          return this.createNewUser ? AppState.register(this.username, this.password)
+            : AppState.login(this.username, this.password);
+        })
+        .then(info => {
+          UiService.sendNotification(`Welcome ${info.name}`, 'welcome to messenger');
+          this.connecting = false;
+        })
+        .catch(e => {
+          if (e) {
+            UiService.sendNotification('Login Error', e && e.message);
+            this.connecting = false;
+          }
+          return Promise.reject(false);
+        })
+        .catch(e => console.log(e));
     },
   },
 };
@@ -98,5 +117,14 @@ export default {
 .form-row span {
   color: #555;
   margin: 10px;
+}
+
+
+
+
+/* change keen ui element style */
+
+.form .ui-checkbox__checkmark {
+  background-color: transparent;
 }
 </style>
