@@ -11,12 +11,34 @@
       </div>
       <div class="left-center">
         <transition name="fade">
-          <transition-group v-if="getBuddyList() && getBuddyList().length" class="left-buddy-list" name="list">
-            <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" @click.native="getBuddyList().splice(buddyList.indexOf(buddy), 1)"></buddy-view>
-          </transition-group>
-          <div v-else class="left-center-tip">
-            <ui-icon>face</ui-icon>
-            you're kind of alone...
+          <div key="left-no-server" v-if="!isConnected()" class="left-center-page">
+            <div class="left-center-tip">
+              <ui-icon>settings_ethernet</ui-icon>
+              maybe an connection to server is required...
+            </div>
+          </div>
+          <div key="left-no-login" v-else-if="!isLogin()" class="left-center-page">
+            <div class="left-center-tip">
+              <ui-icon>verified_user</ui-icon>
+              maybe you need an identity...
+            </div>
+          </div>
+          <div key="left-on-audio" v-else-if="isAudioMode()" class="left-center-page">
+            <div class="left-center-tip">
+              <ui-icon>keyboard_voice</ui-icon>
+              chating...
+            </div>
+          </div>
+          <div key="left-buddy-list" v-else-if="getBuddyList() && getBuddyList().length" class="left-center-page">
+            <transition-group class="left-buddy-list" name="list">
+              <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" @click.native="getBuddyList().splice(buddyList.indexOf(buddy), 1)"></buddy-view>
+            </transition-group>
+          </div>
+          <div key="left-null-list" v-else class="left-center-page">
+            <div class="left-center-tip">
+              <ui-icon>face</ui-icon>
+              you're some kind of alone...
+            </div>
           </div>
         </transition>
       </div>
@@ -55,7 +77,7 @@ import AppState from '../app-state';
 
 const rnd = () => (Math.random() * 255).toFixed(0);
 const createBuddy = (function* c() {
-  for (let i = 0; ;i++) {
+  for (let i = 0; ; i++) {
     yield {
       id: i,
       name: `Buddy ${rnd()}`,
@@ -99,19 +121,20 @@ export default {
 </script>
 
 <style>
-
-.wrapper{
+.wrapper {
   width: 100%;
   height: 100%;
   display: flex;
 }
-.left-aside{
+
+.left-aside {
   flex: 1;
   min-width: 350px;
   display: flex;
   flex-direction: column;
 }
-.left-header{
+
+.left-header {
   font-size: 1.8em;
   padding: 25px;
   /*let left header aside to be dragable*/
@@ -119,7 +142,8 @@ export default {
   display: flex;
   position: relative;
 }
-.left-header-close{
+
+.left-header-close {
   display: block;
   position: absolute;
   width: 20px;
@@ -140,52 +164,74 @@ export default {
   /*let left header aside to be dragable*/
   -webkit-app-region: no-drag;
 }
-.left-header-close:hover{
+
+.left-header-close:hover {
   background: #f55;
 }
-.left-status{
+
+.left-status {
   margin: 0 30px;
   background: #aaa;
   color: #333;
   border-radius: 15px;
   text-align: center;
 }
-.left-center{
+
+.left-center {
   flex: 1;
+  position: relative;
+}
+
+.left-center-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all ease 400ms;
   display: flex;
 }
-.left-center-tip{
+
+.left-center-tip {
   margin: auto;
   font-size: 1.5em;
   color: #888;
+  padding: 0 40px;
+  text-align: center;
 }
-.left-center-tip .ui-icon{
+
+.left-center-tip .ui-icon {
   color: #777;
   font-size: 3em;
   display: block;
   margin: auto;
 }
+
 .left-buddy-list {
+  transition: all ease 400ms;
   overflow-y: auto;
   width: 100%;
   position: relative;
   overflow-x: hidden;
 }
-.left-footer{
+
+.left-footer {
   text-align: center;
   font-size: 0.7em;
   padding: 5px;
   border-top: dashed 1px #aaa;
 }
-.center{
+
+.center {
   color: #555;
   flex: 3;
-  background: rgba(255,255,255,0.7);
-  box-shadow: 0 0 25px 5px rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 25px 5px rgba(255, 255, 255, 0.7);
   position: relative;
   overflow: hidden;
 }
-.center-page{
+
+.center-page {
   position: absolute;
   top: 0;
   left: 0;
@@ -194,31 +240,44 @@ export default {
   transition: all ease 400ms;
 }
 
+
 /* alternating item animation */
-.fade-enter-active, .fade-leave{
+
+.fade-enter-active,
+.fade-leave {
   opacity: 1;
   transform: translateY(0);
 }
-.fade-leave{
+
+.fade-leave {
   pointer-events: none;
 }
-.fade-enter, .fade-leave-active{
+
+.fade-enter,
+.fade-leave-active {
   transform: translateY(50px);
   opacity: 0;
 }
 
+
 /* left list animation */
+
 .list-enter {
   opacity: 0;
   transform: translateX(-100%);
 }
+
 .list-leave-active {
   opacity: 0;
 }
-.list-enter-active, .list-leave, .list-move{
+
+.list-enter-active,
+.list-leave,
+.list-move {
   transition: all ease 400ms;
 }
-.list-leave-active{
+
+.list-leave-active {
   width: 100%;
   position: absolute!important;
 }
