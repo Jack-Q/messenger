@@ -31,7 +31,7 @@
           </div>
           <div key="left-buddy-list" v-else-if="getBuddyList() && getBuddyList().length" class="left-center-page">
             <transition-group class="left-buddy-list" name="list">
-              <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" @click.native="getBuddyList().splice(buddyList.indexOf(buddy), 1)"></buddy-view>
+              <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" @click.native="clickBuddy(buddy)"></buddy-view>
             </transition-group>
           </div>
           <div key="left-null-list" v-else class="left-center-page">
@@ -55,7 +55,7 @@
           <audio-view></audio-view>
         </div>
         <div key="message" class="center-page" v-else-if="messageOpen">
-          <message-view></message-view>
+          <message-view :peername="messagePeer.name" :messageId="messagePeer.id"></message-view>
         </div>
         <!-- default view -->
         <div key="instruction" class="center-page" v-else>
@@ -93,17 +93,24 @@ export default {
     return {
       serverName: 'Server',
       messageOpen: false,
+      messagePeer: null,
     };
   },
   created() {
     AppState.onUpdate(() => this.$forceUpdate());
   },
   methods: {
-    addBuddy() {
-      this.buddyList.splice(Math.min(5, this.buddyList.length), 0, createBuddy.next().value);
-    },
     closeWindow() {
       window.close();
+    },
+    clickBuddy(buddy) {
+      if (this.messageOpen) {
+        this.messageOpen = false;
+        setTimeout(() => this.clickBuddy(buddy), 400);
+        return;
+      }
+      this.messageOpen = true;
+      this.messagePeer = buddy;
     },
     isConnected: () => AppState.connected,
     isAudioMode: () => AppState.isAudioMode,
@@ -241,6 +248,7 @@ export default {
 }
 
 
+
 /* alternating item animation */
 
 .fade-enter-active,
@@ -258,6 +266,7 @@ export default {
   transform: translateY(50px);
   opacity: 0;
 }
+
 
 
 /* left list animation */

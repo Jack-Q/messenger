@@ -22,9 +22,16 @@
 </template>
 <script>
 export default {
+  props: {
+    peername: {
+      type: String,
+    },
+    messageId: {
+      type: String,
+    },
+  },
   data() {
     return {
-      peername: 'Jack Q',
       currentMessage: '',
       messages: [
         { time: new Date(), content: 'Hello', type: 'send' },
