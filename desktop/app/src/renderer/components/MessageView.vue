@@ -2,22 +2,22 @@
   <div class="page">
     <div class="title">Message</div>
     <div class="sub-title">with {{peername}}</div>
-    <div class="message-list">
-      <div v-for="msg in getMessages()" class="message-row" :class="msg.type">
+    <transition-group class="message-list" name="list">
+      <div v-for="msg in getMessages()" :key="msg.time" class="message-row" :class="msg.type">
         <div class="message-box" :class="msg.type">
           <div class="content">{{msg.content}}</div>
           <div class="footer">{{msg.time}}</div>
         </div>
       </div>
-    </div>
-    <div class="editor">
+    </transition-group>
+    <form class="editor" @submit="sendMessage">
       <div class="message-text-edit">
-        <ui-textbox type="text" v-model="currentMessage"></ui-textbox>
+        <ui-textbox type="text" v-model.trim="currentMessage"></ui-textbox>
       </div>
       <div>
-        <ui-button :type="currentMessage?'primary':'secondary'" :disabled="!currentMessage" @click="sendMessage">send</ui-button>
+        <ui-button :type="currentMessage?'primary':'secondary'" :disabled="!currentMessage">send</ui-button>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 <script>
@@ -40,8 +40,8 @@ export default {
       return AppState.messageList[this.peername] || [];
     },
     sendMessage() {
-      console.log('prep send', this.messageId, this.currentMessage);
       AppState.sendMessage(this.messageId, this.currentMessage);
+      this.currentMessage = '';
     },
   },
   data() {
@@ -99,6 +99,7 @@ export default {
 
 .message-list {
   width: 100%;
+  height: 65%;
   max-height: 450px;
   max-width: 600px;
   margin: 0 auto;

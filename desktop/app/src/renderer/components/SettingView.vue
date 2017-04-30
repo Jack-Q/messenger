@@ -4,15 +4,15 @@
     <form class="form" @submit="connect">
       <div class="form-row">
         <div class="host">
-          <ui-textbox required :disabled="connecting" floating-label label="Server Address" placeholder="Enter server address" v-model="host"></ui-textbox>
+          <ui-textbox required :disabled="connecting" floating-label label="Server Address" placeholder="Enter server address" v-model.trim="host"></ui-textbox>
         </div>
         <span>:</span>
         <div class="port">
           <ui-textbox required :disabled="connecting" floating-label label="Port" type="number" :min="1024" step="1" :max="65535" placeholder="Enter your name" v-model="port"></ui-textbox>
         </div>
       </div>
-      <ui-textbox required :disabled="connecting" floating-label label="User name" placeholder="Enter your user name" v-model="username"></ui-textbox>
-      <ui-textbox required :disabled="connecting" floating-label label="Password" placeholder="Enter your password" v-model="password" type="password"></ui-textbox>
+      <ui-textbox required :disabled="connecting" floating-label label="User name" placeholder="Enter your user name" v-model.trim="username"></ui-textbox>
+      <ui-textbox required :disabled="connecting" floating-label label="Password" placeholder="Enter your password" v-model.trim="password" type="password"></ui-textbox>
       <div ref="createNewUser" style="position: relative">
         <ui-checkbox v-model="createNewUser">
           Create new user
