@@ -91,7 +91,7 @@ export const readPacket = (buffer, low, high) => {
   let length = 0, type, payload;
   type = Object.keys(packetType).map(k => packetType[k]).filter(k => k.value === buffer[low + 5])[0];
   length = buffer.readUInt16BE(low + 6);
-  payload = buffer.slice(low + 8, high);
+  payload = buffer.slice(low + 8, low + length);
   console.log(payload.toString());
   if (parsePacketByType[type.type])
     payload = parsePacketByType[type.type](payload)

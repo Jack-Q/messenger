@@ -64,12 +64,47 @@ class ServerConnection {
   }
 
   onData(buffer) {
-    if (protocol.checkPacket(buffer).valid) {
-      const { data: { type, payload } /* , length */ } = protocol.readPacket(buffer);
+        // Copy buffer
+    if (this.buffer.readBuffer.length - this.buffer.bufferHigh < buffer.length) {
+      if (this.buffer.readBuffer.length >
+        this.buffer.bufferHigh - this.buffer.bufferLow + buffer.length) {
+        this.buffer.readBuffer.copy(
+          this.buffer.readBuffer, 0, this.buffer.bufferLow, this.buffer.bufferHigh);
+        this.buffer.bufferHigh -= this.buffer.bufferLow;
+        this.buffer.bufferLow = 0;
+      } else {
+        console.error('large package size');
+        // TODO: close this connection since the state of this connection is unstable
+        return;
+      }
+    }
+    buffer.copy(this.buffer.readBuffer, this.buffer.bufferHigh, 0, buffer.length);
+    this.buffer.bufferHigh += buffer.length;
+
+    // loop to abstract all the incomplete packets
+    for (; ;) {
+      const status = protocol.checkPacket(
+        this.buffer.readBuffer, this.buffer.bufferLow, this.buffer.bufferHigh);
+
+      if (!status.valid) {
+        // clean the buffer
+        this.callbackHub.pub('data-error', { message: 'invalid buffer' });
+        this.buffer.bufferLow = this.buffer.bufferHigh = 0;
+        break;
+      }
+
+      if (!status.complete) { break; }
+
+      const { data: { type, payload }, length } = protocol.readPacket(
+        this.buffer.readBuffer, this.buffer.bufferLow, this.buffer.bufferHigh);
+
+      this.buffer.bufferLow += length;
+      if (this.buffer.bufferLow === this.buffer.bufferHigh) {
+        this.buffer.bufferLow = this.buffer.bufferHigh = 0;
+      }
+
       console.log(type, payload);
       this.callbackHub.pub(type.type || type, [payload]);
-    } else {
-      console.log(buffer);
     }
   }
 
