@@ -22,10 +22,10 @@ export default {
       this.update();
       this.serverConnection.on('connection-close', () => {
         this.resetState();
-        this.update();
       });
       this.serverConnection.on('data-buddy-list', (list) => {
         this.buddyList = list;
+        this.update();
       });
     });
   },
@@ -68,5 +68,6 @@ export default {
     this.username = '';
     this.buddyList = [];
     this.serverConnection = null;
+    this.update();
   },
 };

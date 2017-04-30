@@ -68,6 +68,12 @@ export default class Server {
     conn.pending = false;
     conn.user.name = name;
     this.sendBuddyListToAll();
+    console.log(this.connections.map(conn => ({
+      ...conn, connection: {
+        ip: conn.connection.remoteAddress,
+        port: conn.connection.remotePort,
+      }
+    })));
   }
 
   removeConnection(rawConn) {
@@ -79,6 +85,7 @@ export default class Server {
     conn.connection.send(protocol.packetType.INFO_RESP.type, {
       status: true,
       message: 'ok',
+      type: protocol.infoType.BUDDY_LIST,
       payload: this.connections
         .filter(c => c != conn && !c.pending)
         .map(c => ({

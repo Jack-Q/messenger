@@ -1,6 +1,10 @@
 export const PROTOCOL_VERSION = 0x81;
 export const MAXIMUM_PACKET_SIZE = 2048;
-  
+
+export const infoType = {
+  BUDDY_LIST: "buddy-list"
+};
+
 export const packetType = {
   // Server check
   SERVER_CHECK: { type: 'SERVER_CHECK', value: 0x01 },
@@ -22,7 +26,7 @@ export const packetType = {
   CALL_WAIT: { type: 'CALL_WAIT', value: 0x12 },
   CALL_CONN: { type: 'CALL_CONN', value: 0x13 },
   CALL_END: { type: 'CALL_END', value: 0x14 },
-}
+};
 
 const makePacketByType = {
   SERVER_CHECK: data => "PING",
@@ -32,19 +36,19 @@ const makePacketByType = {
   USER_LOGIN_REQ: data => JSON.stringify({ n: data.name, t: data.token }),
   USER_LOGIN_RESP: data => JSON.stringify({ s: data.status, m: data.message, k: data.sessionKey }),
   INFO_QUERY: data => JSON.stringify({ q: data.queryType, p: data.params }),
-  INFO_RESP: data => JSON.stringify({ s: data.status, m: data.message, p: data.payload }),
-}
+  INFO_RESP: data => JSON.stringify({ s: data.status, m: data.message, p: data.payload, t: data.type }),
+};
 
 const parsePacketByType = {
   SERVER_CHECK: payload => payload.toString(),
   SERVER_STATUS: payload => payload.toString(),
-  USER_ADD_REQ: payload => (d => ({name: d.n, token: d.t}))(JSON.parse(payload.toString())),
+  USER_ADD_REQ: payload => (d => ({ name: d.n, token: d.t }))(JSON.parse(payload.toString())),
   USER_ADD_RESP: payload => (d => ({ status: d.s, message: d.m }))(JSON.parse(payload.toString())),
   USER_LOGIN_REQ: payload => (d => ({ name: d.n, token: d.t }))(JSON.parse(payload.toString())),
   USER_LOGIN_RESP: payload => (d => ({ status: d.s, message: d.m, sessionKey: d.k }))(JSON.parse(payload.toString())),
   INFO_QUERY: payload => (d => ({ queryType: d.q, params: d.p }))(JSON.parse(payload.toString())),
-  INFO_RESP: payload => (d => ({ status: d.s, message: d.m, payload: d.p }))(JSON.parse(payload.toString())),
-}
+  INFO_RESP: payload => (d => ({ status: d.s, message: d.m, payload: d.p, type: d.t }))(JSON.parse(payload.toString())),
+};
 
 export const checkPacket = (buf, low, high) => {
   if (low === undefined) {
@@ -52,7 +56,7 @@ export const checkPacket = (buf, low, high) => {
   }
   let valid, complete, i = low, len = high - low;
   const inRange = i => { if (i < low || i - low > len) throw 'OUT_OF_BOUND'; }
-  const eq = (i, p) => { inRange(i); if (!p(i)) throw 'INVALID';}
+  const eq = (i, p) => { inRange(i); if (!p(i)) throw 'INVALID'; }
   const eqInt = (i, b) => eq(i, v => buf.readUInt8(v) === b);
   try {
     // header
@@ -75,13 +79,13 @@ export const checkPacket = (buf, low, high) => {
     inRange(low + len);
     valid = true, complete = true;
   } catch (e) {
-    if (e === 'INVALID') 
+    if (e === 'INVALID')
       valid = false, complete = false;
-    else 
+    else
       valid = true, complete = false;
-    }
-  return {valid, complete};
-}
+  }
+  return { valid, complete };
+};
 
 export const readPacket = (buffer, low, high) => {
   if (low === undefined) {
@@ -107,7 +111,7 @@ const writeBuffer = (buf, type, data) => {
   i = buf.writeUInt8(PROTOCOL_VERSION, i);
   i = buf.writeUInt8(type.value, i);
 
-  let size = 0;  
+  let size = 0;
 
   if (!(data instanceof Buffer))
     data = Buffer.from(data);
@@ -118,15 +122,15 @@ const writeBuffer = (buf, type, data) => {
   data.copy(buf, i, 0, data.length);
 
   return size;
-}
+};
 
 export const makePacketToBuffer = (buf, type, data) => {
   type = typeof type == 'string' ? type : type.type;
   return writeBuffer(buf, packetType[type], makePacketByType[type](data));
-}
+};
 
 const protocolWriteBuffer = Buffer.alloc(MAXIMUM_PACKET_SIZE);
 export const makePacket = (type, data) => {
   const size = makePacketToBuffer(protocolWriteBuffer, type, data);
   return protocolWriteBuffer.slice(0, size);
-}
+};

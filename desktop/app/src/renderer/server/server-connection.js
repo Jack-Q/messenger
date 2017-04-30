@@ -88,7 +88,7 @@ export default class ServerConnection {
   }
 
   onData(buffer) {
-        // Copy buffer
+    // Copy buffer
     if (this.buffer.readBuffer.length - this.buffer.bufferHigh < buffer.length) {
       if (this.buffer.readBuffer.length >
         this.buffer.bufferHigh - this.buffer.bufferLow + buffer.length) {
@@ -148,13 +148,14 @@ export default class ServerConnection {
     this.callbackHub.listen(protocol.packetType.MSG_RECV.type, (msg) => {
       this.callbackHub.pub('data-message', { user: '', message: msg });
     });
-    this.callbackHub.listen(protocol.packetType.INFO_RESP, (info) => {
+    this.callbackHub.listen(protocol.packetType.INFO_RESP.type, (info) => {
+      console.log(info);
       switch (info.type) {
-        case 'buddy-list':
-          this.callbackHub.pub('data-buddy-hub', info.data);
+        case protocol.infoType.BUDDY_LIST:
+          this.callbackHub.pub('data-buddy-list', info.payload);
           break;
         default:
-          console.log('unknown info received', info.type, info.data);
+          console.log('unknown info received', info.type, info.payload);
       }
     });
   }
