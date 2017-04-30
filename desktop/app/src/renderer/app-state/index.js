@@ -21,8 +21,7 @@ export default {
       this.connected = true;
       this.update();
       this.serverConnection.on('connection-close', () => {
-        this.connected = false;
-        this.serverConnection = null;
+        this.resetState();
         this.update();
       });
       this.serverConnection.on('data-buddy-list', (list) => {
@@ -45,8 +44,13 @@ export default {
 
   register(user, pass) {
     return this.connected ? this.serverConnection.register(user, pass)
-        .then(() => this.login(user, pass))
-      : Promise.reject({ message: 'no server configured' });
+      .then((resp) => {
+        if (resp.status) {
+          // register finished, login account
+          return this.login(user, pass);
+        }
+        return Promise.reject(resp);
+      }) : Promise.reject({ message: 'no server configured' });
   },
 
   onUpdate(callback) {
@@ -55,5 +59,14 @@ export default {
 
   update() {
     updateCallback.map(cb => cb());
+  },
+
+  resetState() {
+    this.connected = false;
+    this.isLogin = false;
+    this.isAudioMode = false;
+    this.username = '';
+    this.buddyList = [];
+    this.serverConnection = null;
   },
 };
