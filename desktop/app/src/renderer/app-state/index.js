@@ -28,6 +28,18 @@ export default {
         this.buddyList = list;
         this.update();
       });
+      this.serverConnection.on('data-message', (msg) => {
+        if (!this.messageList[msg.user]) {
+          this.messageList[msg.user] = [];
+        }
+        this.messageList[msg.user].push({
+          id: +new Date(),
+          time: new Date(),
+          content: msg.message,
+          type: 'recv',
+        });
+        this.update();
+      });
     });
   },
 
@@ -72,6 +84,8 @@ export default {
       content,
       type: 'send',
     });
+
+    this.serverConnection.sendMessage(peer.name, peerId, content);
 
     this.update();
 

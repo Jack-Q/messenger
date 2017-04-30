@@ -37,6 +37,8 @@ const makePacketByType = {
   USER_LOGIN_RESP: data => JSON.stringify({ s: data.status, m: data.message, k: data.sessionKey }),
   INFO_QUERY: data => JSON.stringify({ q: data.queryType, p: data.params }),
   INFO_RESP: data => JSON.stringify({ s: data.status, m: data.message, p: data.payload, t: data.type }),
+  MSG_SEND: data => JSON.stringify({ u: data.user, c: data.connectId, m: data.message }),
+  MSG_RECV: data => JSON.stringify({ s: data.status, u: data.user, c: data.connectId, m: data.message}),
 };
 
 const parsePacketByType = {
@@ -48,6 +50,8 @@ const parsePacketByType = {
   USER_LOGIN_RESP: payload => (d => ({ status: d.s, message: d.m, sessionKey: d.k }))(JSON.parse(payload.toString())),
   INFO_QUERY: payload => (d => ({ queryType: d.q, params: d.p }))(JSON.parse(payload.toString())),
   INFO_RESP: payload => (d => ({ status: d.s, message: d.m, payload: d.p, type: d.t }))(JSON.parse(payload.toString())),
+  MSG_SEND: payload => (d => ({ user: d.u, connectId: d.c, message: d.m }))(JSON.parse(payload.toString())),
+  MSG_RECV: payload => (d => ({ status: d.s, user: d.u, connectId: d.c, message: d.m }))(JSON.parse(payload.toString())),
 };
 
 export const checkPacket = (buf, low, high) => {

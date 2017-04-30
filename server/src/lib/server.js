@@ -54,8 +54,22 @@ export default class Server {
           connection.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: connection.id });
           this.loginConnection(connection, payload.name);
         } 
-        else
+        else {
           connection.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
+        }
+      case protocol.packetType.MSG_SEND.type:
+        console.log("redirect message from", payload.user, payload.message);
+        const conn = this.connections.find(c => c.id == payload.connectId);
+        const srcConn = this.connections.find(c => c.id == connection.id);
+        if (conn && srcConn) {
+          conn.connection.send(protocol.packetType.MSG_RECV, {
+            status: true,
+            user: srcConn.user.name,
+            connectId: srcConn.id,
+            message: payload.message,
+          });
+        }
+        break;
     }
   }
 

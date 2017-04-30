@@ -76,6 +76,11 @@ export default class ServerConnection {
     });
   }
 
+  sendMessage(user, connectId, message) {
+    this.sock.write(protocol.makePacket(protocol.packetType.MSG_SEND,
+      { user, connectId, message }));
+  }
+
   onError(err) {
     console.log(err.name, err.message, err.stack);
     this.stopPing();
@@ -146,7 +151,7 @@ export default class ServerConnection {
 
   bindPacketHandler() {
     this.callbackHub.listen(protocol.packetType.MSG_RECV.type, (msg) => {
-      this.callbackHub.pub('data-message', { user: '', message: msg });
+      this.callbackHub.pub('data-message', { user: msg.user, connectId: msg.connectId, message: msg.message });
     });
     this.callbackHub.listen(protocol.packetType.INFO_RESP.type, (info) => {
       console.log(info);
