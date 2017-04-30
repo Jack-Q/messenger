@@ -3,7 +3,7 @@
     <div class="title">Message</div>
     <div class="sub-title">with {{peername}}</div>
     <div class="message-list">
-      <div v-for="msg in messages" class="message-row" :class="msg.type">
+      <div v-for="msg in getMessages()" class="message-row" :class="msg.type">
         <div class="message-box" :class="msg.type">
           <div class="content">{{msg.content}}</div>
           <div class="footer">{{msg.time}}</div>
@@ -15,12 +15,14 @@
         <ui-textbox type="text" v-model="currentMessage"></ui-textbox>
       </div>
       <div>
-        <ui-button :type="currentMessage?'primary':'secondary'" :disabled="!currentMessage">send</ui-button>
+        <ui-button :type="currentMessage?'primary':'secondary'" :disabled="!currentMessage" @click="sendMessage">send</ui-button>
       </div>
     </div>
   </div>
 </template>
 <script>
+import AppState from '../app-state';
+
 export default {
   props: {
     peername: {
@@ -28,6 +30,18 @@ export default {
     },
     messageId: {
       type: String,
+    },
+  },
+  created() {
+    AppState.onUpdate(() => this.$forceUpdate());
+  },
+  methods: {
+    getMessages() {
+      return AppState.messageList[this.peername] || [];
+    },
+    sendMessage() {
+      console.log('prep send', this.messageId, this.currentMessage);
+      AppState.sendMessage(this.messageId, this.currentMessage);
     },
   },
   data() {

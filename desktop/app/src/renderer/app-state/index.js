@@ -9,6 +9,7 @@ export default {
   serverConnection: undefined,
   username: '',
   buddyList: [],
+  messageList: {},
 
   connect(host, port) {
     if (this.connected) {
@@ -51,6 +52,30 @@ export default {
         }
         return Promise.reject(resp);
       }) : Promise.reject({ message: 'no server configured' });
+  },
+
+  sendMessage(peerId, content) {
+    const peer = this.buddyList.find(b => b.id === peerId);
+    if (!peer) {
+      return false;
+    }
+
+    if (!this.messageList[peer.name]) {
+      this.messageList[peer.name] = [];
+    }
+
+    console.log(`send "${content}" to ${peer.name}`);
+
+    this.messageList[peer.name].push({
+      id: +new Date(),
+      time: new Date(),
+      content,
+      type: 'send',
+    });
+
+    this.update();
+
+    return true;
   },
 
   onUpdate(callback) {
