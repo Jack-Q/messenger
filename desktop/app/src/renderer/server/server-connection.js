@@ -163,6 +163,9 @@ export default class ServerConnection {
           console.log('unknown info received', info.type, info.payload);
       }
     });
+    this.callbackHub.listen(protocol.packetType.CALL_INIT.type, (msg) => {
+      this.callbackHub.pub('call-init', { user: msg.user });
+    });
   }
 
   on(event, callback) {

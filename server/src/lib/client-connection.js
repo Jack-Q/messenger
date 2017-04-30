@@ -16,7 +16,8 @@ export default class ClientConnection {
     // bind event handler
     sock.on('close', () => this.onClose());
     sock.on('timeout', () => this.onTimeout());
-    sock.on('data', data => this.onData(data))
+    sock.on('data', data => this.onData(data));
+    sock.on('error', (err) => console.error(err));
   }
 
   // Send Message
