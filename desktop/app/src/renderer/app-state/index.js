@@ -6,6 +6,10 @@ export default {
   connected: false,
   isLogin: false,
   isAudioMode: false,
+  audioCall: {
+    peerName: '',
+    status: '',
+  },
   serverConnection: undefined,
   username: '',
   buddyList: [],
@@ -90,6 +94,35 @@ export default {
     this.update();
 
     return true;
+  },
+
+  initAudioCall(peerId) {
+    if (this.isAudioMode) {
+      return;
+    }
+
+    const peer = this.buddyList.find(b => b.id === peerId);
+    this.isAudioMode = true;
+    this.update();
+    console.log(`call ${peer.name}`);
+  },
+
+  endCall() {
+    if (!this.isAudioMode) {
+      return;
+    }
+
+    this.isAudioMode = false;
+
+    this.update();
+  },
+
+  answerCall() {
+    if (!this.isAudioMode) {
+      return;
+    }
+
+    this.update();
   },
 
   onUpdate(callback) {

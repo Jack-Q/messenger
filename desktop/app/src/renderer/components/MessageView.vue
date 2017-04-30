@@ -17,6 +17,10 @@
       <div>
         <ui-button :type="currentMessage?'primary':'secondary'" :disabled="!currentMessage">send</ui-button>
       </div>
+      <div class="editor-seperator"></div>
+      <div>
+        <ui-button type="secondary" buttonType="button" @click="initAudio">Audio chat</ui-button>
+      </div>
     </form>
   </div>
 </template>
@@ -42,6 +46,9 @@ export default {
     sendMessage() {
       AppState.sendMessage(this.messageId, this.currentMessage);
       this.currentMessage = '';
+    },
+    initAudio() {
+      AppState.initAudioCall(this.messageId);
     },
   },
   data() {
