@@ -56,7 +56,7 @@ export default class PeerSocket {
       return;
     }
 
-    switch (messageData.type.type) {
+    switch (messageData.type) {
       case udpProtocol.packetType.U_SYN:
         this.updatePeer(address, port);
         this.sendAck();
@@ -83,7 +83,7 @@ export default class PeerSocket {
         this.callbackHub.pub(this.eventType.CONN_END);
         break;
       default:
-        console.log(`unknown packet type from ${address}:${port}`);
+        console.log(`unknown packet type ${messageData.type} from ${address}:${port}`);
         // Discard unknown message
     }
   }

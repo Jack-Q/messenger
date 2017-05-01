@@ -10,9 +10,9 @@ export const packetType = {
   U_SRV_ADDR: { type: 'U_SRV_ADDR', value: 0xa1 },
   // peer to peer
   U_SYN: { type: 'U_SYN', value: 0x01 },
-  U_ACK: { type: 'U_SYN', value: 0x02 },
-  U_DAT: { type: 'U_SYN', value: 0x03 },
-  U_END: { type: 'U_SYN', value: 0x04 },
+  U_ACK: { type: 'U_ACK', value: 0x02 },
+  U_DAT: { type: 'U_DAT', value: 0x03 },
+  U_END: { type: 'U_END', value: 0x04 },
 };
 
 const makePacketOnlyToken = (type, sessionId) => {

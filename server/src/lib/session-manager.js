@@ -70,6 +70,7 @@ export default class SessionManager {
       port: this.serverAddress.port,
     };
     caller.connection.send(protocol.packetType.CALL_INIT, initPacket);
+    initPacket.fromUser = caller.id;
     callee.connection.send(protocol.packetType.CALL_INIT, initPacket);
 
     return sessionId;

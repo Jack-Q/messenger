@@ -9,6 +9,7 @@ export default {
   isAudioMode: false,
   audioCall: {
     peerName: '',
+    peerId: '',
     status: '',
     sessionId: '',
     peerSocket: null,
@@ -110,6 +111,8 @@ export default {
 
     const peer = this.buddyList.find(b => b.id === peerId);
     this.isAudioMode = true;
+    this.audioCall.peerName = peer.name;
+    this.audioCall.peerId = peer.id;
     this.serverConnection.requestCall(peer.name, peerId);
     this.update();
     console.log(`call ${peer.name}`);
@@ -146,6 +149,15 @@ export default {
       if (!msg.status) {
         console.log(`ERROR: ${msg.message}`);
       }
+      if (!this.isAudioMode) {
+        const fromUser = this.buddyList.find(b => b.id === msg.fromUser);
+
+        this.isAudioMode = true;
+        this.audioCall.status = `incoming call from ${fromUser.name}`;
+        this.audioCall.peerName = fromUser.name;
+        this.audioCall.peerId = fromUser.id;
+      }
+
       this.audioCall.sessionId = msg.sessionId;
       PeerSocket.createSock(msg.sessionId, {
         address: msg.address,
@@ -187,6 +199,8 @@ export default {
       setTimeout(() => {
         this.audioCall.status = '';
         this.audioCall.peerSocket = null;
+        this.audioCall.peerId = '';
+        this.audioCall.peerName = '';
         this.isAudioMode = false;
         this.update();
       }, 1000);

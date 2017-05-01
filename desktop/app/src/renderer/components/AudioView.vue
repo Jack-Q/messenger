@@ -30,15 +30,13 @@ export default {
     AppState.onUpdate(() => this.$forceUpdate());
   },
   data() {
-    return {
-      status: 'connecting...',
-    };
+    return {};
   },
   methods: {
     answerCall: () => AppState.answerCall(),
     endCall: () => AppState.terminateCall(),
     getPeerName: () => AppState.audioCall.peername,
-    getStatus: () => AppState.audioCall.status,
+    getStatus: () => AppState.audioCall.status || '...',
   },
 };
 </script>
