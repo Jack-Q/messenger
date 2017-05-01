@@ -7,7 +7,21 @@ class Session{
   constructor(sessionId, caller, callee) {
     this.sessionId = sessionId;
     this.caller = caller;
+    this.callerInfo = {};
     this.callee = callee;
+    this.calleeInfo = {};
+  }
+
+  updateAddress(connectId, address, port) {
+    if (this.caller.id === connectId) {
+      this.callerInfo.address = address;
+      this.callerInfo.port = port;
+    } else if (this.callee.id === connectId){
+      this.calleeInfo.address = address;
+      this.calleeInfo.port = port;
+    } else {
+      console.log("unknown connect id");
+    }
   }
 }
 
@@ -51,6 +65,7 @@ export default class SessionManager {
     }
 
     const sessionId = messageData.payload.sessionId;
+    const connectId = messageData.payload.connectId;
     const session = sessionList[sessionId];
 
     if (!sessionId || !session) {
@@ -60,7 +75,7 @@ export default class SessionManager {
 
     switch (messageData.type) {
       case udpProtocol.packetType.U_SRV_ADDR:
-        session.callerInfo = {};
+        session.updateAddress(connectId, address, port);
         break;
       default:
         console.log("unknown message type");  
