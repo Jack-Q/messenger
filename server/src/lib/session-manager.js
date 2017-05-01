@@ -85,4 +85,14 @@ export default class SessionManager {
   onError(err) {
     console.log('Session socket error:', err);
   }
+
+  prepareCall(sessionId, userId) {
+    
+  }
+  answerCall(sessionId, userId) {
+    
+  }
+  terminateCall(sessionId, userId) {
+    
+  }
 }

@@ -48,6 +48,7 @@ export default class Server {
   }
 
   handleClientAction(connection, type, payload) {
+    const srcConn = this.connections.find(c => c.id == connection.id);
     switch (type.type) {
       case protocol.packetType.USER_ADD_REQ.type:
         createUser(payload.name, payload.token);
@@ -64,7 +65,6 @@ export default class Server {
       case protocol.packetType.MSG_SEND.type:
         console.log("redirect message from", payload.user, payload.message);
         const conn = this.connections.find(c => c.id == payload.connectId);
-        const srcConn = this.connections.find(c => c.id == connection.id);
         if (conn && srcConn) {
           conn.connection.send(protocol.packetType.MSG_RECV, {
             status: true,
@@ -74,8 +74,33 @@ export default class Server {
           });
         }
         break;
-      case protocol.packetType.CALL_REQ:
-        
+      case protocol.packetType.CALL_REQ.type:
+        const conn = this.connections.find(c => c.id == payload.connectId);
+        if (!srcConn || srcConn.pending || srcConn.sessionId) {
+          // TODO: handle caller unsatisfied state
+          return;
+        }
+        if (!conn || conn.pending || conn.sessionId) {
+          // TODO: handle callee unsatisfied state
+          if (conn.sessionId) {
+            // the callee is busy, response to caller about this state
+          } else {
+            // unknown reason
+          }
+          return;
+        }
+        // create the session, and the following process are handled 
+        // by the SessionManager
+        const session = this.sessionManager.createSession(srcConn, conn);
+        break;
+      case protocol.packetType.CALL_PREP.type:
+        this.sessionManager.prepareCall(payload.sessionId, srcConn.id);
+        break;
+      case protocol.packetType.CALL_ANS.type:
+        this.sessionManager.answerCall(payload.sessionId, srcConn.id);
+        break;
+      case protocol.packetType.CALL_TERM.type:
+        this.sessionManager.terminateCall(payload.sessionId, srcConn.id);
         break;
     }
   }
