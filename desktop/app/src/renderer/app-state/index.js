@@ -11,6 +11,7 @@ export default {
     peerName: '',
     peerId: '',
     status: '',
+    phase: 0,
     answerMode: false,
     terminateMode: false,
     sessionId: '',
@@ -120,6 +121,7 @@ export default {
     this.audioCall.answerMode = false;
     this.audioCall.terminateMode = false;
     this.audioCall.status = 'preparing...';
+    this.audioCall.phase = 0;
     this.update();
     console.log(`call ${peer.name}`);
   },
@@ -140,6 +142,7 @@ export default {
     this.audioCall.answerMode = false;
     this.audioCall.terminateMode = false;
     this.audioCall.status = 'connecting...';
+    this.audioCall.phase = 0;
     this.update();
     this.serverConnection.answerCall(this.audioCall.sessionId);
   },
@@ -152,6 +155,7 @@ export default {
     this.audioCall.answerMode = false;
     this.audioCall.terminateMode = false;
     this.audioCall.status = 'ending...';
+    this.audioCall.phase = 3;
     this.update();
     this.serverConnection.terminateCall(this.audioCall.sessionId);
   },
@@ -172,10 +176,12 @@ export default {
 
         this.audioCall.answerMode = true;
         this.audioCall.terminateMode = true;
+        this.audioCall.phase = 1;
       } else {
         // Caller
         this.audioCall.answerMode = false;
         this.audioCall.terminateMode = true;
+        this.audioCall.phase = 1;
         this.audioCall.status = 'waiting for answering...';
       }
 
@@ -210,7 +216,8 @@ export default {
       this.audioCall.status = 'chatting';
       this.audioCall.answerMode = false;
       this.audioCall.terminateMode = true;
-      this.audioCall.status = 'preparing...';
+      this.audioCall.status = 'enjoy chatting';
+      this.audioCall.phase = 2;
       this.update();
     });
     this.serverConnection.on('call-end', (msg) => {
@@ -219,12 +226,14 @@ export default {
       }
       this.audioCall.status = 'finished';
       this.audioCall.peerSocket.close();
+      this.audioCall.phase = 3;
       this.update();
       setTimeout(() => {
         this.audioCall.status = '';
         this.audioCall.peerSocket = null;
         this.audioCall.peerId = '';
         this.audioCall.peerName = '';
+        this.audioCall.phase = 0;
         this.isAudioMode = false;
         this.update();
       }, 1000);
