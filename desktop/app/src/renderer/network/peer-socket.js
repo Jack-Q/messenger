@@ -135,4 +135,8 @@ export default class PeerSocket {
   sendEnd() {
     this.send(this.peerAddress, udpProtocol.packetType.U_END, { sessionId: this.sessionId });
   }
+
+  close() {
+    this.sock.close();
+  }
 }

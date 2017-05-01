@@ -11,10 +11,11 @@ export default {
     peerName: '',
     status: '',
     sessionId: '',
-    peerSocket: new PeerSocket(),
+    peerSocket: null,
   },
   serverConnection: undefined,
   username: '',
+  sessionKey: '',
   buddyList: [],
   messageList: {},
 
@@ -47,6 +48,8 @@ export default {
         });
         this.update();
       });
+      // bind call related message handler
+      this.bindCallMessageHandler();
     });
   },
 
@@ -107,8 +110,8 @@ export default {
 
     const peer = this.buddyList.find(b => b.id === peerId);
     this.isAudioMode = true;
-    this.update();
     this.serverConnection.requestCall(peer.name, peerId);
+    this.update();
     console.log(`call ${peer.name}`);
   },
 
@@ -136,6 +139,58 @@ export default {
     this.isAudioMode = false;
 
     this.serverConnection.terminateCall(this.audioCall.sessionId);
+  },
+
+  bindCallMessageHandler() {
+    this.serverConnection.on('call-init', (msg) => {
+      if (!msg.status) {
+        console.log(`ERROR: ${msg.message}`);
+      }
+      this.audioCall.sessionId = msg.sessionId;
+      PeerSocket.createSock(msg.sessionId, {
+        address: msg.address,
+        port: msg.port,
+      }).then((peerSocket) => {
+        this.audioCall.peerSocket = peerSocket;
+        peerSocket.sendSrvAddr(this.sessionKey);
+      }).catch((error) => {
+        console.log(error);
+      });
+      this.update();
+    });
+    this.serverConnection.on('call-addr', (msg) => {
+      if (!msg.status) {
+        console.log(`ERROR: ${msg.message}`);
+      }
+      if (msg.sessionId !== this.audioCall.sessionId) {
+        console.log(
+          `ERROR SID: expecting ${this.audioCall.sessionId}, got ${msg.sessionId}`);
+      }
+      this.audioCall.peerSocket.updatePeer(msg.address, msg.port);
+      this.audioCall.peerSocket.sendSyn();
+      this.update();
+    });
+    this.serverConnection.on('call-conn', (msg) => {
+      if (!msg.status) {
+        console.log(`ERROR: ${msg.message}`);
+      }
+      this.audioCall.status = 'chatting';
+      this.update();
+    });
+    this.serverConnection.on('call-end', (msg) => {
+      if (!msg.status) {
+        console.log(`ERROR: ${msg.message}`);
+      }
+      this.audioCall.status = 'finished';
+      this.audioCall.peerSocket.close();
+      this.update();
+      setTimeout(() => {
+        this.audioCall.status = '';
+        this.audioCall.peerSocket = null;
+        this.isAudioMode = false;
+        this.update();
+      }, 1000);
+    });
   },
 
   onUpdate(callback) {

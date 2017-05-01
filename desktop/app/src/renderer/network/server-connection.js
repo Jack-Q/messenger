@@ -184,7 +184,16 @@ export default class ServerConnection {
       }
     });
     this.callbackHub.listen(protocol.packetType.CALL_INIT.type, (msg) => {
-      this.callbackHub.pub('call-init', { user: msg.user });
+      this.callbackHub.pub('call-init', msg);
+    });
+    this.callbackHub.listen(protocol.packetType.CALL_ADDR.type, (msg) => {
+      this.callbackHub.pub('call-addr', msg);
+    });
+    this.callbackHub.listen(protocol.packetType.CALL_CONN.type, (msg) => {
+      this.callbackHub.pub('call-conn', msg);
+    });
+    this.callbackHub.listen(protocol.packetType.CALL_END.type, (msg) => {
+      this.callbackHub.pub('call-end', msg);
     });
   }
 
