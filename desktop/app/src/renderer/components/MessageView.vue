@@ -48,7 +48,7 @@ export default {
       this.currentMessage = '';
     },
     initAudio() {
-      AppState.initAudioCall(this.messageId);
+      AppState.initCall(this.messageId);
     },
   },
   data() {

@@ -40,8 +40,9 @@ export default class ServerConnection {
     this.timer = 0;
 
     this.sock.on('close', () => this.onClose());
-    this.sock.on('timeout', () => this.onError('timeout'));
     this.sock.on('data', data => this.onData(data));
+    this.sock.on('error', err => this.onError(err));
+    this.sock.on('timeout', () => this.onError('timeout'));
 
     this.bindPacketHandler();
 

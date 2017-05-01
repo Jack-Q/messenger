@@ -1,4 +1,5 @@
-import ServerConnection from '../server/server-connection';
+import ServerConnection from '../network/server-connection';
+import PeerSocket from '../network/peer-socket';
 
 const updateCallback = [];
 
@@ -9,6 +10,7 @@ export default {
   audioCall: {
     peerName: '',
     status: '',
+    peerSocket: new PeerSocket(),
   },
   serverConnection: undefined,
   username: '',
@@ -96,7 +98,7 @@ export default {
     return true;
   },
 
-  initAudioCall(peerId) {
+  initCall(peerId) {
     if (this.isAudioMode) {
       return;
     }
