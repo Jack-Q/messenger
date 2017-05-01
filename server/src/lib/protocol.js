@@ -46,10 +46,10 @@ const makePacketByType = {
   CALL_REQ: data => JSON.stringify({ c: data.connectId, u: data.user }),
   CALL_INIT: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId, a: data.address, p: data.port }),
   CALL_ADDR: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId, a: data.address, p: data.port }),
-  CALL_PREP: data => JSON.stringify({ c: data.connectId, i: sessionId }),
-  CALL_ANS: data => JSON.stringify({ c: data.connectId, i: sessionId }),
+  CALL_PREP: data => JSON.stringify({ i: sessionId }),
+  CALL_ANS: data => JSON.stringify({ i: sessionId }),
   CALL_CONN: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId }),
-  CALL_TERM: data => JSON.stringify({ c: data.connectId, i: sessionId }),
+  CALL_TERM: data => JSON.stringify({ i: sessionId }),
   CALL_END: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId }),
 };
 
@@ -67,10 +67,10 @@ const parsePacketByType = {
   CALL_REQ: payload => (d => ({ connectId: d.c, user: d.u }))(JSON.parse(payload.toString())),
   CALL_INIT: data => (d => ({ status: d.s, message: d.m, sessionId: d.i, address: d.a, port: d.p }))(JSON.parse(payload.toString())),
   CALL_ADDR: data => (d => ({ status: d.s, message: d.m, sessionId: d.i, address: d.a, port: d.p }))(JSON.parse(payload.toString())),
-  CALL_PREP: data => (d => ({ connectId: d.c, sessionId: d.i }))(JSON.parse(payload.toString())),
-  CALL_ANS: data => (d => ({ connectId: d.c, sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_PREP: data => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_ANS: data => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
   CALL_CONN: data => (d => ({ status: d.s, message: d.m, sessionId: d.i }))(JSON.parse(payload.toString())),
-  CALL_TERM: data => (d => ({ connectId: d.c, sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_TERM: data => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
   CALL_END: data => (d => ({ status: d.s, message: d.m, sessionId: d.i }))(JSON.parse(payload.toString())),
 };
 
