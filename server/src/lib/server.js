@@ -3,6 +3,7 @@ import dgram from 'dgram';
 import shortid from 'shortid';
 
 import * as protocol from './protocol';
+import * as udpProtocol from './udp-protocol';
 import { checkUser, createUser } from './user-manager';
 
 import ClientConnection from './client-connection';

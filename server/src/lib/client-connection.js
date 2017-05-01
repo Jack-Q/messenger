@@ -85,7 +85,8 @@ export default class ClientConnection {
       if (buf.bufferLow == buf.bufferHigh) 
         buf.bufferLow = buf.bufferHigh = 0;
       
-      this.send(protocol.packetType.SERVER_STATUS, SERVER_NAME);
+      if ( type === protocol.packetType.SERVER_CHECK )
+        this.send(protocol.packetType.SERVER_STATUS, SERVER_NAME);
 
     }
 

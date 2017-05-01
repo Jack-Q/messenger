@@ -54,9 +54,9 @@ const parsePacketByType = {
     }
     
     return {
-      sessionKey: msg.toString(1, sep[0]),
-      type: msg.toString(sep[0] + 1, sep[1]),
-      buffer: msg.slice(sep[1] + 1),
+      sessionKey: msg.toString('utf8', 1, sep[0]),
+      type: msg.toString('utf8', sep[0] + 1, sep[1]),
+      buffer: msg.slice('utf8', sep[1] + 1),
     };
   },
   U_END: parsePacketOnlyToken,
