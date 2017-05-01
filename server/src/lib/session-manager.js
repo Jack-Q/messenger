@@ -87,7 +87,7 @@ export default class SessionManager {
 
     const sessionId = messageData.payload.sessionId;
     const connectId = messageData.payload.connectId;
-    const session = sessionList[sessionId];
+    const session = this.sessionList[sessionId];
 
     if (!sessionId || !session) {
       console.log('invalid SessionId field');
@@ -103,7 +103,7 @@ export default class SessionManager {
           // update caller, send to callee
           session.callee.connection.send(protocol.packetType.CALL_ADDR, {
             status: true,
-            user: caller.id,
+            user: session.caller.id,
             sessionId: sessionId,
             address: address,
             port: port,
@@ -111,7 +111,7 @@ export default class SessionManager {
         } else if(session.caller.id === connectId) {
           session.caller.connection.send(protocol.packetType.CALL_ADDR, {
             status: true,
-            user: callee.id,
+            user: session.callee.id,
             sessionId: sessionId,
             address: address,
             port: port,

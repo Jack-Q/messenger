@@ -73,13 +73,14 @@ const parsePacketByType = {
 
 export const makePacket = (type, data) => makePacketByType[type.type || type](data);
 
-export const parsePacket = (msg) => {
+export const parsePacket = (buffer) => {
   try {
     const type = Object.keys(packetType).map(k => packetType[k])
       .find(k => k.value === buffer[0]);
-    const payload = parsePacketByType[type.type](msg);
+    const payload = parsePacketByType[type.type](buffer);
     return { valid: true, type, payload };
   } catch (e) {
+    console.log(e);
     return { valid: false };
   }
 }
