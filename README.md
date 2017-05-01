@@ -18,6 +18,47 @@ Client 1 -TCP-\     /-TCP- Client 2
           Central server
 ```
 
+### Audio Call Process
+* a normal flow without exception
+```
+ Client A                      Client B
+----------       Server       ----------
+  Caller                        Callee
+=========================================
+1. requestCall
+   (CALL_REQ)
+              2. createSession
+                 initCall
+                 (CALL_INIT)
+3. createUdpSock             3. createUdpSock
+   (U_SRV_ADDR)                 (U_SRV_ADDR)
+              4. passPeerAddr
+                 (CALL_ADDR)
+5. synPeer                   5. synPeer
+   (U_SYN)                      (U_SYN)
+6. ackPeer                   6. ackPeer
+   updateAddr                   updateAddr
+   (U_ACK)                      (U_ACK)
+7. prepCall                  7. prepCall
+   (CALL_PREP)                  (CALL_PREP)
+...........................................
+                 [WAITING]
+...........................................
+                             8. ansCall
+                                (CALL_ANS)
+              9. connectCall
+                 (CALL_CONN)
+...........................................
+                 [CHATTING]
+                  (U_DAT)
+...........................................
+                            10. termCall
+                                (CALL_TERM)
+                                (U_TERM)
+              11. endCall
+                  (CALL_END)
+```
+
 ### P2P over NAT
 * Consider to implement some naive handling for NAT problem
 * Reference: [P2P NAT](http://www.brynosaurus.com/pub/net/p2pnat/)

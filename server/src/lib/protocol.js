@@ -22,10 +22,14 @@ export const packetType = {
   MSG_SEND: { type: 'MSG_SEND', value: 0x09 },
   MSG_RECV: { type: 'MSG_RECV', value: 0x0a },
   // Call Management
-  CALL_INIT: { type: 'CALL_INIT', value: 0x11 },
-  CALL_WAIT: { type: 'CALL_WAIT', value: 0x12 },
-  CALL_CONN: { type: 'CALL_CONN', value: 0x13 },
-  CALL_END: { type: 'CALL_END', value: 0x14 },
+  CALL_REQ: { type: 'CALL_REQ', value: 0x11 },
+  CALL_INIT: { type: 'CALL_INIT', value: 0x12 },
+  CALL_ADDR: { type: 'CALL_ADDR', value: 0x13 },
+  CALL_PREP: { type: 'CALL_PREP', value: 0x14 },
+  CALL_ANS: { type: 'CALL_ANS', value: 0x15 },
+  CALL_CONN: { type: 'CALL_CONN', value: 0x16 },
+  CALL_TERM: { type: 'CALL_TERM', value: 0x17 },
+  CALL_END: { type: 'CALL_END', value: 0x18 },
 };
 
 const makePacketByType = {
