@@ -124,9 +124,12 @@ export default class PeerSocket {
     });
   }
 
-  sendSrvAddr() {
+  sendSrvAddr(connectId) {
     this.send(this.serverAddress,
-      udpProtocol.packetType.U_SRV_ADDR, { sessionId: this.sessionId });
+      udpProtocol.packetType.U_SRV_ADDR, {
+        sessionId: this.sessionId,
+        connectId,
+      });
   }
 
   sendEnd() {

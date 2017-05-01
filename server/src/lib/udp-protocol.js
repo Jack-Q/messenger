@@ -15,18 +15,24 @@ export const packetType = {
   U_END: { type: 'U_SYN', value: 0x04 },
 };
 
-const makePacketOnlyToken = (type, sessionKey) => {
-  const buffer = Buffer.allocUnsafe(sessionKey.length + 1);
+const makePacketOnlyToken = (type, sessionId) => {
+  const buffer = Buffer.allocUnsafe(sessionId.length + 1);
   buffer.writeUInt8(type, 0);
-  buffer.write(sessionKey, 1);
+  buffer.write(sessionId, 1);
   return buffer;
 };
 const makePacketByType = {
-  U_SRV_ADDR: data => makePacketOnlyToken(packetType.U_SRV_ADDR.value, data.sessionKey),
-  U_SYN: data => makePacketOnlyToken(packetType.U_SYN.value, data.sessionKey),
-  U_ACK: data => makePacketOnlyToken(packetType.U_ACK.value, data.sessionKey),
+  U_SRV_ADDR: data => {
+    const header = `${data.sessionId}:${data.connectId}`;
+    const buffer = Buffer.allocUnsafe(header.length + 1);
+    buffer.writeUInt8(packetType.U_SRV_ADDR.value, 0);
+    buffer.write(header, 1);
+    return buffer;
+  },
+  U_SYN: data => makePacketOnlyToken(packetType.U_SYN.value, data.sessionId),
+  U_ACK: data => makePacketOnlyToken(packetType.U_ACK.value, data.sessionId),
   U_DAT: data => {
-    const header = data.sessionKey + ':' + data.type + ':';
+    const header = data.sessionId + ':' + data.type + ':';
     const buffer = Buffer.allocUnsafe(1 + header.length + data.buffer.length);
     let pos = 0;
     pos = buffer.write(packetType.U_DAT.value, pos);
@@ -34,12 +40,15 @@ const makePacketByType = {
     data.buffer.copy(buffer, pos);
     return buffer;
   },
-  U_END: data => makePacketOnlyToken(packetType.U_END.value, data.sessionKey),
+  U_END: data => makePacketOnlyToken(packetType.U_END.value, data.sessionId),
 };
 
-const parsePacketOnlyToken = msg => ({ sessionKey: msg.toString('utf8', 1, HEADER_LIMIT) });
+const parsePacketOnlyToken = msg => ({ sessionId: msg.toString('utf8', 1, HEADER_LIMIT) });
 const parsePacketByType = {
-  U_SRV_ADDR: parsePacketOnlyToken,
+  U_SRV_ADDR: msg => {
+    const arr = msg.toString('utf8', 1, HEADER_LIMIT).split(':');
+    return {sessionId: arr[0], connectId: arr[1]};
+  },
   U_SYN: parsePacketOnlyToken,
   U_ACK: parsePacketOnlyToken,
   U_DAT: msg => {
@@ -54,7 +63,7 @@ const parsePacketByType = {
     }
     
     return {
-      sessionKey: msg.toString('utf8', 1, sep[0]),
+      sessionId: msg.toString('utf8', 1, sep[0]),
       type: msg.toString('utf8', sep[0] + 1, sep[1]),
       buffer: msg.slice('utf8', sep[1] + 1),
     };
