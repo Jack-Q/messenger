@@ -9,12 +9,12 @@
       <div>{{getStatus()}}</div>
     </div>
     <div class="actions">
-      <div class="action-answer">
+      <div class="action-answer" v-if="getAnswerMode()">
         <ui-button type="secondary" @click="answerCall()">
           <ui-icon>call</ui-icon>
         </ui-button>
       </div>
-      <div class="action-end">
+      <div class="action-end" v-if="getTerminateMode()">
         <ui-button type="secondary" @click="endCall()">
           <ui-icon>call_end</ui-icon>
         </ui-button>
@@ -35,8 +35,10 @@ export default {
   methods: {
     answerCall: () => AppState.answerCall(),
     endCall: () => AppState.terminateCall(),
-    getPeerName: () => AppState.audioCall.peername,
+    getPeerName: () => AppState.audioCall.peerName,
     getStatus: () => AppState.audioCall.status || '...',
+    getAnswerMode: () => AppState.audioCall.answerMode,
+    getTerminateMode: () => AppState.audioCall.terminateMode,
   },
 };
 </script>

@@ -11,6 +11,8 @@ export default {
     peerName: '',
     peerId: '',
     status: '',
+    answerMode: false,
+    terminateMode: false,
     sessionId: '',
     peerSocket: null,
   },
@@ -114,6 +116,10 @@ export default {
     this.audioCall.peerName = peer.name;
     this.audioCall.peerId = peer.id;
     this.serverConnection.requestCall(peer.name, peerId);
+
+    this.audioCall.answerMode = false;
+    this.audioCall.terminateMode = false;
+    this.audioCall.status = 'preparing...';
     this.update();
     console.log(`call ${peer.name}`);
   },
@@ -131,6 +137,10 @@ export default {
       return;
     }
 
+    this.audioCall.answerMode = false;
+    this.audioCall.terminateMode = false;
+    this.audioCall.status = 'connecting...';
+    this.update();
     this.serverConnection.answerCall(this.audioCall.sessionId);
   },
 
@@ -139,8 +149,10 @@ export default {
       return;
     }
 
-    this.isAudioMode = false;
-
+    this.audioCall.answerMode = false;
+    this.audioCall.terminateMode = false;
+    this.audioCall.status = 'ending...';
+    this.update();
     this.serverConnection.terminateCall(this.audioCall.sessionId);
   },
 
@@ -150,12 +162,21 @@ export default {
         console.log(`ERROR: ${msg.message}`);
       }
       if (!this.isAudioMode) {
+        // Callee
         const fromUser = this.buddyList.find(b => b.id === msg.fromUser);
 
         this.isAudioMode = true;
         this.audioCall.status = `incoming call from ${fromUser.name}`;
         this.audioCall.peerName = fromUser.name;
         this.audioCall.peerId = fromUser.id;
+
+        this.audioCall.answerMode = true;
+        this.audioCall.terminateMode = true;
+      } else {
+        // Caller
+        this.audioCall.answerMode = false;
+        this.audioCall.terminateMode = true;
+        this.audioCall.status = 'waiting for answering...';
       }
 
       this.audioCall.sessionId = msg.sessionId;
@@ -187,6 +208,9 @@ export default {
         console.log(`ERROR: ${msg.message}`);
       }
       this.audioCall.status = 'chatting';
+      this.audioCall.answerMode = false;
+      this.audioCall.terminateMode = true;
+      this.audioCall.status = 'preparing...';
       this.update();
     });
     this.serverConnection.on('call-end', (msg) => {
