@@ -27,7 +27,7 @@ export default class Server {
     this.sessionManager = new SessionManager();
   }
 
-  // start server  
+  // start server
   initServer() {
     this.server.addListener('connection', sock => this.onCreateSock(sock));
     this.server.addListener('error', err => console.log(err));

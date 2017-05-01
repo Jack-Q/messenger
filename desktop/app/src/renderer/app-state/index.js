@@ -10,6 +10,7 @@ export default {
   audioCall: {
     peerName: '',
     status: '',
+    sessionId: '',
     peerSocket: new PeerSocket(),
   },
   serverConnection: undefined,
@@ -54,6 +55,7 @@ export default {
       if (resp.status) {
         this.isLogin = true;
         this.username = user;
+        this.sessionKey = resp.sessionKey;
         this.update();
         return Promise.resolve({ name: user });
       }
@@ -98,7 +100,7 @@ export default {
     return true;
   },
 
-  initCall(peerId) {
+  requestCall(peerId) {
     if (this.isAudioMode) {
       return;
     }
@@ -106,17 +108,16 @@ export default {
     const peer = this.buddyList.find(b => b.id === peerId);
     this.isAudioMode = true;
     this.update();
+    this.serverConnection.requestCall(peer.name, peerId);
     console.log(`call ${peer.name}`);
   },
 
-  endCall() {
+  prepareCall() {
     if (!this.isAudioMode) {
       return;
     }
 
-    this.isAudioMode = false;
-
-    this.update();
+    this.serverConnection.prepareCall(this.audioCall.sessionId);
   },
 
   answerCall() {
@@ -124,7 +125,17 @@ export default {
       return;
     }
 
-    this.update();
+    this.serverConnection.answerCall(this.audioCall.sessionId);
+  },
+
+  terminateCall() {
+    if (!this.isAudioMode) {
+      return;
+    }
+
+    this.isAudioMode = false;
+
+    this.serverConnection.terminateCall(this.audioCall.sessionId);
   },
 
   onUpdate(callback) {

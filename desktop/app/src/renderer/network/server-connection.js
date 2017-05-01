@@ -78,8 +78,27 @@ export default class ServerConnection {
   }
 
   sendMessage(user, connectId, message) {
-    this.sock.write(protocol.makePacket(protocol.packetType.MSG_SEND,
-      { user, connectId, message }));
+    this.send(protocol.packetType.MSG_SEND, { user, connectId, message });
+  }
+
+  send(type, data) {
+    this.sock.write(protocol.makePacket(type, data));
+  }
+
+  requestCall(user, connectId) {
+    this.send(protocol.packetType.CALL_REQ, { user, connectId });
+  }
+
+  prepareCall(sessionId) {
+    this.send(protocol.packetType.CALL_PREP, { sessionId });
+  }
+
+  answerCall(sessionId) {
+    this.send(protocol.packetType.CALL_ANS, { sessionId });
+  }
+
+  terminateCall(sessionId) {
+    this.send(protocol.packetType.CALL_TERM, { sessionId });
   }
 
   onError(err) {
