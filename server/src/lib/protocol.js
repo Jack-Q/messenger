@@ -44,13 +44,13 @@ const makePacketByType = {
   MSG_SEND: data => JSON.stringify({ u: data.user, c: data.connectId, m: data.message }),
   MSG_RECV: data => JSON.stringify({ s: data.status, u: data.user, c: data.connectId, m: data.message }),
   CALL_REQ: data => JSON.stringify({ c: data.connectId, u: data.user }),
-  CALL_INIT: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId, a: data.address, p: data.port }),
-  CALL_ADDR: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId, a: data.address, p: data.port }),
-  CALL_PREP: data => JSON.stringify({ i: sessionId }),
-  CALL_ANS: data => JSON.stringify({ i: sessionId }),
-  CALL_CONN: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId }),
-  CALL_TERM: data => JSON.stringify({ i: sessionId }),
-  CALL_END: data => JSON.stringify({ s: data.status, m: data.message, i: sessionId }),
+  CALL_INIT: data => JSON.stringify({ s: data.status, m: data.message, i: data.sessionId, a: data.address, p: data.port }),
+  CALL_ADDR: data => JSON.stringify({ s: data.status, m: data.message, i: data.sessionId, a: data.address, p: data.port }),
+  CALL_PREP: data => JSON.stringify({ i: data.sessionId }),
+  CALL_ANS: data => JSON.stringify({ i: data.sessionId }),
+  CALL_CONN: data => JSON.stringify({ s: data.status, m: data.message, i: data.sessionId }),
+  CALL_TERM: data => JSON.stringify({ i: data.sessionId }),
+  CALL_END: data => JSON.stringify({ s: data.status, m: data.message, i: data.sessionId }),
 };
 
 const parsePacketByType = {

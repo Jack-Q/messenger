@@ -49,6 +49,7 @@ export default class Server {
 
   handleClientAction(connection, type, payload) {
     const srcConn = this.connections.find(c => c.id == connection.id);
+    let conn = null;
     switch (type.type) {
       case protocol.packetType.USER_ADD_REQ.type:
         createUser(payload.name, payload.token);
@@ -58,13 +59,14 @@ export default class Server {
         if (checkUser(payload.name, payload.token)) {
           connection.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: connection.id });
           this.loginConnection(connection, payload.name);
-        } 
+        }
         else {
           connection.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
         }
+        break;
       case protocol.packetType.MSG_SEND.type:
         console.log("redirect message from", payload.user, payload.message);
-        const conn = this.connections.find(c => c.id == payload.connectId);
+        conn = this.connections.find(c => c.id == payload.connectId);
         if (conn && srcConn) {
           conn.connection.send(protocol.packetType.MSG_RECV, {
             status: true,
@@ -75,7 +77,7 @@ export default class Server {
         }
         break;
       case protocol.packetType.CALL_REQ.type:
-        const conn = this.connections.find(c => c.id == payload.connectId);
+        conn = this.connections.find(c => c.id == payload.connectId);
         if (!srcConn || srcConn.pending || srcConn.sessionId) {
           // TODO: handle caller unsatisfied state
           return;
@@ -91,7 +93,8 @@ export default class Server {
         }
         // create the session, and the following process are handled 
         // by the SessionManager
-        const session = this.sessionManager.createSession(srcConn, conn);
+        console.log('create session');
+        this.sessionManager.createSession(srcConn, conn);
         break;
       case protocol.packetType.CALL_PREP.type:
         this.sessionManager.prepareCall(payload.sessionId, srcConn.id);
