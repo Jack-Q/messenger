@@ -1,5 +1,6 @@
 import ServerConnection from '../network/server-connection';
 import PeerSocket from '../network/peer-socket';
+import Audio from '../audio';
 
 const updateCallback = [];
 
@@ -22,6 +23,7 @@ export default {
   sessionKey: '',
   buddyList: [],
   messageList: {},
+  audio: new Audio(),
 
   connect(host, port) {
     if (this.connected) {
