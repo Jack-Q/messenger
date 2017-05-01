@@ -107,9 +107,9 @@ export default {
 @keyframes icon-shaking {
   35%{transform: rotate(0)}
   40%{transform: rotate(-20deg)}
-  50%{transform: rotate(20deg)}
-  60%{transform: rotate(-20deg)}
-  70%{transform: rotate(20deg)}
+  50%{transform: rotate(22deg)}
+  60%{transform: rotate(-25deg)}
+  70%{transform: rotate(22deg)}
   80%{transform: rotate(-20deg)}
   85%{transform: rotate(0)}
 }
@@ -118,7 +118,7 @@ export default {
   animation: infinite 1.5s linear icon-shaking;
 }
 
-@keyframes icon-shaking {
+@keyframes icon-floating {
   0%{transform: translateY(0)}
   25%{transform: translateY(-5%)}
   75%{transform: translateY(5%)}
@@ -126,7 +126,7 @@ export default {
 }
 
 .status .icon-chatting {
-  animation: infinite 2s linear icon-shaking;
+  animation: infinite 2s linear icon-floating;
 }
 
 /* alternating item animation */
