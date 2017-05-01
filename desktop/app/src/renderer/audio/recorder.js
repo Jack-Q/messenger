@@ -26,7 +26,7 @@ export default class Recorder {
 
       this.audioContext.createMediaStreamSource(stream).connect(gainNode);
       gainNode.connect(recorder);
-      // recorder.connect(this.audioContext.destination);
+      recorder.connect(this.audioContext.destination);
     });
   }
 
