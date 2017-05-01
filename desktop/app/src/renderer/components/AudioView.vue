@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     answerCall: () => AppState.answerCall(),
-    endCall: () => AppState.endCall(),
+    endCall: () => AppState.terminateCall(),
     getPeerName: () => AppState.audioCall.peername,
     getStatus: () => AppState.audioCall.status,
   },
