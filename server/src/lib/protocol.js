@@ -65,13 +65,13 @@ const parsePacketByType = {
   MSG_SEND: payload => (d => ({ user: d.u, connectId: d.c, message: d.m }))(JSON.parse(payload.toString())),
   MSG_RECV: payload => (d => ({ status: d.s, user: d.u, connectId: d.c, message: d.m }))(JSON.parse(payload.toString())),
   CALL_REQ: payload => (d => ({ connectId: d.c, user: d.u }))(JSON.parse(payload.toString())),
-  CALL_INIT: data => (d => ({ status: d.s, message: d.m, sessionId: d.i, address: d.a, port: d.p }))(JSON.parse(payload.toString())),
-  CALL_ADDR: data => (d => ({ status: d.s, message: d.m, sessionId: d.i, address: d.a, port: d.p }))(JSON.parse(payload.toString())),
-  CALL_PREP: data => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
-  CALL_ANS: data => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
-  CALL_CONN: data => (d => ({ status: d.s, message: d.m, sessionId: d.i }))(JSON.parse(payload.toString())),
-  CALL_TERM: data => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
-  CALL_END: data => (d => ({ status: d.s, message: d.m, sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_INIT: payload => (d => ({ status: d.s, message: d.m, sessionId: d.i, address: d.a, port: d.p }))(JSON.parse(payload.toString())),
+  CALL_ADDR: payload => (d => ({ status: d.s, message: d.m, sessionId: d.i, address: d.a, port: d.p }))(JSON.parse(payload.toString())),
+  CALL_PREP: payload => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_ANS: payload => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_CONN: payload => (d => ({ status: d.s, message: d.m, sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_TERM: payload => (d => ({ sessionId: d.i }))(JSON.parse(payload.toString())),
+  CALL_END: payload => (d => ({ status: d.s, message: d.m, sessionId: d.i }))(JSON.parse(payload.toString())),
 };
 
 export const checkPacket = (buf, low, high) => {

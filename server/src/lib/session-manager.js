@@ -75,7 +75,7 @@ export default class SessionManager {
     return sessionId;
   }
 
-  onMessage(msg, rinfo) {
+  onMessage(message, remoteInfo) {
     const { address, port } = remoteInfo;
     console.log('udp message from ', address, port, message.toString());
 
