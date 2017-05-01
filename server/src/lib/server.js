@@ -3,7 +3,6 @@ import dgram from 'dgram';
 import shortid from 'shortid';
 
 import * as protocol from './protocol';
-import * as udpProtocol from './udp-protocol';
 import { checkUser, createUser } from './user-manager';
 
 import ClientConnection from './client-connection';
@@ -12,6 +11,7 @@ import SessionManager from './session-manager';
 const packConnection = conn => ({
   id: conn.id,
   pending: true,
+  sessionId: null,
   user: {
     name: 'anonymous'
   },
@@ -24,6 +24,7 @@ export default class Server {
     this.port = port;
     this.server = net.createServer();
     this.connections = [];
+    this.sessionManager = new SessionManager();
   }
 
   // start server  
@@ -34,6 +35,8 @@ export default class Server {
     this.server.listen(this.port, this.host, () => {
       console.log("Server listening ", this.server.address());
     });
+
+    this.sessionManager.init();
   }
 
   onCreateSock(sock) {
@@ -70,6 +73,9 @@ export default class Server {
             message: payload.message,
           });
         }
+        break;
+      case protocol.packetType.CALL_REQ:
+        
         break;
     }
   }
