@@ -102,3 +102,7 @@ InFrameBuffer |         OutFrameBuffer |
               |                        |
               \-[UDP Socket & Network]-/
 ```
+
+### Build native module in node
+Since `electron` is generally bundled a different version of `v8`, the native node module requires recompiling to work correctly.
+Use the `electron-rebuild` package for this task.
