@@ -8,7 +8,7 @@
 </script>
 
 <style>
-  @import url(https://fonts.googleapis.com/css?family=Lato:300);
+  @import url(./resource/font.css);
 
   ::-webkit-scrollbar {
     background: transparent;
