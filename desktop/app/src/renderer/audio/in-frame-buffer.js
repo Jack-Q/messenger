@@ -32,11 +32,11 @@ export default class InFrameBuffer {
       let pos = 0; let leftLength = frameLength;
       while (leftLength > 0) {
         const low = this.initialPosition;
-        const buffer = this.frameList[0];
+        const frame = this.frameList[0];
         let high;
-        if (buffer.length - low <= leftLength) {
-          leftLength = leftLength - buffer.length - low;
-          high = buffer.length;
+        if (frame.length - low <= leftLength) {
+          leftLength = leftLength - frame.length - low;
+          high = frame.length;
           this.frameList.shift();
           this.initialPosition = 0;
         } else {
@@ -46,7 +46,7 @@ export default class InFrameBuffer {
         }
 
         for (let i = low; i < high; i++) {
-          pos = buffer.writeInt16LE(buffer[i], pos);
+          pos = buffer.writeInt16LE(frame[i], pos);
         }
       }
       this.sampleLength -= frameLength;
