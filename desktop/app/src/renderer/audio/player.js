@@ -5,9 +5,8 @@ export default class Player {
   }
 
   addData(data) {
-    this.counter++;
-    if (this.counter % 100 === 0) {
-      console.log(JSON.stringify(data));
+    if (this.counter++ % 1000 === 0) {
+      console.log(data);
     }
     this.bufferSource = this.audioContext.createBufferSource();
     this.bufferSource.connect(this.audioContext.destination);
