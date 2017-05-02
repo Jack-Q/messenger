@@ -17,7 +17,6 @@ export default class Recorder {
     }).then((stream) => {
       console.log(stream);
       this.stream = stream;
-
       const gainNode = this.audioContext.createGain();
       const recorder = this.audioContext.createScriptProcessor(
         2048, 1, 1); // this.sampleRate / this.frameFrequency

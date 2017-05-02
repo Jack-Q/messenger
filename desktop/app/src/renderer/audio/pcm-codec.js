@@ -1,5 +1,5 @@
 const scaler = 2 ** 15;
-const amplifier = 5;
+const amplifier = 1;
 const saturate = v => Math.min(1, Math.max(-1, v));
 
 export default class PcmCodec {

@@ -1,7 +1,7 @@
 
 
 export default class InFrameBuffer {
-  constructor(sampleRate = 44100, frameRate = 25) {
+  constructor(sampleRate = 48000, frameRate = 25) {
     // config
     this.frameRate = frameRate;
     this.sampleRate = sampleRate;
@@ -25,7 +25,7 @@ export default class InFrameBuffer {
     this.frameList.push(frame);
     this.sampleLength += frame.length;
 
-    const frameLength = Math.floor(this.sampleRate - this.frameRate);
+    const frameLength = Math.floor(this.sampleRate / this.frameRate);
     if (this.sampleLength >= frameLength) {
       // encode packet
       const buffer = Buffer.allocUnsafe(2 * frameLength);

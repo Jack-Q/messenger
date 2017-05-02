@@ -134,8 +134,6 @@ export default class Server {
       this.sessionManager.terminateCall(conn.sessionId, conn.id);
     }
 
-    rawConn.close();
-
     this.sendBuddyListToAll();
   }
   
