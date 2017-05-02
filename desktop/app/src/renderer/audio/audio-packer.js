@@ -8,9 +8,11 @@ export default class AudioPacker {
     const buffer = Buffer.allocUnsafe(length);
     buffer.writeUInt16LE(data.index, 0);
     data.frame.copy(buffer, 2);
+    console.log(`pack ${data.index}`);
     return buffer;
   }
   static unpack(buffer) {
-    return { index: buffer.readInt16LE(0), data: buffer.slice(2) };
+    console.log(`pack ${buffer.readUInt16LE(0)}`);
+    return { index: buffer.readUInt16LE(0), frame: buffer.slice(2) };
   }
 }

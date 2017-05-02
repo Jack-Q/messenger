@@ -34,10 +34,9 @@ const makePacketByType = {
   U_DAT: data => {
     const header = data.sessionId + ':' + data.type + ':';
     const buffer = Buffer.allocUnsafe(1 + header.length + data.buffer.length);
-    let pos = 0;
-    pos = buffer.write(packetType.U_DAT.value, pos);
-    pos = buffer.write(header, pos);
-    data.buffer.copy(buffer, pos);
+    buffer.writeUInt8(packetType.U_DAT.value, 0);
+    buffer.write(header, 1);
+    data.buffer.copy(buffer, header.length + 1, 0);
     return buffer;
   },
   U_END: data => makePacketOnlyToken(packetType.U_END.value, data.sessionId),
@@ -56,16 +55,16 @@ const parsePacketByType = {
     
     // Scan message packet for message content
     // skip type indicator (pos 0)
-    for (let pos = 1, cnt = 0; cnt < 2 && pos < HEADER_LIMIT && pos < msg.length; i++) {
-      if (buf.readUInt8(i) === separator) {
-        buf[cnt++] = pos;
+    for (let pos = 1, cnt = 0; cnt < 2 && pos < HEADER_LIMIT && pos < msg.length; pos++) {
+      if (msg.readUInt8(pos) === HEADER_SEPARATOR) {
+        sep[cnt++] = pos;
       }
     }
     
     return {
       sessionId: msg.toString('utf8', 1, sep[0]),
       type: msg.toString('utf8', sep[0] + 1, sep[1]),
-      buffer: msg.slice('utf8', sep[1] + 1),
+      buffer: msg.slice(sep[1] + 1),
     };
   },
   U_END: parsePacketOnlyToken,
