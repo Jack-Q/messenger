@@ -215,6 +215,11 @@ export default {
       if (!msg.status) {
         console.log(`ERROR: ${msg.message}`);
       }
+      // start session
+      this.audio.setOnPacket(packet => this.peerSocket.sendData(packet));
+      this.peerSocket(PeerSocket.eventType.DATA_AUDIO, data => this.audio.receivePacket(data));
+      this.audio.startSession();
+      // transit call state
       this.audioCall.status = 'chatting';
       this.audioCall.answerMode = false;
       this.audioCall.terminateMode = true;
@@ -226,6 +231,10 @@ export default {
       if (!msg.status) {
         console.log(`ERROR: ${msg.message}`);
       }
+      // start session
+      this.audio.setOnPacket(null);
+      this.audio.endSession();
+      // transit call state
       this.audioCall.status = 'finished';
       this.audioCall.peerSocket.close();
       this.audioCall.phase = 3;

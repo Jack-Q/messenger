@@ -139,4 +139,8 @@ export default class PeerSocket {
   close() {
     this.sock.close();
   }
+
+  on(event, callback) {
+    this.callbackHub.listen(event, callback);
+  }
 }

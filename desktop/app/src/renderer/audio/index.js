@@ -39,7 +39,7 @@ export default class Audio {
     this.recording = false;
   }
 
-  onBufferPacket(packet) {
+  receivePacket(packet) {
     const frameData = AudioPacker.unpack(packet);
     const pcmFrame = this.opusCodec.decode(frameData.frame);
     this.outFrameBuffer.addFrame(pcmFrame);
