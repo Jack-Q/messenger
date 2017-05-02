@@ -33,10 +33,14 @@ export default class Audio {
     this.recording = true;
     this.inFrameBuffer.reset();
     this.outFrameBuffer.reset();
+    this.recorder.start();
+    this.player.start();
   }
 
   endSession() {
     this.recording = false;
+    this.recorder.stop();
+    this.player.stop();
   }
 
   receivePacket(packet) {

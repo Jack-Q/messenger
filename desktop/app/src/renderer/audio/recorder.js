@@ -1,6 +1,9 @@
 export default class Recorder {
 
   constructor(audioContext) {
+    this.recording = false;
+    this.onDataCallback = null;
+
     this.stream = null;
     this.buffer = null;
     this.sampleRate = 8000;
@@ -20,13 +23,22 @@ export default class Recorder {
         2048, 1, 1); // this.sampleRate / this.frameFrequency
       recorder.onaudioprocess = (e) => {
         const data = e.inputBuffer.getChannelData(0);
-        if (this.onDataCallback) { this.onDataCallback(data); }
+        if (this.recording && this.onDataCallback) { this.onDataCallback(data); }
       };
 
       this.audioContext.createMediaStreamSource(stream).connect(gainNode);
       gainNode.connect(recorder);
       recorder.connect(this.audioContext.destination);
     });
+  }
+
+  start() {
+    this.recording = true;
+  }
+
+  stop() {
+    this.recording = false;
+    this.onDataCallback = null;
   }
 
   onData(callback) {
