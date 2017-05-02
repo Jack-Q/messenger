@@ -216,8 +216,9 @@ export default {
         console.log(`ERROR: ${msg.message}`);
       }
       // start session
-      this.audio.setOnPacket(packet => this.peerSocket.sendData(packet));
-      this.peerSocket(PeerSocket.eventType.DATA_AUDIO, data => this.audio.receivePacket(data));
+      this.audio.setOnPacket(packet => this.audioCall.peerSocket.sendData(packet));
+      this.audioCall.peerSocket.on(this.audioCall.peerSocket.eventType.DATA_AUDIO,
+        data => this.audio.receivePacket(data));
       this.audio.startSession();
       // transit call state
       this.audioCall.status = 'chatting';
