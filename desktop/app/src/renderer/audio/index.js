@@ -46,7 +46,7 @@ export default class Audio {
   receivePacket(packet) {
     const frameData = AudioPacker.unpack(packet);
     const pcmFrame = this.opusCodec.decode(frameData.frame);
-    this.outFrameBuffer.addFrame(pcmFrame);
+    this.outFrameBuffer.addFrame({ index: frameData.index, frame: pcmFrame });
   }
 
   onPlayFrame(pcmFrame) {
@@ -60,8 +60,8 @@ export default class Audio {
   }
 
   onSendFrame(pcmFrame) {
-    const encodedData = this.opusCodec.encode(pcmFrame);
-    const packet = AudioPacker.pack({ frame: encodedData });
+    const encodedData = this.opusCodec.encode(pcmFrame.frame);
+    const packet = AudioPacker.pack({ index: pcmFrame.index, frame: encodedData });
     if (this.sendFrameCallback) {
       this.sendFrameCallback(packet);
     }

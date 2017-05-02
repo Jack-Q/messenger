@@ -10,6 +10,7 @@ export default class InFrameBuffer {
     this.frameList = [];
     this.initialPosition = 0;
     this.sampleLength = 0;
+    this.frameIndex = 0;
   }
 
   reset() {
@@ -17,6 +18,7 @@ export default class InFrameBuffer {
     this.frameList = [];
     this.initialPosition = 0;
     this.sampleLength = 0;
+    this.frameIndex = 0;
   }
 
   addFrame(frame) {
@@ -48,7 +50,7 @@ export default class InFrameBuffer {
         }
       }
       this.sampleLength -= frameLength;
-      this.onFrameCallback(buffer);
+      this.onFrameCallback({ index: this.frameIndex++, frame: buffer });
     }
   }
 
