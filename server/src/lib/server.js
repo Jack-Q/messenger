@@ -126,7 +126,16 @@ export default class Server {
   }
 
   removeConnection(rawConn) {
-    this.connections.splice(this.connections.findIndex(conn => conn.connection === rawConn), 1);
+    const connIndex = this.connections.findIndex(conn => conn.connection === rawConn)
+    const conn = this.connections[connIndex];
+    this.connections.splice(connIndex, 1);
+    
+    if (conn.sessionId) {
+      this.sessionManager.terminateCall(conn.sessionId, conn.id);
+    }
+
+    rawConn.close();
+
     this.sendBuddyListToAll();
   }
   
