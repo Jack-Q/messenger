@@ -20,7 +20,6 @@ export default class Recorder {
         2048, 1, 1); // this.sampleRate / this.frameFrequency
       recorder.onaudioprocess = (e) => {
         const data = e.inputBuffer.getChannelData(0);
-        console.log(e);
         if (this.onDataCallback) { this.onDataCallback(data); }
       };
 
