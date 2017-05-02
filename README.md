@@ -82,3 +82,23 @@ http://jakewharton.github.io/butterknife/
 ```bash
 sudo apt-get install libasound2-dev
 ```
+
+### Desktop Client Process Flow
+```
+           Sender                  Receiver
+         Microphone            Headphone/Speaker
+ AudioContext |                        |
+        [Float32Array]        [AudioBufferSource]
+   PcmCodec   |                        |
+         [Int16Array]            [AudioBuffer]
+ FrameBuffer  |                        |
+          [PcmFrame]              [PcmFrame]
+   OpusCodec  |                        |
+         [OpusFrame]              [OpusFrame]
+  AudioPacker |                        |
+      [AudioPacketData]        [AudioPacketData] 
+ UdpProtocol  |                        |
+        [UDP-Packet]             [UDP-Packet]
+              |                        |
+              \-[UDP Socket & Network]-/
+```
