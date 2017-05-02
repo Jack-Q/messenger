@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="title">Server &amp; Account</div>
-    <form class="form" @submit="connect">
+    <form class="form" @submit.prevent="connect">
       <div class="form-row">
         <div class="host">
           <ui-textbox required :disabled="connecting" floating-label label="Server Address" placeholder="Enter server address" v-model.trim="host"></ui-textbox>

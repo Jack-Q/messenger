@@ -51,7 +51,7 @@ export default class Audio {
   }
 
   onPlayFrame(pcmFrame) {
-    const floatPcmFrame = this.pcmCodec.decode(pcmFrame);
+    const floatPcmFrame = PcmCodec.decode(pcmFrame);
     this.player.addData(floatPcmFrame);
   }
 

@@ -10,7 +10,7 @@
         </div>
       </div>
     </transition-group>
-    <form class="editor" @submit="sendMessage">
+    <form class="editor" @submit.prevent="sendMessage">
       <div class="message-text-edit">
         <ui-textbox type="text" v-model.trim="currentMessage"></ui-textbox>
       </div>
