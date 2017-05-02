@@ -117,7 +117,7 @@ export default class PeerSocket {
   }
 
   sendData(buffer) {
-    this.send(this.peerAddress, udpProtocol.packetType.U_SYN, {
+    this.send(this.peerAddress, udpProtocol.packetType.U_DAT, {
       buffer,
       type: udpProtocol.dataType.AUDIO,
       sessionId: this.sessionId,

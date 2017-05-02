@@ -46,6 +46,7 @@ export default class Audio {
   receivePacket(packet) {
     const frameData = AudioPacker.unpack(packet);
     const pcmFrame = this.opusCodec.decode(frameData.frame);
+    console.log(frameData.index, frameData.data.length, pcmFrame.length);
     this.outFrameBuffer.addFrame({ index: frameData.index, frame: pcmFrame });
   }
 
