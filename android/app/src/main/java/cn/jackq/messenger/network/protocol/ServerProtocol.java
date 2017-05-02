@@ -1,4 +1,4 @@
-package cn.jackq.messenger.network.ptotocol;
+package cn.jackq.messenger.network.protocol;
 
 import java.nio.ByteBuffer;
 
