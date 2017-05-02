@@ -87,17 +87,17 @@ sudo apt-get install libasound2-dev
 ```
            Sender                  Receiver
          Microphone            Headphone/Speaker
- AudioContext |                        |
+     Recorder |                 Player |
         [Float32Array]        [AudioBufferSource]
-   PcmCodec   |                        |
+     PcmCodec |                        |
          [Int16Array]            [AudioBuffer]
- FrameBuffer  |                        |
+InFrameBuffer |         OutFrameBuffer |
           [PcmFrame]              [PcmFrame]
-   OpusCodec  |                        |
+    OpusCodec |                        |
          [OpusFrame]              [OpusFrame]
   AudioPacker |                        |
       [AudioPacketData]        [AudioPacketData] 
- UdpProtocol  |                        |
+  UdpProtocol |                        |
         [UDP-Packet]             [UDP-Packet]
               |                        |
               \-[UDP Socket & Network]-/
