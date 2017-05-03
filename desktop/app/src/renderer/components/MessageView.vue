@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     getMessages() {
-      return AppState.messageList[this.peername] || [];
+      return AppState.messageManager.getMessages(this.peername);
     },
     sendMessage() {
       AppState.sendMessage(this.messageId, this.currentMessage);
@@ -53,6 +53,9 @@ export default {
   },
   filters: {
     time: d => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
+  },
+  beforeUpdate() {
+    AppState.messageManager.readAll(this.peername);
   },
   data() {
     return {

@@ -1,6 +1,7 @@
 import ServerConnection from '../network/server-connection';
 import PeerSocket from '../network/peer-socket';
 import Audio from '../audio';
+import MessageManager from './message-manager';
 
 class AppState {
   constructor() {
@@ -21,9 +22,9 @@ class AppState {
     this.username = '';
     this.sessionKey = '';
     this.buddyList = [];
-    this.messageList = {};
     this.audio = new Audio();
     this.updateCallback = [];
+    this.messageManager = new MessageManager(() => this.update());
   }
 
   connect(host, port) {
@@ -44,15 +45,7 @@ class AppState {
         this.update();
       });
       this.serverConnection.on('data-message', (msg) => {
-        if (!this.messageList[msg.user]) {
-          this.messageList[msg.user] = [];
-        }
-        this.messageList[msg.user].push({
-          id: +new Date(),
-          time: new Date(),
-          content: msg.message,
-          type: 'recv',
-        });
+        this.messageManager.getList(msg.user).pushReceive(msg.message);
         this.update();
       });
       // bind call related message handler
@@ -90,18 +83,7 @@ class AppState {
       return false;
     }
 
-    if (!this.messageList[peer.name]) {
-      this.messageList[peer.name] = [];
-    }
-
-    console.log(`send "${content}" to ${peer.name}`);
-
-    this.messageList[peer.name].push({
-      id: +new Date(),
-      time: new Date(),
-      content,
-      type: 'send',
-    });
+    this.messageManager.getList(peer.name).pushSend(content);
 
     this.serverConnection.sendMessage(peer.name, peerId, content);
 
@@ -173,17 +155,10 @@ class AppState {
       console.log(`Call ended: ${status}`);
       // add call record
       if (this.audioCall.peerName) {
-        if (!this.messageList[this.audioCall.peerName]) {
-          this.messageList[this.audioCall.peerName] = [];
-        }
-        this.messageList[this.audioCall.peerName].push({
-          id: +new Date(),
-          time: new Date(),
-          content: this.audioCall.phase === 2
-            ? 'call finished' : 'call terminated',
-          type: 'sys',
-        });
+        this.messageManager.getList(this.audioCall.peerName).pushSystem(this.audioCall.phase === 2
+            ? 'call finished' : 'call terminated');
       }
+
       // terminate session
       this.audio.endSession();
       this.audio.setOnPacket(null);
@@ -294,17 +269,20 @@ class AppState {
   }
 
   resetState() {
+    if (this.audio) {
+      this.audio.endSession();
+    } else {
+      this.audio = new Audio();
+    }
+    if (this.serverConnection) {
+      this.serverConnection.close();
+    }
     this.connected = false;
     this.isLogin = false;
     this.isAudioMode = false;
     this.username = '';
     this.buddyList = [];
     this.serverConnection = null;
-    if (this.audio) {
-      this.audio.endSession();
-    } else {
-      this.audio = new Audio();
-    }
     this.update();
   }
 }

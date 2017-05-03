@@ -36,7 +36,7 @@
           </div>
           <div key="left-buddy-list" v-else-if="getBuddyList() && getBuddyList().length" class="left-center-page">
             <transition-group class="left-buddy-list" name="list">
-              <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" @click.native="clickBuddy(buddy)"></buddy-view>
+              <buddy-view v-for="buddy in getBuddyList()" :key="buddy.id" :buddy="buddy" :unreadItem="getUnreadItem(buddy.name)" @click.native="clickBuddy(buddy)"></buddy-view>
             </transition-group>
           </div>
           <div key="left-null-list" v-else class="left-center-page">
@@ -62,6 +62,7 @@
         <div key="message" class="center-page" v-else-if="messageOpen">
           <message-view :peername="messagePeer.name" :messageId="messagePeer.id"></message-view>
         </div>
+        <div key="blank" class="center-page" v-else-if="showBlank"></div>
         <!-- default view -->
         <div key="instruction" class="center-page" v-else>
           <instruction-view></instruction-view>
@@ -97,6 +98,7 @@ export default {
   data() {
     return {
       messageOpen: false,
+      showBlank: false,
       messagePeer: null,
     };
   },
@@ -110,11 +112,19 @@ export default {
     clickBuddy(buddy) {
       if (this.messageOpen) {
         this.messageOpen = false;
-        setTimeout(() => this.clickBuddy(buddy), 400);
+        if (buddy.name === this.messagePeer.name) {
+          this.showBlank = false;
+          setTimeout(() => { this.messagePeer = null; }, 200);
+        } else {
+          this.showBlank = true;
+          setTimeout(() => this.clickBuddy(buddy), 200);
+        }
         return;
       }
       this.messageOpen = true;
+      this.showBlank = false;
       this.messagePeer = buddy;
+      AppState.messageManager.readAll(buddy.name);
     },
     closeConnection: () => AppState.resetState(),
     isConnected: () => AppState.connected,
@@ -123,6 +133,7 @@ export default {
     getBuddyList: () => AppState.buddyList,
     isLogin: () => AppState.isLogin,
     getServer: () => AppState.serverConnection.getServerName(),
+    getUnreadItem: id => AppState.messageManager.getUnread(id),
   },
   components: {
     InstructionView,

@@ -204,4 +204,8 @@ export default class ServerConnection {
   getServerName() {
     return `${this.host}:${this.port}`;
   }
+
+  close() {
+    if (this.sock) { this.sock.destroy(); }
+  }
 }
