@@ -38,8 +38,8 @@
         style="@style/CallBottomActionButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/fullscreen_content_controls"
-        app:layout_constraintEnd_toStartOf="@id/imageButton2"
+        app:layout_constraintBottom_toTopOf="@+id/fullscreen_content_controls"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_media_pause" />
@@ -49,7 +49,7 @@
         style="@style/CallBottomActionButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/fullscreen_content_controls"
+        app:layout_constraintBottom_toTopOf="@+id/fullscreen_content_controls"
         app:layout_constraintEnd_toStartOf="@+id/imageButton3"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/imageButton1"
@@ -61,10 +61,10 @@
         style="@style/CallBottomActionButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/fullscreen_content_controls"
+        app:layout_constraintBottom_toTopOf="@+id/fullscreen_content_controls"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/imageButton2"
+        app:layout_constraintStart_toEndOf="@+id/imageButton2"
         app:srcCompat="@android:drawable/ic_media_pause" />
 
 
@@ -75,13 +75,7 @@
         android:layout_height="wrap_content"
         android:background="@color/black_overlay"
         android:orientation="horizontal"
-        tools:ignore="UselessParent"
-        tools:layout_conversion_absoluteHeight="48dp"
-        tools:layout_conversion_absoluteWidth="384dp"
-        tools:layout_conversion_absoluteX="0dp"
-        tools:layout_conversion_absoluteY="519dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="519dp">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/dummy_button"

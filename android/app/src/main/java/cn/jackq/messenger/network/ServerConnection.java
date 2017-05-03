@@ -12,6 +12,8 @@ import java.util.concurrent.FutureTask;
 
 import java.util.concurrent.CompletableFuture;
 
+import cn.jackq.messenger.network.protocol.ServerProtocol;
+
 public class ServerConnection {
     private static final String TAG = "ServerConnection";
     private ServerProtocol serverProtocol = new ServerProtocol();
