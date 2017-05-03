@@ -26,7 +26,7 @@ export default class Audio {
     // bind items
     this.recorder.onData(data => this.onRecordFrame(data));
     this.inFrameBuffer.onFrame(frame => this.onSendFrame(frame));
-    this.outFrameBuffer.onFrame(frame => this.onPlayFrame(frame));
+    this.outFrameBuffer.onFrame((frame, index) => this.onPlayFrame(frame, index));
   }
 
   startSession() {
@@ -50,9 +50,9 @@ export default class Audio {
     this.outFrameBuffer.addFrame({ index: frameData.index, frame: pcmFrame });
   }
 
-  onPlayFrame(pcmFrame) {
+  onPlayFrame(pcmFrame, index) {
     const floatPcmFrame = PcmCodec.decode(pcmFrame);
-    this.player.addData(floatPcmFrame);
+    this.player.addData(floatPcmFrame, index);
   }
 
   onRecordFrame(floatPcmFrame) {
