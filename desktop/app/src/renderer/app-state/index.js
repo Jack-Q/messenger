@@ -2,28 +2,29 @@ import ServerConnection from '../network/server-connection';
 import PeerSocket from '../network/peer-socket';
 import Audio from '../audio';
 
-const updateCallback = [];
-
-export default {
-  connected: false,
-  isLogin: false,
-  isAudioMode: false,
-  audioCall: {
-    peerName: '',
-    peerId: '',
-    status: '',
-    phase: 0,
-    answerMode: false,
-    terminateMode: false,
-    sessionId: '',
-    peerSocket: null,
-  },
-  serverConnection: undefined,
-  username: '',
-  sessionKey: '',
-  buddyList: [],
-  messageList: {},
-  audio: new Audio(),
+class AppState {
+  constructor() {
+    this.connected = false;
+    this.isLogin = false;
+    this.isAudioMode = false;
+    this.audioCall = {
+      peerName: '',
+      peerId: '',
+      status: '',
+      phase: 0,
+      answerMode: false,
+      terminateMode: false,
+      sessionId: '',
+      peerSocket: null,
+    };
+    this.serverConnection = undefined;
+    this.username = '';
+    this.sessionKey = '';
+    this.buddyList = [];
+    this.messageList = {};
+    this.audio = new Audio();
+    this.updateCallback = [];
+  }
 
   connect(host, port) {
     if (this.connected) {
@@ -57,7 +58,7 @@ export default {
       // bind call related message handler
       this.bindCallMessageHandler();
     });
-  },
+  }
 
   login(user, pass) {
     return this.connected ? this.serverConnection.login(user, pass).then((resp) => {
@@ -70,7 +71,7 @@ export default {
       }
       return Promise.reject(resp);
     }) : Promise.reject({ message: 'no server configured' });
-  },
+  }
 
   register(user, pass) {
     return this.connected ? this.serverConnection.register(user, pass)
@@ -81,7 +82,7 @@ export default {
         }
         return Promise.reject(resp);
       }) : Promise.reject({ message: 'no server configured' });
-  },
+  }
 
   sendMessage(peerId, content) {
     const peer = this.buddyList.find(b => b.id === peerId);
@@ -107,7 +108,7 @@ export default {
     this.update();
 
     return true;
-  },
+  }
 
   requestCall(peerId) {
     if (this.isAudioMode) {
@@ -126,7 +127,7 @@ export default {
     this.audioCall.phase = 0;
     this.update();
     console.log(`call ${peer.name}`);
-  },
+  }
 
   prepareCall() {
     if (!this.isAudioMode) {
@@ -134,7 +135,7 @@ export default {
     }
 
     this.serverConnection.prepareCall(this.audioCall.sessionId);
-  },
+  }
 
   answerCall() {
     if (!this.isAudioMode) {
@@ -147,7 +148,7 @@ export default {
     this.audioCall.phase = 0;
     this.update();
     this.serverConnection.answerCall(this.audioCall.sessionId);
-  },
+  }
 
   terminateCall() {
     if (!this.isAudioMode) {
@@ -160,7 +161,7 @@ export default {
     this.audioCall.phase = 3;
     this.update();
     this.serverConnection.terminateCall(this.audioCall.sessionId);
-  },
+  }
 
   bindCallMessageHandler() {
     const endAudioMode = (status) => {
@@ -269,15 +270,15 @@ export default {
         endAudioMode('call ended');
       }
     });
-  },
+  }
 
   onUpdate(callback) {
-    updateCallback.push(callback);
-  },
+    this.updateCallback.push(callback);
+  }
 
   update() {
-    updateCallback.map(cb => cb());
-  },
+    this.updateCallback.map(cb => cb());
+  }
 
   resetState() {
     this.connected = false;
@@ -286,6 +287,13 @@ export default {
     this.username = '';
     this.buddyList = [];
     this.serverConnection = null;
+    if (this.audio) {
+      this.audio.endSession();
+    } else {
+      this.audio = new Audio();
+    }
     this.update();
-  },
-};
+  }
+}
+
+export default new AppState();
