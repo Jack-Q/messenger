@@ -163,9 +163,37 @@ export default {
   },
 
   bindCallMessageHandler() {
+    const endAudioMode = (status) => {
+      if (!this.isAudioMode) {
+          // unintended message, ignore the packet
+        console.log(`No in call mode: ${status}`);
+        return;
+      }
+      console.log(`Call ended: ${status}`);
+      // start session
+      this.audio.endSession();
+      this.audio.setOnPacket(null);
+      // transit call state
+      this.audioCall.status = status;
+      if (this.audioCall.peerSocket) { this.audioCall.peerSocket.close(); }
+      this.audioCall.phase = 3;
+      this.audioCall.answerMode = false;
+      this.audioCall.terminateMode = false;
+      this.update();
+      setTimeout(() => {
+        this.audioCall.status = '';
+        this.audioCall.peerSocket = null;
+        this.audioCall.peerId = '';
+        this.audioCall.peerName = '';
+        this.audioCall.phase = 0;
+        this.isAudioMode = false;
+        this.update();
+      }, 1500);
+    };
     this.serverConnection.on('call-init', (msg) => {
       if (!msg.status) {
-        console.log(`ERROR: ${msg.message}`);
+        endAudioMode(msg.message);
+        return;
       }
       if (!this.isAudioMode) {
         // Callee
@@ -202,6 +230,8 @@ export default {
     this.serverConnection.on('call-addr', (msg) => {
       if (!msg.status) {
         console.log(`ERROR: ${msg.message}`);
+        endAudioMode(msg.message);
+        return;
       }
       if (msg.sessionId !== this.audioCall.sessionId) {
         console.log(
@@ -214,6 +244,8 @@ export default {
     this.serverConnection.on('call-conn', (msg) => {
       if (!msg.status) {
         console.log(`ERROR: ${msg.message}`);
+        endAudioMode(msg.message);
+        return;
       }
       // start session
       this.audio.setOnPacket(packet => this.audioCall.peerSocket.sendData(packet));
@@ -232,24 +264,10 @@ export default {
     this.serverConnection.on('call-end', (msg) => {
       if (!msg.status) {
         console.log(`ERROR: ${msg.message}`);
+        endAudioMode(msg.message);
+      } else {
+        endAudioMode('call ended');
       }
-      // start session
-      this.audio.endSession();
-      this.audio.setOnPacket(null);
-      // transit call state
-      this.audioCall.status = 'finished';
-      this.audioCall.peerSocket.close();
-      this.audioCall.phase = 3;
-      this.update();
-      setTimeout(() => {
-        this.audioCall.status = '';
-        this.audioCall.peerSocket = null;
-        this.audioCall.peerId = '';
-        this.audioCall.peerName = '';
-        this.audioCall.phase = 0;
-        this.isAudioMode = false;
-        this.update();
-      }, 1000);
     });
   },
 

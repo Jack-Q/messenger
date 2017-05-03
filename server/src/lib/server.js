@@ -78,16 +78,26 @@ export default class Server {
         break;
       case protocol.packetType.CALL_REQ.type:
         conn = this.connections.find(c => c.id == payload.connectId);
-        if (!srcConn || srcConn.pending || srcConn.sessionId) {
-          // TODO: handle caller unsatisfied state
+        if (!srcConn) { 
+          console.log('invalid request');
           return;
         }
+        if( srcConn.pending) {
+          // caller unsatisfied state
+          this.sessionManager.rejectSession(srcConn, "telephony requires an identity");
+          return;
+        }
+        if (srcConn.sessionId) {
+          this.sessionManager.rejectSession(srcConn, "only single simultaneous session is supported");
+        }
         if (!conn || conn.pending || conn.sessionId) {
-          // TODO: handle callee unsatisfied state
+          // handle callee unsatisfied state
           if (conn.sessionId) {
             // the callee is busy, response to caller about this state
+            this.sessionManager.rejectSession(srcConn, `sorry, ${conn.user.name} is busy...`);
           } else {
             // unknown reason
+            this.sessionManager.rejectSession(srcConn, "requested callee not found");
           }
           return;
         }

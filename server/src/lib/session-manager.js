@@ -76,6 +76,18 @@ export default class SessionManager {
     return sessionId;
   }
 
+
+  rejectSession(caller, reason) {
+    const initRejection = {
+      status: false,
+      message: reason,
+      sessionId: '',
+      address: '',
+      port: ''
+    };
+    caller.connection.send(protocol.packetType.CALL_INIT, initRejection);
+  }
+
   onMessage(message, remoteInfo) {
     const { address, port } = remoteInfo;
     console.log('udp message from ', address, port, message.toString());
