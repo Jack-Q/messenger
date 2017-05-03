@@ -26,7 +26,7 @@ export default class InFrameBuffer {
     this.sampleLength += frame.length;
 
     const frameLength = Math.floor(this.sampleRate / this.frameRate);
-    if (this.sampleLength >= frameLength) {
+    while (this.sampleLength >= frameLength) {
       // encode packet
       const buffer = Buffer.allocUnsafe(2 * frameLength);
       let pos = 0; let leftLength = frameLength;
@@ -52,6 +52,8 @@ export default class InFrameBuffer {
       this.sampleLength -= frameLength;
       this.onFrameCallback({ index: this.frameIndex++, frame: buffer });
     }
+
+    console.log(`in frame buffer length: ${this.sampleLength}`);
   }
 
   onFrame(callback) {

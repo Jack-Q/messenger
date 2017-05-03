@@ -23,7 +23,7 @@ export default class Player {
     } else if (index - this.currentIndex === 1) {
       // buffer adjustment
       const idealPosition = currentTime + expectedBuffer;
-      this.scheduleTime += 0.125 * (idealPosition - this.scheduleTime);
+      this.scheduleTime += 0.0625 * (idealPosition - this.scheduleTime);
 
       this.addToContext(data, this.scheduleTime, duration);
       this.currentIndex = index;
