@@ -52,8 +52,8 @@ export default class Server {
     let conn = null;
     switch (type.type) {
       case protocol.packetType.USER_ADD_REQ.type:
-        createUser(payload.name, payload.token);
-        connection.send(protocol.packetType.USER_ADD_RESP, { status: true, message: 'ok' });
+        connection.send(protocol.packetType.USER_ADD_RESP,
+          createUser(payload.name, payload.token));
         break;
       case protocol.packetType.USER_LOGIN_REQ.type:
         if (checkUser(payload.name, payload.token)) {
