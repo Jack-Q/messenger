@@ -2,7 +2,7 @@
   <div class="page">
     <div class="title">Message</div>
     <div class="sub-title">with {{peername}}</div>
-    <transition-group class="message-list" name="list">
+    <transition-group class="message-list" name="list" v-buttom>
       <div v-for="msg in getMessages()" :key="msg.time" class="message-row" :class="msg.type">
         <div class="message-box" :class="msg.type">
           <div class="content">{{msg.content}}</div>
@@ -54,6 +54,13 @@ export default {
   filters: {
     time: d => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
   },
+  directives: {
+    buttom: {
+      update(el) {
+        setImmediate(() => { el.scrollTop = el.scrollHeight; });
+      },
+    },
+  },
   beforeUpdate() {
     AppState.messageManager.readAll(this.peername);
   },
@@ -96,6 +103,7 @@ export default {
   overflow: auto;
   border-top: dashed 1px #aaa;
   border-bottom: dashed 1px #aaa;
+  transition: all ease 400ms;
 }
 
 .message-row{
