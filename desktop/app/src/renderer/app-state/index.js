@@ -171,7 +171,20 @@ class AppState {
         return;
       }
       console.log(`Call ended: ${status}`);
-      // start session
+      // add call record
+      if (this.audioCall.peerName) {
+        if (!this.messageList[this.audioCall.peerName]) {
+          this.messageList[this.audioCall.peerName] = [];
+        }
+        this.messageList[this.audioCall.peerName].push({
+          id: +new Date(),
+          time: new Date(),
+          content: this.audioCall.phase === 2
+            ? 'call finished' : 'call terminated',
+          type: 'sys',
+        });
+      }
+      // terminate session
       this.audio.endSession();
       this.audio.setOnPacket(null);
       // transit call state

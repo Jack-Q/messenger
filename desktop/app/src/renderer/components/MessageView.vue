@@ -6,7 +6,7 @@
       <div v-for="msg in getMessages()" :key="msg.time" class="message-row" :class="msg.type">
         <div class="message-box" :class="msg.type">
           <div class="content">{{msg.content}}</div>
-          <div class="footer">{{msg.time}}</div>
+          <div class="footer">{{msg.time | time }}</div>
         </div>
       </div>
     </transition-group>
@@ -50,6 +50,9 @@ export default {
     initAudio() {
       AppState.requestCall(this.messageId);
     },
+  },
+  filters: {
+    time: d => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
   },
   data() {
     return {
@@ -116,6 +119,13 @@ export default {
   margin: auto 2px;
   background: rgba(240,240,240,0.5);
   border-radius: 50%;
+}
+.message-box.sys{
+  text-align: center;
+  margin: auto;
+  font-size: 0.7em;
+  padding: 5px 10px 10px;
+  background: rgba(220,225,225,0.3);
 }
 .message-box.send{
   margin-left: auto;
