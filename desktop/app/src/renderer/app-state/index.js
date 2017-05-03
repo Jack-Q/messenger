@@ -220,6 +220,7 @@ export default {
       this.audioCall.peerSocket.on(this.audioCall.peerSocket.eventType.DATA_AUDIO,
         data => this.audio.receivePacket(data));
       this.audio.startSession();
+      console.log('CALL-CONN: Session start');
       // transit call state
       this.audioCall.status = 'chatting';
       this.audioCall.answerMode = false;
@@ -233,8 +234,8 @@ export default {
         console.log(`ERROR: ${msg.message}`);
       }
       // start session
-      this.audio.setOnPacket(null);
       this.audio.endSession();
+      this.audio.setOnPacket(null);
       // transit call state
       this.audioCall.status = 'finished';
       this.audioCall.peerSocket.close();

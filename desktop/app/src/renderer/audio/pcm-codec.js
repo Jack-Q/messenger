@@ -1,6 +1,6 @@
 const scaler = 2 ** 15;
 const amplifier = 1;
-const saturate = v => Math.min(1, Math.max(-1, v));
+const saturate = v => v;// Math.min(1, Math.max(-1, v));
 
 export default class PcmCodec {
   static encode(float32Array) {
@@ -8,6 +8,6 @@ export default class PcmCodec {
   }
 
   static decode(int16Array) {
-    return Float32Array.from(int16Array).map(f => saturate(f / amplifier));
+    return Float32Array.from(int16Array).map(f => saturate(f / scaler));
   }
 }

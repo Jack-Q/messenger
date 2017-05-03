@@ -37,7 +37,6 @@ export default class Recorder {
 
   stop() {
     this.recording = false;
-    this.onDataCallback = null;
   }
 
   onData(callback) {

@@ -22,6 +22,8 @@ export default class InFrameBuffer {
   }
 
   addFrame(frame) {
+    console.log('receive buffer');
+
     this.frameList.push(frame);
     this.sampleLength += frame.length;
 
