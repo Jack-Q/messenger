@@ -48,6 +48,7 @@
     /*disable selection by default*/
     user-select: none;
     cursor: default;
+    overflow: hidden;
   }
 
   #app{

@@ -131,6 +131,12 @@ export default {
     AudioView,
     MessageView,
   },
+  beforeUpdate() {
+    if (this.messageOpen && !AppState.buddyList.find(p => this.messagePeer.name === p.name)) {
+      this.messagePeer = null;
+      this.messageOpen = false;
+    }
+  },
 };
 </script>
 

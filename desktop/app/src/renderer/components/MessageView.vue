@@ -54,30 +54,7 @@ export default {
   data() {
     return {
       currentMessage: '',
-      messages: [
-        { time: new Date(), content: 'Hello', type: 'send' },
-        { time: new Date(), content: 'Hi~ \n Nice to see you here', type: 'recv' },
-        {
-          time: new Date(),
-          content: 'Yeah, it quite a suprise to be talking on a self-hosted platform',
-          type: 'send',
-        },
-        {
-          time: new Date(),
-          content: 'Yeah, it quite a suprise to be talking on a self-hosted platform',
-          type: 'recv',
-        },
-        {
-          time: new Date(),
-          content: 'Yeah, it quite a suprise to be talking on a self-hosted platform',
-          type: 'send',
-        },
-        { time: new Date(), content: 'Hello', type: 'recv' },
-        { time: new Date(), content: 'Hello', type: 'recv' },
-        { time: new Date(), content: 'Hello', type: 'send' },
-        { time: new Date(), content: 'Hello', type: 'recv' },
-        { time: new Date(), content: 'Hello', type: 'send' },
-      ],
+      messages: [],
     };
   },
 };

@@ -2,6 +2,7 @@
   <div class="buddy" ref="buddy-root">
     <div class="name">{{buddy.name}}</div>
     <div class="ip">{{buddy.ip}}</div>
+    <div class="red-dot" :class="unreadItem > 0 || 'empty'">{{unreadItem || 0}}</div>
     <ui-ripple-ink trigger="buddy-root" ></ui-ripple-ink> 
   </div>
 </template>
@@ -12,6 +13,10 @@ export default {
     buddy: {
       type: Object,
       required: true,
+    },
+    unreadItem: {
+      type: Number,
+      required: false,
     },
   },
 };
@@ -42,5 +47,22 @@ export default {
 }
 .buddy + .buddy {
   border-top: dotted 1px #888;
+}
+
+.red-dot {
+  position: absolute;
+  right: 20px;
+  top: 30px;
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  background: #c55;
+  border-radius: 5px;
+  transition: all ease 400ms;
+  opacity: 1;
+}
+
+.red-dot.empty {
+  opacity: 0;
 }
 </style>
