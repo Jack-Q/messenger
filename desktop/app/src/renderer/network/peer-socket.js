@@ -43,11 +43,10 @@ export default class PeerSocket {
 
   onMessage(message, remoteInfo) {
     const { address, port } = remoteInfo;
-    console.log('udp message from ', address, port, message.toString());
 
     const messageData = udpProtocol.parsePacket(message);
     if (!messageData.valid) {
-      console.log('invalid UDP packet received');
+      console.log(`invalid UDP packet received from ${address}:${port}`);
       return;
     }
 

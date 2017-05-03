@@ -37,7 +37,7 @@ export default class OutFrameBuffer {
     this.frameList.push(frameData);
     this.frameList.sort((a, b) => a.index - b.index);
 
-    if (this.frameList < minimumBufferFrame) {
+    if (this.frameList.length < minimumBufferFrame) {
       // wait for more frame
       return;
     }
@@ -49,15 +49,18 @@ export default class OutFrameBuffer {
     const now = Date.now();
     if (now < this.current.finish) {
       // timer pending
+      console.log('Skip play');
       return;
     }
 
     if (this.frameList.length === 0) {
       // no audio frame
+      console.log('empty buffer');
       return;
     }
 
     while (this.frameList[0].index <= this.current.index) {
+      console.log(`drop buffer frame with index${this.frameList[0].index}`);
       this.frameList.shift();
     }
 
@@ -67,15 +70,18 @@ export default class OutFrameBuffer {
       // or, the buffer is sufficient (long lag), skip to next available frame
       const nxtSeq = this.frameList.shift();
       this.current.index = nxtSeq.index;
-      this.current.length = nxtSeq.frame.length / this.sampleRate;
+      this.current.length = Math.floor(nxtSeq.frame.length / this.sampleRate * 1000);
+      console.log(`feed frame of ${this.current.length} with id ${nxtSeq.index}`);
       this.onFrameCallback(nxtSeq.frame);
     } else {
       // place a space with the same length as the current one
+      console.log('insert empty frame');
       this.current.index = this.current.index + 1;
     }
 
     this.current.finish = this.current.length + now;
     this.timer = setTimeout(this.playNextFrame.bind(this), this.current.length);
+    console.log(this.frameList.map(p => `${p.index}, ${p.frame.length}`));
   }
 
   onFrame(callback) {

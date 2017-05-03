@@ -15,7 +15,6 @@ export default class Recorder {
     navigator.mediaDevices.getUserMedia({
       audio: { sampleRate: 8000 },
     }).then((stream) => {
-      console.log(stream);
       this.stream = stream;
       const gainNode = this.audioContext.createGain();
       const recorder = this.audioContext.createScriptProcessor(

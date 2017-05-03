@@ -11,6 +11,8 @@ export default class OpusCodec {
     return this.codec.encode(buffer, 480);
   }
   decode(buffer) {
-    return this.codec.decode(buffer);
+    const nodeBuffer = this.codec.decode(buffer);
+    // convert node buffer to Int16Array
+    return new Int16Array(nodeBuffer.buffer, nodeBuffer.byteOffset, nodeBuffer.byteLength / 2);
   }
 }
