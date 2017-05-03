@@ -10,7 +10,6 @@ export default class Player {
 
   addData(data, index) {
     if (!this.playing) { return; }
-    console.log(`prep add data ${index} after ${this.currentIndex}`);
     const duration = data.length / this.sampleRate;
     const currentTime = this.audioContext.currentTime;
     if (index - this.currentIndex > 1) {

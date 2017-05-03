@@ -35,7 +35,7 @@ export default class InFrameBuffer {
         const frame = this.frameList[0];
         let high;
         if (frame.length - low <= leftLength) {
-          leftLength = leftLength - frame.length - low;
+          leftLength -= frame.length - low;
           high = frame.length;
           this.frameList.shift();
           this.initialPosition = 0;

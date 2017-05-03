@@ -5,8 +5,8 @@ import opus from 'node-opus';
  * This must be one of 8000, 12000, 16000, 24000, or 48000.
  */
 export default class OpusCodec {
-  constructor(sampleRate = 48000) {
-    this.directMode = true;
+  constructor(sampleRate = 48000, directMode = false) {
+    this.directMode = directMode;
     this.sampleRate = sampleRate;
     this.codec = new opus.OpusEncoder(sampleRate, 1);
   }
@@ -15,7 +15,7 @@ export default class OpusCodec {
     if (this.directMode) {
       return OpusCodec.directEncode(buffer);
     }
-    return this.codec.encode(buffer, 2480);
+    return this.codec.encode(buffer, 480);
   }
   decode(buffer) {
     if (this.directMode) {
@@ -27,9 +27,9 @@ export default class OpusCodec {
   }
 
   static directEncode(buffer) {
-    this.sampleRate++;
-    return new Buffer(buffer.buffer)
-      .slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+    // return new Buffer(buffer.buffer)
+    //   .slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+    return buffer;
   }
 
   static directDecode(buffer) {
