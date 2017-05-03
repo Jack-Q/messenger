@@ -71,17 +71,18 @@ export default class OutFrameBuffer {
       const nxtSeq = this.frameList.shift();
       this.current.index = nxtSeq.index;
       this.current.length = Math.floor(nxtSeq.frame.length / this.sampleRate * 1000);
-      console.log(`feed frame of ${this.current.length} with id ${nxtSeq.index}`);
+      console.log(`feed frame of ${this.current.length}@${now - this.now}@${now} with id ${nxtSeq.index}`);
       this.onFrameCallback(nxtSeq.frame);
     } else {
       // place a space with the same length as the current one
-      console.log('insert empty frame');
+      console.log(`insert empty frame of ${this.current.length}@${now - this.now}@${now}`);
       this.current.index = this.current.index + 1;
     }
 
     this.current.finish = this.current.length + now;
     this.timer = setTimeout(this.playNextFrame.bind(this), this.current.length);
     console.log(this.frameList.map(p => `${p.index}, ${p.frame.length}`));
+    this.now = now;
   }
 
   onFrame(callback) {
