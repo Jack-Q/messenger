@@ -30,12 +30,12 @@ public class ServerConnection {
                 InetAddress serverAddress = InetAddress.getByName("10.0.6.1");
                 Socket socket = new Socket(serverAddress, 12121);
 
-                socket.getOutputStream().write(serverProtocol.packServerTestPackage());
+                socket.getOutputStream().write(serverProtocol.packServerTestPacket());
 
                 byte[] readBuffer = new byte[10240];
                 int read = 0;
-                while (serverProtocol.isPartialPackage(readBuffer, read)) {
-                    if (serverProtocol.isFullPackage(readBuffer, read)) {
+                while (serverProtocol.isPartialPacket(readBuffer, read)) {
+                    if (serverProtocol.isFullPacket(readBuffer, read)) {
                         String message = serverProtocol.unpackString(readBuffer);
                         socket.close();
                         return new NetworkOperationStatus(message, true);
