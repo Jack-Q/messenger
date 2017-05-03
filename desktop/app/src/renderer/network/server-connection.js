@@ -200,4 +200,8 @@ export default class ServerConnection {
   on(event, callback) {
     this.callbackHub.listen(event, callback);
   }
+
+  getServerName() {
+    return `${this.host}:${this.port}`;
+  }
 }

@@ -6,8 +6,13 @@
         <span>Messenger</span>
       </div>
       <div class="left-status">
-        <span v-if="isConnected()"> connected to {{serverName}} </span>
+        <span v-if="isLogin()"> {{getUsername()}} @ {{getServer()}} </span>
+        <span v-else-if="isConnected()"> connected to {{getServer()}} </span>
         <span v-else>not connected</span>
+        <div class="left-disconnect" v-if="isConnected()" @click="closeConnection()">
+          <span v-if="isLogin()">log out</span>
+          <span v-else-if="isConnected()">disconnect</span>
+        </div>
       </div>
       <div class="left-center">
         <transition name="fade">
@@ -91,7 +96,6 @@ console.log(buddyList);
 export default {
   data() {
     return {
-      serverName: 'Server',
       messageOpen: false,
       messagePeer: null,
     };
@@ -112,10 +116,13 @@ export default {
       this.messageOpen = true;
       this.messagePeer = buddy;
     },
+    closeConnection: () => AppState.resetState(),
     isConnected: () => AppState.connected,
     isAudioMode: () => AppState.isAudioMode,
+    getUsername: () => AppState.username,
     getBuddyList: () => AppState.buddyList,
     isLogin: () => AppState.isLogin,
+    getServer: () => AppState.serverConnection.getServerName(),
   },
   components: {
     InstructionView,
@@ -182,6 +189,25 @@ export default {
   color: #333;
   border-radius: 15px;
   text-align: center;
+  position: relative;
+}
+
+.left-status .left-disconnect{
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  transition: all ease 400ms;
+  border-radius: 15px;
+  background: #955;
+  color: #eee;
+  cursor: pointer;
+}
+
+.left-status:hover .left-disconnect{
+  opacity: 1;
 }
 
 .left-center {
