@@ -1,3 +1,5 @@
+const expectedBuffer = 150 / 1000; // expected buffer in millisecond
+
 export default class Player {
   constructor(audioContext, sampleRate = 44100) {
     this.playing = false;
@@ -14,11 +16,15 @@ export default class Player {
     const currentTime = this.audioContext.currentTime;
     if (index - this.currentIndex > 1) {
       const bufferTime = currentTime > this.scheduleTime ?
-        currentTime + 0.15 : this.scheduleTime + 0.03;
+        currentTime + expectedBuffer : this.scheduleTime;
       this.addToContext(data, bufferTime, duration);
       this.currentIndex = index;
       this.scheduleTime = bufferTime + duration;
     } else if (index - this.currentIndex === 1) {
+      // buffer adjustment
+      const idealPosition = currentTime + expectedBuffer;
+      this.scheduleTime += 0.125 * (idealPosition - this.scheduleTime);
+
       this.addToContext(data, this.scheduleTime, duration);
       this.currentIndex = index;
       this.scheduleTime = this.scheduleTime + duration;
