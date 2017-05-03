@@ -166,7 +166,7 @@ class AppState {
   bindCallMessageHandler() {
     const endAudioMode = (status) => {
       if (!this.isAudioMode) {
-          // unintended message, ignore the packet
+        // unintended message, ignore the packet
         console.log(`No in call mode: ${status}`);
         return;
       }

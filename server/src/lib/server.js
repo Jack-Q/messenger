@@ -56,13 +56,16 @@ export default class Server {
           createUser(payload.name, payload.token));
         break;
       case protocol.packetType.USER_LOGIN_REQ.type:
-        if (checkUser(payload.name, payload.token)) {
-          connection.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: connection.id });
-          this.loginConnection(connection, payload.name);
+        if (this.connections.some(c => c.user.name === payload.name)) {
+          connection.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'requested login name is in use, please pick another one', sessionKey: '' });
+          return;
         }
-        else {
-          connection.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'login failed', sessionKey: '' });
+        if (!checkUser(payload.name, payload.token)) {
+          connection.send(protocol.packetType.USER_LOGIN_RESP, { status: false, message: 'invalid login name or token, please check again', sessionKey: '' });
+          return;
         }
+        connection.send(protocol.packetType.USER_LOGIN_RESP, { status: true, message: 'ok', sessionKey: connection.id });
+        this.loginConnection(connection, payload.name);
         break;
       case protocol.packetType.MSG_SEND.type:
         console.log("redirect message from", payload.user, payload.message);
