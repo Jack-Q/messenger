@@ -32,6 +32,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cn.jackq.messenger.ui.MainActivity" />
         </activity>
+
+        <service
+            android:name=".service.MainService"
+            android:enabled="true" />
     </application>
 
 </manifest>
