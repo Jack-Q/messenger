@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jackq.messenger.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AbstractMessengerActivity {
     private static final String TAG = "MainActivity";
 
     @BindView(R.id.view_animator)

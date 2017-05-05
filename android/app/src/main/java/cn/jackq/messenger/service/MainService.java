@@ -15,8 +15,8 @@ import android.util.Log;
 public class MainService extends Service {
     private static final String TAG = "MainService";
 
-    public class MainServiceBinder extends Binder{
-        public MainService getService(){
+    public class MainServiceBinder extends Binder {
+        public MainService getService() {
             return MainService.this;
         }
     }
@@ -29,4 +29,5 @@ public class MainService extends Service {
         Log.d(TAG, "onBind: bind service from ui");
         return this.serviceBinder;
     }
+
 }
