@@ -1,17 +1,13 @@
 package cn.jackq.messenger.network.protocol;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.nio.ByteBuffer;
 
-/**
- * Created on: 4/24/17.
- * Creator: Jack Q <qiaobo@outlook.com>
- */
-
 public class PeerProtocol {
 
-    public enum PackageType {
+    public enum PacketType {
         U_SRV_ADDR(0xa1),
         U_SYN(0x01),
         U_ACK(0x02),
@@ -20,54 +16,88 @@ public class PeerProtocol {
 
         public final byte value;
 
-        PackageType(int value) {
+        PacketType(int value) {
             this.value = (byte) value;
         }
-    }
 
-    public enum DataType {
-        AUDIO("audio");
-
-        public final String value;
-
-        DataType(String value) {
-            this.value = value;
+        @Nullable
+        public static PacketType fromByte(byte b) {
+            for (PacketType p : PacketType.values()) {
+                if (p.value == b) return p;
+            }
+            return null;
         }
+
     }
 
-    public ByteBuffer packServerAddr(String sessionId, String connectId) {
+    public static ByteBuffer packServerAddr(String sessionId, String connectId) {
         String header = sessionId + ":" + connectId;
-        return getTypeStringBuffer(PackageType.U_SRV_ADDR, header);
+        return getTypeStringBuffer(PacketType.U_SRV_ADDR, header);
     }
 
-    public ByteBuffer packPeerData(String sessionId, DataType dataType, ByteBuffer data) {
-        String header = sessionId + ':' + dataType.value + ':';
-        ByteBuffer buffer = ByteBuffer.allocate(1 + header.length() + data.limit());
-        buffer.put(PackageType.U_DAT.value);
+    public static ByteBuffer packPeerData(PeerData data) {
+
+
+        String header = data.getSessionId() + ':' + data.getType().value + ':';
+        ByteBuffer buffer = ByteBuffer.allocate(1 + header.length() + data.getBuffer().limit());
+        buffer.put(PacketType.U_DAT.value);
         byte[] headerBytes = header.getBytes();
         buffer.put(headerBytes, 1, headerBytes.length);
-        buffer.put(data);
+        buffer.put(data.getBuffer());
         return buffer;
     }
 
-    public ByteBuffer packPeerSync(String sessionId) {
-        return getTypeStringBuffer(PackageType.U_SYN, sessionId);
+    public static ByteBuffer packPeerSync(String sessionId) {
+        return getTypeStringBuffer(PacketType.U_SYN, sessionId);
     }
 
-    public ByteBuffer packPeerAck(String sessionId) {
-        return getTypeStringBuffer(PackageType.U_ACK, sessionId);
+    public static ByteBuffer packPeerAck(String sessionId) {
+        return getTypeStringBuffer(PacketType.U_ACK, sessionId);
     }
 
-    public ByteBuffer packPeerEnd(String sessionId) {
-        return getTypeStringBuffer(PackageType.U_END, sessionId);
+    public static ByteBuffer packPeerEnd(String sessionId) {
+        return getTypeStringBuffer(PacketType.U_END, sessionId);
     }
 
     @NonNull
-    private ByteBuffer getTypeStringBuffer(PackageType type, String sessionId) {
+    private static ByteBuffer getTypeStringBuffer(PacketType type, String sessionId) {
+
         ByteBuffer buffer = ByteBuffer.allocate(sessionId.length() + 1);
         buffer.put(type.value);
         buffer.put(sessionId.getBytes());
         return buffer;
     }
 
+
+    public static String unpackSessionId(ByteBuffer buffer) {
+        return new String(buffer.array(), buffer.arrayOffset() + 1, buffer.limit() - 1);
+    }
+
+    public static PacketType unpackPacketType(ByteBuffer buffer){
+        return PacketType.fromByte(buffer.get(0));
+    }
+
+    public static PeerData unpackPeerData(ByteBuffer buffer) {
+
+        ByteBuffer buf = buffer.duplicate();
+        int[] sep = new int[2];
+        int cnt, pos;
+        for (pos = 0, cnt = 0; cnt < 2 && pos < 20 && pos < buffer.limit(); pos++) {
+            if (buf.get(pos) == ':') {
+                sep[cnt++] = pos;
+            }
+        }
+
+        if (cnt != 2) {
+            return null;
+        }
+
+        String sessionId = new String(buffer.array(), buffer.arrayOffset(), sep[0] - 1);
+        String typeString = new String(buffer.array(),
+                buffer.arrayOffset() + sep[0] + 1, sep[1] - sep[0]);
+        ByteBuffer data = ByteBuffer.wrap(buffer.array(), buffer.arrayOffset() + sep[1] + 1,
+                buffer.limit() - sep[1]);
+
+        return new PeerData(sessionId, PeerData.DataType.fromString(typeString), data);
+    }
 }
