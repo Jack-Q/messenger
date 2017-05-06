@@ -1,7 +1,6 @@
 package cn.jackq.messenger.network.protocol;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +45,8 @@ public class ServerProtocol {
     }
 
 
+
+
     public enum PacketType {
         SERVER_CHECK(0x01),
         SERVER_STATUS(0x02),
@@ -64,9 +65,8 @@ public class ServerProtocol {
         CALL_ANS(0x15),
         CALL_CONN(0x16),
         CALL_TERM(0x17),
-        CALL_END(0x18),;
+        CALL_END(0x18);
         private final byte type;
-
         PacketType(int type) {
             this.type = (byte) type;
         }
@@ -74,12 +74,12 @@ public class ServerProtocol {
         public byte getValue() {
             return this.type;
         }
-    }
 
+    }
     public enum InfoType {
         BUDDY_LIST("buddy-list");
-        private String typeValue;
 
+        private String typeValue;
         InfoType(String typeValue) {
             this.typeValue = typeValue;
         }
@@ -87,20 +87,20 @@ public class ServerProtocol {
         public String getTypeValue() {
             return typeValue;
         }
-    }
 
+    }
     private static final int VERSION_OFFSET = HEADER_LENGTH;
+
     private static final int VERSION_LENGTH = 1;
     private static final int PACKET_TYPE_OFFSET = VERSION_OFFSET + VERSION_LENGTH;
     private static final int PACKET_TYPE_LENGTH = 1;
     private static final int SIZE_OFFSET = PACKET_TYPE_OFFSET + PACKET_TYPE_LENGTH;
     private static final int SIZE_LENGTH = 2;
     private static final int PAYLOAD_OFFSET = SIZE_OFFSET + SIZE_LENGTH;
-
-
     public static boolean isFullPacket(byte[] readBuffer) {
         return isFullPacket(readBuffer, readBuffer.length, 0);
     }
+
 
     public static boolean isFullPacket(byte[] readBuffer, int length, int offset) {
         // validate length
@@ -149,24 +149,27 @@ public class ServerProtocol {
 
     @NonNull
     public static String unpackString(byte[] readBuffer) {
-        return new String(readBuffer, PAYLOAD_OFFSET, getPacketSize(readBuffer));
+        return unpackString(readBuffer, 0);
+    }
+
+    public static String unpackString(byte[] readBuffer, int posLow) {
+        return new String(readBuffer, posLow + PAYLOAD_OFFSET, getPacketSize(readBuffer, posLow));
     }
 
 
-    private static int getPacketSize(byte[] readBuffer) {
+    public static int getPacketSize(byte[] readBuffer) {
         return getPacketSize(readBuffer, 0);
     }
 
-    private static int getPacketSize(byte[] readBuffer, int offset) {
+    public static int getPacketSize(byte[] readBuffer, int offset) {
         return ByteBuffer.wrap(readBuffer).getShort(offset + SIZE_OFFSET);
     }
 
-    private static int getPacketVersion(byte[] readBuffer, int offset) {
+    public static int getPacketVersion(byte[] readBuffer, int offset) {
         return ByteBuffer.wrap(readBuffer).get(offset + VERSION_OFFSET);
     }
 
-    @Nullable
-    private static PacketType getPacketType(byte[] readBuffer, int offset) {
+    public static PacketType getPacketType(byte[] readBuffer, int offset) {
         byte typeValue = ByteBuffer.wrap(readBuffer).get(PACKET_TYPE_OFFSET + offset);
         for (PacketType p : PacketType.values()) {
             if (p.getValue() == typeValue)

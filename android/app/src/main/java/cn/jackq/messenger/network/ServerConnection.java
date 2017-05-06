@@ -1,17 +1,10 @@
 package cn.jackq.messenger.network;
 
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.FutureTask;
 
 import cn.jackq.messenger.network.protocol.ServerProtocol;
 
@@ -24,6 +17,12 @@ public class ServerConnection {
     }
 
     public interface ServerConnectionListener {
+        /**
+         * invoked at the first time the client is connected to the server
+         *
+         * @param string the message returned from the server
+         */
+        void onConnected(String string);
         // void onUserLoginResponse();
     }
 
@@ -43,7 +42,7 @@ public class ServerConnection {
         return this.mStatus;
     }
 
-    public void connect(String serverHost, int serverPort){
+    public void connect(String serverHost, int serverPort) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
 
@@ -51,7 +50,7 @@ public class ServerConnection {
         this.mConnectionThread.start();
     }
 
-    private class ServerConnectionThread extends Thread{
+    private class ServerConnectionThread extends Thread {
 
         private byte[] readBuffer = new byte[10240];
         private int posLow = 0;
@@ -61,7 +60,7 @@ public class ServerConnection {
         public void run() {
             try {
                 socket = new Socket(serverHost, serverPort);
-                while(true){
+                while (true) {
                     int read = socket.getInputStream().read(readBuffer, posHigh, readBuffer.length - posHigh);
                     posHigh += read;
                     // parse all of packet in buffer
@@ -71,17 +70,17 @@ public class ServerConnection {
                         }
                     }
 
-                    if(posLow == posHigh){
+                    if (posLow == posHigh) {
                         posLow = posHigh = 0;
                     }
 
-                    if(posLow > 2 * readBuffer.length / 3){
+                    if (posLow > 2 * readBuffer.length / 3) {
                         System.arraycopy(readBuffer, posLow, readBuffer, 0, posHigh - posLow);
                         posHigh -= posLow;
                         posLow = 0;
                     }
 
-                    if(mStatus == ServerStatus.DISCONNECTING){
+                    if (mStatus == ServerStatus.DISCONNECTING) {
                         break;
                     }
                 }
@@ -93,7 +92,47 @@ public class ServerConnection {
         }
 
         private void handlePacket() {
+            ServerProtocol.PacketType packetType = ServerProtocol.getPacketType(readBuffer, posLow);
+            if (packetType == null) {
+                Log.d(TAG, "handlePacket: unresolvable packet");
+                return;
+            }
+            int length = ServerProtocol.getPacketSize(readBuffer, posLow);
+            switch (packetType) {
+                case SERVER_STATUS:
+                    // Connected to server
+                    String string = ServerProtocol.unpackString(readBuffer, posLow);
+                    if (mStatus == ServerStatus.CONNECTING) {
+                        Log.d(TAG, "handlePacket: new connection to server with server feedback " + string);
+                        mStatus = ServerStatus.CONNECTED;
+                        mListener.onConnected(string);
+                    } else {
+                        Log.d(TAG, "handlePacket: server status report " + string);
+                    }
+                    break;
+                case USER_ADD_RESP:
+                    // user add response
 
+                    break;
+                case USER_LOGIN_RESP:
+                    break;
+                case INFO_RESP:
+                    break;
+                case MSG_RECV:
+                    break;
+                case CALL_INIT:
+                    break;
+                case CALL_ADDR:
+                    break;
+                case CALL_CONN:
+                    break;
+                case CALL_END:
+                    break;
+                default:
+                    // for other packet, just skip the process of the packet content
+                    // since all of other packet are sent by client
+            }
+            this.posLow += length;
         }
     }
 
