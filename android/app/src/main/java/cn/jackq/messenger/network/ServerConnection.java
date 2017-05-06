@@ -13,10 +13,21 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.CompletableFuture;
 
 import cn.jackq.messenger.network.protocol.ServerProtocol;
+import cn.jackq.messenger.service.MainService;
 
 public class ServerConnection {
+
     private static final String TAG = "ServerConnection";
-    private ServerProtocol serverProtocol = new ServerProtocol();
+
+    public interface ServerConnectionListener {
+        // void onUserLoginResponse();
+    }
+
+    private ServerConnectionListener mListener;
+
+    public ServerConnection(ServerConnectionListener listener) {
+        this.mListener = listener;
+    }
 
     public CompletableFuture<NetworkOperationStatus> connectServer() {
         return null;
@@ -30,13 +41,13 @@ public class ServerConnection {
                 InetAddress serverAddress = InetAddress.getByName("10.0.6.1");
                 Socket socket = new Socket(serverAddress, 12121);
 
-                socket.getOutputStream().write(serverProtocol.packServerTestPacket());
+                socket.getOutputStream().write(ServerProtocol.packServerTestPacket());
 
                 byte[] readBuffer = new byte[10240];
                 int read = 0;
-                while (serverProtocol.isPartialPacket(readBuffer, read)) {
-                    if (serverProtocol.isFullPacket(readBuffer, read)) {
-                        String message = serverProtocol.unpackString(readBuffer);
+                while (ServerProtocol.isPartialPacket(readBuffer, read)) {
+                    if (ServerProtocol.isFullPacket(readBuffer, read)) {
+                        String message = ServerProtocol.unpackString(readBuffer);
                         socket.close();
                         return new NetworkOperationStatus(message, true);
                     }
@@ -55,12 +66,7 @@ public class ServerConnection {
         });
     }
 
-    private static ServerConnection connection = new ServerConnection();
-
-    private ServerConnection() {
-    }
-
-    public static ServerConnection get() {
-        return connection;
+    public static ServerConnection create(ServerConnectionListener listener) {
+        return new ServerConnection(listener);
     }
 }

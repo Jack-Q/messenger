@@ -35,12 +35,7 @@ public class MainActivity extends AbstractMessengerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-            Log.d(TAG, "onCreate: Load native opus library");
-            Class.forName("cn.jackq.messenger.audio.OpusCodec");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

@@ -1,5 +1,8 @@
 package cn.jackq.messenger.network.protocol;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,7 +15,7 @@ public class ServerProtocol {
     private static final int HEADER_LENGTH = HEADER.length;
     private static final byte PACKET_VERSION = (byte) 0x81;
 
-    public boolean isPartialPacket(byte[] readBuffer, int length) {
+    public static boolean isPartialPacket(byte[] readBuffer, int length) {
         if (length < 0 || length > readBuffer.length) return false;
 
         // Check header
@@ -94,11 +97,11 @@ public class ServerProtocol {
     private static final int PAYLOAD_OFFSET = SIZE_OFFSET + SIZE_LENGTH;
 
 
-    public boolean isFullPacket(byte[] readBuffer) {
+    public static boolean isFullPacket(byte[] readBuffer) {
         return isFullPacket(readBuffer, readBuffer.length);
     }
 
-    public boolean isFullPacket(byte[] readBuffer, int length) {
+    public static boolean isFullPacket(byte[] readBuffer, int length) {
         // validate length
         if (length < readBuffer.length)
             return false;
@@ -120,13 +123,14 @@ public class ServerProtocol {
         return length == size;
     }
 
-    private boolean isHeaderValid(byte[] readBuffer) {
+    private static boolean isHeaderValid(byte[] readBuffer) {
         for (int i = 0; i < HEADER.length; i++)
             if (readBuffer[i] != HEADER[i]) return false;
         return true;
     }
 
-    private byte[] pack(PacketType type, byte[] payload) {
+    @NonNull
+    private static byte[] pack(PacketType type, byte[] payload) {
         short size = (short) (PAYLOAD_OFFSET + payload.length);
         ByteBuffer buffer = ByteBuffer.allocate(size);
         buffer.put(HEADER);
@@ -137,23 +141,26 @@ public class ServerProtocol {
         return buffer.array();
     }
 
-    private byte[] pack(PacketType type, String payload) {
+    @NonNull
+    private static byte[] pack(PacketType type, String payload) {
         return pack(type, payload.getBytes());
     }
 
-    public String unpackString(byte[] readBuffer) {
+    @NonNull
+    public static String unpackString(byte[] readBuffer) {
         return new String(readBuffer, PAYLOAD_OFFSET, getPacketSize(readBuffer));
     }
 
-    private int getPacketSize(byte[] readBuffer) {
+    private static int getPacketSize(byte[] readBuffer) {
         return ByteBuffer.wrap(readBuffer).getShort(SIZE_OFFSET);
     }
 
-    private int getPacketVersion(byte[] readBuffer) {
+    private static int getPacketVersion(byte[] readBuffer) {
         return ByteBuffer.wrap(readBuffer).get(VERSION_OFFSET);
     }
 
-    private PacketType getPacketType(byte[] readBuffer) {
+    @Nullable
+    private static PacketType getPacketType(byte[] readBuffer) {
         byte typeValue = ByteBuffer.wrap(readBuffer).get(PACKET_TYPE_OFFSET);
         for (PacketType p : PacketType.values()) {
             if (p.getValue() == typeValue)
@@ -163,11 +170,13 @@ public class ServerProtocol {
     }
 
     //region Public Packet Enclosure
-    public byte[] packServerTestPacket() {
+    @NonNull
+    public static byte[] packServerTestPacket() {
         return pack(PacketType.SERVER_CHECK, "PING");
     }
 
-    public byte[] packUserAddReqPacket(String name, String token) {
+    @NonNull
+    public static byte[] packUserAddReqPacket(String name, String token) {
         JSONObject object = new JSONObject();
         try {
             object.put("n", name);
@@ -175,10 +184,11 @@ public class ServerProtocol {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.USER_ADD_REQ, object.toString());
+        return pack(PacketType.USER_ADD_REQ, object.toString());
     }
 
-    public byte[] packLoginReqPacket(String name, String token) {
+    @NonNull
+    public static byte[] packLoginReqPacket(String name, String token) {
         JSONObject object = new JSONObject();
         try {
             object.put("n", name);
@@ -186,10 +196,11 @@ public class ServerProtocol {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.USER_LOGIN_REQ, object.toString());
+        return pack(PacketType.USER_LOGIN_REQ, object.toString());
     }
 
-    public byte[] packInfoQueryPacket(InfoType type, String param) {
+    @NonNull
+    public static byte[] packInfoQueryPacket(InfoType type, String param) {
         JSONObject object = new JSONObject();
         try {
             object.put("q", type.getTypeValue());
@@ -197,14 +208,16 @@ public class ServerProtocol {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.INFO_QUERY, object.toString());
+        return pack(PacketType.INFO_QUERY, object.toString());
     }
 
-    public byte[] packBuddyListQueryPacket() {
-        return this.packInfoQueryPacket(InfoType.BUDDY_LIST, "");
+    @NonNull
+    public static byte[] packBuddyListQueryPacket() {
+        return packInfoQueryPacket(InfoType.BUDDY_LIST, "");
     }
 
-    public byte[] packMsgSendPacket(User user, String message) {
+    @NonNull
+    public static byte[] packMsgSendPacket(User user, String message) {
         JSONObject object = new JSONObject();
         try {
             object.put("u", user.getName());
@@ -213,10 +226,11 @@ public class ServerProtocol {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.MSG_SEND, object.toString());
+        return pack(PacketType.MSG_SEND, object.toString());
     }
 
-    public byte[] packCallReqPacket(User user, String connectioId) {
+    @NonNull
+    public static byte[] packCallReqPacket(User user, String connectioId) {
         JSONObject object = new JSONObject();
         try {
             object.put("u", user.getName());
@@ -224,37 +238,40 @@ public class ServerProtocol {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.CALL_REQ, object.toString());
+        return pack(PacketType.CALL_REQ, object.toString());
     }
 
-    public byte[] packCallPrepPacket(String sessionId) {
+    @NonNull
+    public static byte[] packCallPrepPacket(String sessionId) {
         JSONObject object = new JSONObject();
         try {
             object.put("i", sessionId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.CALL_PREP, object.toString());
+        return pack(PacketType.CALL_PREP, object.toString());
     }
 
-    public byte[] packCallAnsPacket(String sessionId) {
+    @NonNull
+    public static byte[] packCallAnsPacket(String sessionId) {
         JSONObject object = new JSONObject();
         try {
             object.put("i", sessionId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.CALL_PREP, object.toString());
+        return pack(PacketType.CALL_PREP, object.toString());
     }
 
-    public byte[] packCallTremPacket(String sessionId) {
+    @NonNull
+    public static byte[] packCallTremPacket(String sessionId) {
         JSONObject object = new JSONObject();
         try {
             object.put("i", sessionId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.pack(PacketType.CALL_PREP, object.toString());
+        return pack(PacketType.CALL_PREP, object.toString());
     }
     //endregion
 }

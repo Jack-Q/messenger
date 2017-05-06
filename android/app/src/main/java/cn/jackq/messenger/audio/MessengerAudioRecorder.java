@@ -6,21 +6,23 @@ import android.media.MediaRecorder;
 import android.os.Process;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created on: 4/22/17.
  * Creator: Jack Q <qiaobo@outlook.com>
  */
 
-public class MessengerAudioRecorder implements Runnable {
+class MessengerAudioRecorder implements Runnable {
+
     public interface MessengerAudioPackageListener {
         /**
          * @param buffer the buffer of the audio message.
          *               This buffer may be reused in serials of handling process.
          *               After finish the message handling method, the content
          *               should not be changed.
-         * @param size   the length of audio package in length
          */
-        void onAudioPackage(byte[] buffer, int size);
+        void onAudioPackage(ByteBuffer buffer);
     }
 
     private static final String TAG = "MessengerAudioRecorder";
@@ -44,8 +46,13 @@ public class MessengerAudioRecorder implements Runnable {
     private Thread mThread;
     private boolean isRecording;
 
-    public MessengerAudioRecorder(MessengerAudioPackageListener listener) {
+    MessengerAudioRecorder(MessengerAudioPackageListener listener) {
         mListener = listener;
+    }
+
+
+    public void init() {
+
     }
 
     public void start() throws AudioException {
@@ -162,7 +169,7 @@ public class MessengerAudioRecorder implements Runnable {
         if(mEncoder.isReady()){
             // int bufferedFrames = mEncoder.getBufferedFrames();
             int dataSize = mEncoder.getEncodedData(encodedDataBuffer);
-            mListener.onAudioPackage(encodedDataBuffer, dataSize);
+            mListener.onAudioPackage(ByteBuffer.wrap(encodedDataBuffer, 0, dataSize));
         }else{
             Log.d(TAG, "sendAudioPack: send request prematurely");
         }

@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  * Creator: Jack Q <qiaobo@outlook.com>
  */
 
-public class MessengerAudioOutput {
+class MessengerAudioOutput {
     private static final String TAG = "MessengerAudioOutput";
 
     private AudioTrack mTrack;

@@ -9,6 +9,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import cn.jackq.messenger.service.MainService;
+
 /**
  * Created on: 4/24/17.
  * Creator: Jack Q <qiaobo@outlook.com>
