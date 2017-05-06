@@ -8,7 +8,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -55,6 +54,7 @@ public class MainActivity extends AbstractMessengerActivity {
                     mViewAnimator.setDisplayedChild(0);
                     return true;
                 case R.id.navigation_dashboard:
+                    getMainService().connectToServer("192.168.1.102", 12121);
                     mViewAnimator.setDisplayedChild(1);
                     return true;
                 case R.id.navigation_notifications:

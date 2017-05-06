@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.jackq.messenger.audio.MessengerAudio;
 import cn.jackq.messenger.network.PeerTransmission;
@@ -32,6 +34,11 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     }
 
+    @Override
+    public void onServerConnected(String string) {
+
+    }
+
     // region binding management
 
     public class MainServiceBinder extends Binder {
@@ -52,13 +59,12 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     // endregion
 
     private final MessengerAudio audio = MessengerAudio.create(this);
-    private final ServerConnection server = new ServerConnection(this);
+    private final ServerConnection serverConnection = new ServerConnection(this);
     private final PeerTransmission peerTransmission = new PeerTransmission(this);
 
 
     @Override
     public void onSendAudioFrame(ByteBuffer audioFrame) {
-
     }
 
     // region service lifecycle management
@@ -73,7 +79,20 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         }
         super.onCreate();
         Log.d(TAG, "onCreate: create main service");
-        this.audio.init();
+        Log.d(TAG, "onCreate: create main service repeat");
+        try {
+            this.audio.init();
+        }catch (Exception e){
+            Log.e(TAG, "onCreate: Audio Exception", e);
+        }
+        Log.d(TAG, "onCreate: created");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        Log.d(TAG, "onStartCommand: Start main service");
+        return START_STICKY;
     }
 
     @Override
@@ -82,6 +101,34 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         Log.d(TAG, "onDestroy: destroy main service");
     }
 
+    // endregion
+
+    public void connectToServer(String host, int port) {
+        Log.d(TAG, "connectToServer: Connect to server on response to client");
+        this.serverConnection.connect(host, port);
+    }
+
+    // region state management
+    public interface MainServiceStateChangeListener {
+        void onServerStateChange();
+    }
+
+    private List<MainServiceStateChangeListener> mainServiceStateChangeListenerList = new ArrayList<>();
+
+    private void notifyStateChange() {
+        for (MainServiceStateChangeListener l : mainServiceStateChangeListenerList)
+            l.onServerStateChange();
+    }
+
+    public void subscribeStateChange(MainServiceStateChangeListener l) {
+        Log.d(TAG, "subscribeStateChange: Add Subscriber " + l.getClass().getName());
+        this.mainServiceStateChangeListenerList.add(l);
+    }
+
+    public void unSubscribeStateChange(MainServiceStateChangeListener l) {
+        Log.d(TAG, "subscribeStateChange: Remove Subscriber " + l.getClass().getName());
+        this.mainServiceStateChangeListenerList.remove(l);
+    }
     // endregion
 
     private void startCallActivity() {

@@ -35,7 +35,10 @@
 
         <service
             android:name=".service.MainService"
-            android:enabled="true" />
+            android:description="@string/main_service_description"
+            android:exported="true"
+            android:label="Messenger Main Service"
+            android:enabled="true"/>
     </application>
 
 </manifest>

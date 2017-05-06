@@ -22,7 +22,7 @@ public class ServerConnection {
          *
          * @param string the message returned from the server
          */
-        void onConnected(String string);
+        void onServerConnected(String string);
         // void onUserLoginResponse();
     }
 
@@ -43,11 +43,42 @@ public class ServerConnection {
     }
 
     public void connect(String serverHost, int serverPort) {
+        if (this.mStatus == ServerStatus.CONNECTING || this.mStatus == ServerStatus.CONNECTED) {
+            Log.d(TAG, "connect: already connected to server, please disconnect first");
+            return;
+        }
+        Log.d(TAG, "connect: request start service from binder");
         this.serverHost = serverHost;
         this.serverPort = serverPort;
 
+        this.mStatus = ServerStatus.CONNECTING;
         this.mConnectionThread = new ServerConnectionThread();
         this.mConnectionThread.start();
+    }
+
+    public void disconnect() {
+        if (this.mStatus == ServerStatus.CONNECTING || this.mStatus == ServerStatus.CONNECTED) {
+            this.mStatus = ServerStatus.DISCONNECTING;
+            Log.d(TAG, "disconnect: disconnecting: interrupt at first");
+            this.mConnectionThread.interrupt();
+            try {
+                this.mConnectionThread.join(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.mStatus = ServerStatus.NOT_CONNECT;
+        }
+    }
+
+    public void sendServerCheck() {
+        byte[] bytes = ServerProtocol.packServerTestPacket();
+        try {
+            Log.d(TAG, "sendServerCheck: sending server check packet to server");
+            this.socket.getOutputStream().write(bytes);
+            this.socket.getOutputStream().flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class ServerConnectionThread extends Thread {
@@ -58,11 +89,16 @@ public class ServerConnection {
 
         @Override
         public void run() {
+            Log.d(TAG, "run: begin server connection thread");
             try {
                 socket = new Socket(serverHost, serverPort);
+                sendServerCheck();
+                mStatus = ServerStatus.CONNECTED;
                 while (true) {
+                    Log.d(TAG, "run: wait for data from server");
                     int read = socket.getInputStream().read(readBuffer, posHigh, readBuffer.length - posHigh);
                     posHigh += read;
+                    Log.d(TAG, "run: receive " + read + " bytes from server");
                     // parse all of packet in buffer
                     while (ServerProtocol.isPartialPacket(readBuffer, posLow, posHigh - posLow)) {
                         if (ServerProtocol.isFullPacket(readBuffer, posLow, posHigh - posLow)) {
@@ -85,7 +121,7 @@ public class ServerConnection {
                     }
                 }
 
-
+                Log.d(TAG, "run: finish network thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -105,7 +141,7 @@ public class ServerConnection {
                     if (mStatus == ServerStatus.CONNECTING) {
                         Log.d(TAG, "handlePacket: new connection to server with server feedback " + string);
                         mStatus = ServerStatus.CONNECTED;
-                        mListener.onConnected(string);
+                        mListener.onServerConnected(string);
                     } else {
                         Log.d(TAG, "handlePacket: server status report " + string);
                     }
@@ -133,6 +169,7 @@ public class ServerConnection {
                     // since all of other packet are sent by client
             }
             this.posLow += length;
+            sendServerCheck();
         }
     }
 

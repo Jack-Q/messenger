@@ -7,4 +7,5 @@
     <string name="title_activity_call">CallActivity</string>
     <string name="dummy_button">hang up</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="main_service_description">Main Service for Messenger to exchange data and control audio</string>
 </resources>
