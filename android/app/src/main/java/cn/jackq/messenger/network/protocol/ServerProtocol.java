@@ -26,7 +26,7 @@ public class ServerProtocol {
         // Check version
         if (length < VERSION_OFFSET + VERSION_LENGTH)
             return true;
-        else if (getPacketVersion(readBuffer, offset) != VERSION_LENGTH)
+        else if (getPacketVersion(readBuffer, offset) != PACKET_VERSION)
             return false;
 
         // Check type
@@ -43,8 +43,6 @@ public class ServerProtocol {
 
         return true;
     }
-
-
 
 
     public enum PacketType {
@@ -67,6 +65,7 @@ public class ServerProtocol {
         CALL_TERM(0x17),
         CALL_END(0x18);
         private final byte type;
+
         PacketType(int type) {
             this.type = (byte) type;
         }
@@ -76,10 +75,12 @@ public class ServerProtocol {
         }
 
     }
+
     public enum InfoType {
         BUDDY_LIST("buddy-list");
 
         private String typeValue;
+
         InfoType(String typeValue) {
             this.typeValue = typeValue;
         }
@@ -89,6 +90,7 @@ public class ServerProtocol {
         }
 
     }
+
     private static final int VERSION_OFFSET = HEADER_LENGTH;
 
     private static final int VERSION_LENGTH = 1;
@@ -97,14 +99,15 @@ public class ServerProtocol {
     private static final int SIZE_OFFSET = PACKET_TYPE_OFFSET + PACKET_TYPE_LENGTH;
     private static final int SIZE_LENGTH = 2;
     private static final int PAYLOAD_OFFSET = SIZE_OFFSET + SIZE_LENGTH;
+
     public static boolean isFullPacket(byte[] readBuffer) {
-        return isFullPacket(readBuffer, readBuffer.length, 0);
+        return isFullPacket(readBuffer, 0, readBuffer.length);
     }
 
 
-    public static boolean isFullPacket(byte[] readBuffer, int length, int offset) {
+    public static boolean isFullPacket(byte[] readBuffer, int offset, int length) {
         // validate length
-        if (length < readBuffer.length)
+        if (length > readBuffer.length - offset)
             return false;
 
         // minimal size
@@ -153,7 +156,7 @@ public class ServerProtocol {
     }
 
     public static String unpackString(byte[] readBuffer, int posLow) {
-        return new String(readBuffer, posLow + PAYLOAD_OFFSET, getPacketSize(readBuffer, posLow));
+        return new String(readBuffer, posLow + PAYLOAD_OFFSET, getPacketSize(readBuffer, posLow) - PAYLOAD_OFFSET);
     }
 
 

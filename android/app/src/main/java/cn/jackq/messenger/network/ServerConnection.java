@@ -103,7 +103,9 @@ public class ServerConnection {
                     while (ServerProtocol.isPartialPacket(readBuffer, posLow, posHigh - posLow)) {
                         if (ServerProtocol.isFullPacket(readBuffer, posLow, posHigh - posLow)) {
                             this.handlePacket();
+                            continue;
                         }
+                        break;
                     }
 
                     if (posLow == posHigh) {
@@ -147,29 +149,37 @@ public class ServerConnection {
                     }
                     break;
                 case USER_ADD_RESP:
+                    Log.d(TAG, "handlePacket: user add response");
                     // user add response
 
                     break;
                 case USER_LOGIN_RESP:
+                    Log.d(TAG, "handlePacket: login response");
                     break;
                 case INFO_RESP:
+                    Log.d(TAG, "handlePacket: information received from server");
                     break;
                 case MSG_RECV:
+                    Log.d(TAG, "handlePacket: receive message from server");
                     break;
                 case CALL_INIT:
+                    Log.d(TAG, "handlePacket: call initialized at server");
                     break;
                 case CALL_ADDR:
+                    Log.d(TAG, "handlePacket: call address acquired from server");
                     break;
                 case CALL_CONN:
+                    Log.d(TAG, "handlePacket: call connect form server");
                     break;
                 case CALL_END:
+                    Log.d(TAG, "handlePacket: Call end from server");
                     break;
                 default:
+                    Log.d(TAG, "handlePacket: unknown packet type received from server" + packetType);
                     // for other packet, just skip the process of the packet content
                     // since all of other packet are sent by client
             }
             this.posLow += length;
-            sendServerCheck();
         }
     }
 
