@@ -52,7 +52,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     // endregion
 
     private final MessengerAudio audio = MessengerAudio.create(this);
-    private final ServerConnection server = ServerConnection.create(this);
+    private final ServerConnection server = new ServerConnection(this);
     private final PeerTransmission peerTransmission = new PeerTransmission(this);
 
 

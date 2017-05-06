@@ -15,35 +15,36 @@ public class ServerProtocol {
     private static final int HEADER_LENGTH = HEADER.length;
     private static final byte PACKET_VERSION = (byte) 0x81;
 
-    public static boolean isPartialPacket(byte[] readBuffer, int length) {
+    public static boolean isPartialPacket(byte[] readBuffer, int offset, int length) {
         if (length < 0 || length > readBuffer.length) return false;
 
         // Check header
         if (length < HEADER_LENGTH)
             return true;
-        else if (!isHeaderValid(readBuffer))
+        else if (!isHeaderValid(readBuffer, offset))
             return false;
 
         // Check version
         if (length < VERSION_OFFSET + VERSION_LENGTH)
             return true;
-        else if (getPacketVersion(readBuffer) != VERSION_LENGTH)
+        else if (getPacketVersion(readBuffer, offset) != VERSION_LENGTH)
             return false;
 
         // Check type
         if (length < PACKET_TYPE_OFFSET + PACKET_TYPE_LENGTH)
             return true;
-        else if (getPacketType(readBuffer) == null)
+        else if (getPacketType(readBuffer, offset) == null)
             return false;
 
         // Check length
         if (length < SIZE_OFFSET + SIZE_LENGTH)
             return true;
-        else if (getPacketSize(readBuffer) < 0)
+        else if (getPacketSize(readBuffer, offset) < 0)
             return false;
 
         return true;
     }
+
 
     public enum PacketType {
         SERVER_CHECK(0x01),
@@ -98,10 +99,10 @@ public class ServerProtocol {
 
 
     public static boolean isFullPacket(byte[] readBuffer) {
-        return isFullPacket(readBuffer, readBuffer.length);
+        return isFullPacket(readBuffer, readBuffer.length, 0);
     }
 
-    public static boolean isFullPacket(byte[] readBuffer, int length) {
+    public static boolean isFullPacket(byte[] readBuffer, int length, int offset) {
         // validate length
         if (length < readBuffer.length)
             return false;
@@ -110,22 +111,22 @@ public class ServerProtocol {
         if (length < PAYLOAD_OFFSET) return false;
 
         // header magic number
-        if (!isHeaderValid(readBuffer)) return false;
+        if (!isHeaderValid(readBuffer, offset)) return false;
 
         // version
-        if (getPacketVersion(readBuffer) != PACKET_VERSION) return false;
+        if (getPacketVersion(readBuffer, offset) != PACKET_VERSION) return false;
 
         // type
-        if (getPacketType(readBuffer) == null)
+        if (getPacketType(readBuffer, offset) == null)
             return false;
 
-        int size = getPacketSize(readBuffer);
+        int size = getPacketSize(readBuffer, offset);
         return length == size;
     }
 
-    private static boolean isHeaderValid(byte[] readBuffer) {
+    private static boolean isHeaderValid(byte[] readBuffer, int offset) {
         for (int i = 0; i < HEADER.length; i++)
-            if (readBuffer[i] != HEADER[i]) return false;
+            if (readBuffer[i + offset] != HEADER[i]) return false;
         return true;
     }
 
@@ -151,17 +152,22 @@ public class ServerProtocol {
         return new String(readBuffer, PAYLOAD_OFFSET, getPacketSize(readBuffer));
     }
 
+
     private static int getPacketSize(byte[] readBuffer) {
-        return ByteBuffer.wrap(readBuffer).getShort(SIZE_OFFSET);
+        return getPacketSize(readBuffer, 0);
     }
 
-    private static int getPacketVersion(byte[] readBuffer) {
-        return ByteBuffer.wrap(readBuffer).get(VERSION_OFFSET);
+    private static int getPacketSize(byte[] readBuffer, int offset) {
+        return ByteBuffer.wrap(readBuffer).getShort(offset + SIZE_OFFSET);
+    }
+
+    private static int getPacketVersion(byte[] readBuffer, int offset) {
+        return ByteBuffer.wrap(readBuffer).get(offset + VERSION_OFFSET);
     }
 
     @Nullable
-    private static PacketType getPacketType(byte[] readBuffer) {
-        byte typeValue = ByteBuffer.wrap(readBuffer).get(PACKET_TYPE_OFFSET);
+    private static PacketType getPacketType(byte[] readBuffer, int offset) {
+        byte typeValue = ByteBuffer.wrap(readBuffer).get(PACKET_TYPE_OFFSET + offset);
         for (PacketType p : PacketType.values()) {
             if (p.getValue() == typeValue)
                 return p;

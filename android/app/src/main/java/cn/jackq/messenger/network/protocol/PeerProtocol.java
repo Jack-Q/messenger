@@ -73,7 +73,7 @@ public class PeerProtocol {
         return new String(buffer.array(), buffer.arrayOffset() + 1, buffer.limit() - 1);
     }
 
-    public static PacketType unpackPacketType(ByteBuffer buffer){
+    public static PacketType unpackPacketType(ByteBuffer buffer) {
         return PacketType.fromByte(buffer.get(0));
     }
 
