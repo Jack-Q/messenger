@@ -84,7 +84,7 @@ public class MainActivity extends AbstractMessengerActivity {
 
     }
 
-    class BuddyListAdapter extends ArrayAdapter<User>{
+    class BuddyListAdapter extends ArrayAdapter<User> {
         public BuddyListAdapter(@NonNull Context context, int resource, @NonNull List<User> objects) {
             super(context, resource, objects);
         }
@@ -143,7 +143,8 @@ public class MainActivity extends AbstractMessengerActivity {
     @Override
     public void onServerStateChange() {
         super.onServerStateChange();
-        this.buddyListAdapter.notifyDataSetChanged();
+        this.runOnUiThread(() ->
+                this.buddyListAdapter.notifyDataSetChanged());
     }
 
     private void checkPermission() {

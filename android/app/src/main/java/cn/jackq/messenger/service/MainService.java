@@ -89,6 +89,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     private List<User> buddyList = new ArrayList<>();
     private MainServiceStatus mStatus = MainServiceStatus.NOT_CONNECTED;
     private String mErrorMessage = "";
+    private User callPeer = null;
 
     // region Server connection event handle
 
@@ -138,6 +139,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onServerCallInit(boolean status, String message, String sessionId, String user, String address, int port) {
+
         this.mStatus = MainServiceStatus.IN_CALL;
         mSessionId = sessionId;
         this.startCallActivity();
@@ -253,7 +255,10 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     public void callRequest(User user) {
         Log.d(TAG, "callRequest: request call to " + user.getName());
-        this.serverConnection.sendCallRequest(user, mConnectId);
+        this.mStatus = MainServiceStatus.IN_CALL;
+        this.callPeer = user;
+        this.serverConnection.sendCallRequest(user, user.getConnectId());
+        notifyStateChange();
     }
 
     public void sendMessageToUser(User user, String message) {
@@ -266,16 +271,19 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void callAnswer() {
         Log.d(TAG, "callAnswer: Answer to call " + mSessionId);
         this.serverConnection.sendCallAnswer(mSessionId);
+        notifyStateChange();
     }
 
     public void callPrepared() {
         Log.d(TAG, "callPrepared: prepare call " + mSessionId);
         this.serverConnection.sendCallPrepared(mSessionId);
+        notifyStateChange();
     }
 
     public void callTerminate() {
         Log.d(TAG, "callTerminate: terminal call " + mSessionId);
         this.serverConnection.sendCallTerminate(mSessionId);
+        notifyStateChange();
     }
 
     // endregion
