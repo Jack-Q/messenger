@@ -5,11 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.design.widget.TextInputEditText;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.EditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,13 +20,13 @@ public class LoginActivity extends AbstractMessengerActivity {
     private static final String TAG = "LoginActivity";
 
     @BindView(R.id.user_name)
-    EditText mUserNameEdit;
+    TextInputEditText mUserNameEdit;
     @BindView(R.id.password)
-    EditText mPasswordEdit;
+    TextInputEditText mPasswordEdit;
     @BindView(R.id.host)
-    EditText mHostEdit;
+    TextInputEditText mHostEdit;
     @BindView(R.id.port)
-    EditText mPortEdit;
+    TextInputEditText mPortEdit;
     @BindView(R.id.is_create_new)
     CheckBox mIsCreateNewCheckBox;
 

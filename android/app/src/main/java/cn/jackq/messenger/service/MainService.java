@@ -33,6 +33,14 @@ import cn.jackq.messenger.ui.MainActivity;
 public class MainService extends Service implements MessengerAudio.MessengerAudioListener, ServerConnection.ServerConnectionListener, PeerTransmission.PeerTransmissionListener {
 
 
+    public List<User> getBuddyList() {
+        return buddyList;
+    }
+
+    public MessageManager getMessageManager() {
+        return messageManager;
+    }
+
     public enum MainServiceStatus {
         IN_CALL, LOGIN_IDLE, LOGGING_IN, NOT_LOGIN, CONNECTING, NOT_CONNECTED
     }
@@ -119,7 +127,10 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     }
 
     @Override
-    public void onServerCallInit(boolean status, String message, String connectId, String user, String address, int port) {
+    public void onServerCallInit(boolean status, String message, String sessionId, String user, String address, int port) {
+        this.mStatus = MainServiceStatus.IN_CALL;
+        mSessionId = sessionId;
+        this.startCallActivity();
         this.notifyStateChange();
     }
 
@@ -136,6 +147,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onServerCallEnd(boolean status, String message, String sessionId) {
+        this.mStatus = MainServiceStatus.LOGIN_IDLE;
+        this.mErrorMessage = message;
         this.notifyStateChange();
     }
 

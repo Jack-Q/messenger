@@ -37,7 +37,7 @@ public class ServerConnection {
 
         void onServerMessageFromUser(String user, String connectId, String message);
 
-        void onServerCallInit(boolean status, String message, String connectId, String user, String address, int port);
+        void onServerCallInit(boolean status, String message, String sessionId, String user, String address, int port);
 
         void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port);
 
@@ -252,7 +252,7 @@ public class ServerConnection {
                 case CALL_INIT:
                     Log.d(TAG, "handlePacket: call initialized at server");
                     if (serverResponse != null) {
-                        mListener.onServerCallInit(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getConnectId(), serverResponse.getUser(), serverResponse.getAddress(), serverResponse.getPort());
+                        mListener.onServerCallInit(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getSessionId(), serverResponse.getUser(), serverResponse.getAddress(), serverResponse.getPort());
                     } else {
                         Log.d(TAG, "handlePacket: no response returned from server");
                     }

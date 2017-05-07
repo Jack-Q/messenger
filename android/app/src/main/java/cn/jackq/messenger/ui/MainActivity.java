@@ -1,23 +1,32 @@
 package cn.jackq.messenger.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ViewAnimator;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jackq.messenger.R;
+import cn.jackq.messenger.network.protocol.User;
 
 public class MainActivity extends AbstractMessengerActivity {
     private static final String TAG = "MainActivity";
@@ -32,6 +41,9 @@ public class MainActivity extends AbstractMessengerActivity {
     View mHomePageView;
     private MainActivityHomePage mHomePage;
 
+    @BindView(R.id.buddy_list)
+    ListViewCompat mBuddyList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -39,6 +51,7 @@ public class MainActivity extends AbstractMessengerActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
 
         setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();
@@ -54,7 +67,6 @@ public class MainActivity extends AbstractMessengerActivity {
                     mViewAnimator.setDisplayedChild(0);
                     return true;
                 case R.id.navigation_dashboard:
-                    getMainService().connectToServer("192.168.1.102", 12121);
                     mViewAnimator.setDisplayedChild(1);
                     return true;
                 case R.id.navigation_notifications:
@@ -69,6 +81,66 @@ public class MainActivity extends AbstractMessengerActivity {
         checkPermission();
 
 
+    }
+
+    class BuddyListAdapter extends ArrayAdapter<User>{
+        public BuddyListAdapter(@NonNull Context context, int resource, @NonNull List<User> objects) {
+            super(context, resource, objects);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.list_item_user, parent, false);
+                holder = new ViewHolder(convertView);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            User item = getMainService().getBuddyList().get(position);
+
+            holder.name.setText(item.getName());
+            holder.ip.setText(item.getIp());
+            holder.unread.setText(String.valueOf(getMainService().getMessageManager().getUnread(item.getName())));
+
+            return convertView;
+        }
+
+        class ViewHolder {
+            @BindView(R.id.user_name)
+            AppCompatTextView name;
+            @BindView(R.id.user_ip)
+            AppCompatTextView ip;
+            @BindView(R.id.user_unread)
+            AppCompatTextView unread;
+
+            ViewHolder(View view) {
+                ButterKnife.bind(this, view);
+            }
+        }
+    }
+
+    BuddyListAdapter buddyListAdapter;
+
+    @Override
+    protected void onServiceBound() {
+        super.onServiceBound();
+
+        buddyListAdapter = new BuddyListAdapter(this, R.layout.list_item_user, getMainService().getBuddyList());
+        mBuddyList.setAdapter(buddyListAdapter);
+        mBuddyList.setOnItemClickListener((parent, view, position, id) -> {
+            Log.d(TAG, "onCreate: click user " + getMainService().getBuddyList().get(position).getName());
+        });
+    }
+
+    @Override
+    public void onServerStateChange() {
+        super.onServerStateChange();
+        this.buddyListAdapter.notifyDataSetChanged();
     }
 
     private void checkPermission() {

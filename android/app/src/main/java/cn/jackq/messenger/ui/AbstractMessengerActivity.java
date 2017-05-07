@@ -29,6 +29,7 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
             mMainService.subscribeStateChange(AbstractMessengerActivity.this);
             mIsServiceBound = true;
             afterServiceBound();
+            onServiceBound();
         }
 
         @Override
@@ -39,6 +40,8 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
 
         }
     };
+
+    protected void onServiceBound(){}
 
     private void afterServiceBound() {
         Log.d(TAG, "afterServiceBound: check status of service");
@@ -100,6 +103,8 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
     public void onServerStateChange() {
         Log.d(TAG, "onServerStateChange: Service State Change");
     }
+
+
 
     protected MainService getMainService(){
         return mMainService;

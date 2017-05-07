@@ -44,6 +44,14 @@
 
                 <include layout="@layout/activity_main_home" />
 
+                <android.support.v7.widget.ListViewCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/buddy_list"
+                    >
+
+                </android.support.v7.widget.ListViewCompat>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

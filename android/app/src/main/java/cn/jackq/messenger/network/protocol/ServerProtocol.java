@@ -200,7 +200,7 @@ public class ServerProtocol {
             }
 
             // Info Response Content
-            if (object.has("p")) {
+            if (resp.getInfoType() != null && object.has("p")) {
                 resp.setJsonPayload(object.get("p"));
                 if (resp.getInfoType() == InfoType.BUDDY_LIST) {
                     JSONArray p = object.getJSONArray("p");
@@ -232,8 +232,8 @@ public class ServerProtocol {
             }
 
             // Port
-            if(object.has("i")){
-                resp.setPort(object.getInt("i"));
+            if(resp.getAddress().length() > 0 && object.has("p")){
+                resp.setPort(object.getInt("p"));
             }
 
             return resp;
