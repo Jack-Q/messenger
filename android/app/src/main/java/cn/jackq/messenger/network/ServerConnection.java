@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import cn.jackq.messenger.network.protocol.ServerProtocol;
+import cn.jackq.messenger.network.protocol.User;
 
 public class ServerConnection {
 
@@ -71,10 +72,39 @@ public class ServerConnection {
     }
 
     public void sendServerCheck() {
-        byte[] bytes = ServerProtocol.packServerTestPacket();
+        send(ServerProtocol.packServerTestPacket());
+    }
+
+    public void sendUserLogin(String username, String token){
+        send(ServerProtocol.packLoginReqPacket(username, token));
+    }
+    public void sendUserAdd(String username, String token){
+        send(ServerProtocol.packUserAddReqPacket(username, token));
+    }
+    public void sendBuddyListRequest(){
+        send(ServerProtocol.packBuddyListQueryPacket());
+    }
+    public void sendMessageToUser(User user, String message){
+        send(ServerProtocol.packMsgSendPacket(user, message));
+    }
+    public void sendCallRequest(User user, String connectId){
+        send(ServerProtocol.packCallReqPacket(user, connectId));
+    }
+    public void sendCallPrepared(String sessionId){
+        send(ServerProtocol.packCallPrepPacket(sessionId));
+    }
+    public void sendCallAnswer(String sessionId){
+        send(ServerProtocol.packCallAnsPacket(sessionId));
+    }
+    public void sendCallTerminate(String sessionId){
+        send(ServerProtocol.packCallTremPacket(sessionId));
+    }
+
+
+    private void send(byte[] buffer){
+        Log.d(TAG, "send: send data to server");
         try {
-            Log.d(TAG, "sendServerCheck: sending server check packet to server");
-            this.socket.getOutputStream().write(bytes);
+            this.socket.getOutputStream().write(buffer);
             this.socket.getOutputStream().flush();
         } catch (IOException e) {
             e.printStackTrace();
