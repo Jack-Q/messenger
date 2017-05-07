@@ -34,7 +34,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
 
     public enum MainServiceStatus {
-        IN_CALL, LOGIN_IDLE, NOT_LOGIN, NOT_CONNECTED
+        IN_CALL, LOGIN_IDLE, LOGGING_IN, NOT_LOGIN, CONNECTING, NOT_CONNECTED
     }
 
     private static final String TAG = "MainService";
@@ -87,8 +87,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
             this.userLogin(mUser, mToken);
         } else {
             mErrorMessage = message;
+            this.notifyStateChange();
         }
-        this.notifyStateChange();
     }
 
     @Override
@@ -98,6 +98,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
             this.mConnectId = connectId;
             this.mStatus = MainServiceStatus.LOGIN_IDLE;
         } else {
+            this.mStatus = MainServiceStatus.NOT_LOGIN;
             mErrorMessage = message;
         }
         this.notifyStateChange();
@@ -135,6 +136,13 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onServerCallEnd(boolean status, String message, String sessionId) {
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onServerDisconnected(String message) {
+        this.mStatus = MainServiceStatus.NOT_CONNECTED;
+        this.mErrorMessage = message;
         this.notifyStateChange();
     }
 
@@ -201,16 +209,22 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     public void connectToServer(String host, int port) {
         Log.d(TAG, "connectToServer: Connect to server on response to client");
+        this.mStatus = MainServiceStatus.CONNECTING;
         this.serverConnection.connect(host, port);
     }
 
     public void userLogin(String username, String token) {
         Log.d(TAG, "userLogin: login with " + username + " and token " + token);
+        this.mStatus = MainServiceStatus.LOGGING_IN;
+        this.mUser = username;
+        this.mToken = token;
         this.serverConnection.sendUserLogin(username, token);
     }
 
     public void userRegister(String username, String token) {
         Log.d(TAG, "userRegister: register with " + username + " password " + token);
+        this.mUser = username;
+        this.mToken = token;
         this.serverConnection.sendUserAdd(username, token);
     }
 
@@ -292,6 +306,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     // endregion
 
+    // region getters and setters
+
     public MainServiceStatus getStatus() {
         return mStatus;
     }
@@ -299,4 +315,14 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void setStatus(MainServiceStatus status) {
         this.mStatus = status;
     }
+
+    public String getUser() {
+        return mUser;
+    }
+
+    public String getErrorMessage() {
+        return mErrorMessage;
+    }
+
+    // endregion
 }

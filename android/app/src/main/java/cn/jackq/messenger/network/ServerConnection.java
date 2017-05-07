@@ -1,9 +1,11 @@
 package cn.jackq.messenger.network;
 
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class ServerConnection {
         void onServerCallConnected(boolean status, String message, String sessionId);
 
         void onServerCallEnd(boolean status, String message, String sessionId);
+
+        void onServerDisconnected(String message);
     }
 
     private final ServerConnectionListener mListener;
@@ -126,6 +130,10 @@ public class ServerConnection {
 
 
     private void send(byte[] buffer) {
+        if (Looper.getMainLooper() == Looper.myLooper()) {
+            new Thread(() -> send(buffer)).start();
+            return;
+        }
         Log.d(TAG, "send: send data to server");
         try {
             this.socket.getOutputStream().write(buffer);
@@ -145,9 +153,19 @@ public class ServerConnection {
         public void run() {
             Log.d(TAG, "run: begin server connection thread");
             try {
-                socket = new Socket(serverHost, serverPort);
+                InetSocketAddress socketAddress = new InetSocketAddress(serverHost, serverPort);
+                socket = new Socket();
+                socket.connect(socketAddress, 5000);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "run: failed to connect to server " + e.getMessage());
+                socket = null;
+                mStatus = ServerStatus.NOT_CONNECT;
+                mListener.onServerDisconnected("failed to connect to server " + e.getMessage());
+                return;
+            }
+            try {
                 sendServerCheck();
-                mStatus = ServerStatus.CONNECTED;
                 while (true) {
                     Log.d(TAG, "run: wait for data from server");
                     int read = socket.getInputStream().read(readBuffer, posHigh, readBuffer.length - posHigh);
@@ -195,13 +213,8 @@ public class ServerConnection {
                 case SERVER_STATUS:
                     // Connected to server
                     String string = ServerProtocol.unpackString(readBuffer, posLow);
-                    if (mStatus == ServerStatus.CONNECTING) {
-                        Log.d(TAG, "handlePacket: new connection to server with server feedback " + string);
-                        mStatus = ServerStatus.CONNECTED;
-                        mListener.onServerConnected(string);
-                    } else {
-                        Log.d(TAG, "handlePacket: server status report " + string);
-                    }
+                    Log.d(TAG, "handlePacket: new connection to server with server feedback " + string);
+                    mListener.onServerConnected(string);
                     break;
                 case USER_ADD_RESP:
                     Log.d(TAG, "handlePacket: user add response");
