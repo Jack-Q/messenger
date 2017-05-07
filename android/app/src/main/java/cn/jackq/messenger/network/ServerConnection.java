@@ -24,7 +24,8 @@ public class ServerConnection {
          * @param string the message returned from the server
          */
         void onServerConnected(String string);
-        // void onUserLoginResponse();
+        void onUserAddResponse(boolean status, String message);
+        void onUserLoginResponse(boolean status, String message, String connectId);
     }
 
     private final ServerConnectionListener mListener;

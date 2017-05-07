@@ -40,6 +40,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     }
 
+    // region Server connection stage manage
+
     @Override
     public void onServerConnected(String string) {
         this.status = MainServiceStatus.NOT_LOGIN;
@@ -53,6 +55,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void setStatus(MainServiceStatus status) {
         this.status = status;
     }
+
+    // endregion
 
     // region binding management
 
@@ -130,6 +134,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         Log.d(TAG, "userRegister: register with " + username + " password " + token);
         this.serverConnection.sendUserAdd(username, token);
     }
+
+
 
     // region state management
     public interface MainServiceStateChangeListener {

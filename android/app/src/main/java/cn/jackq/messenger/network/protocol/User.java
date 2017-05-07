@@ -8,10 +8,12 @@ package cn.jackq.messenger.network.protocol;
 public class User {
     private String name;
     private String connectId;
+    private String ip;
 
-    public User(String name, String connectId) {
+    public User(String name, String connectId, String ip) {
         this.name = name;
         this.connectId = connectId;
+        this.ip = ip;
     }
 
     public String getName() {
@@ -28,5 +30,13 @@ public class User {
 
     public void setConnectId(String connectId) {
         this.connectId = connectId;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }
