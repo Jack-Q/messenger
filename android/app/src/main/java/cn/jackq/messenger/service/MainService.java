@@ -1,22 +1,29 @@
 package cn.jackq.messenger.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jackq.messenger.R;
 import cn.jackq.messenger.audio.MessengerAudio;
+import cn.jackq.messenger.message.Message;
 import cn.jackq.messenger.message.MessageManager;
 import cn.jackq.messenger.network.PeerTransmission;
 import cn.jackq.messenger.network.ServerConnection;
 import cn.jackq.messenger.network.protocol.User;
 import cn.jackq.messenger.ui.CallActivity;
+import cn.jackq.messenger.ui.MainActivity;
 
 /**
  * Created on: 5/5/17.
@@ -105,7 +112,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onServerMessageFromUser(String user, String connectId, String message) {
-
+        this.messageManager.addMessage(user, Message.createReceive(message));
+        this.addNotification("Message from " + user, message);
         this.notifyStateChange();
     }
 
@@ -211,6 +219,12 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.serverConnection.sendCallRequest(user, mConnectId);
     }
 
+    public void sendMessageToUser(User user, String message) {
+        Log.d(TAG, "sendMessageToUser: send message to user");
+        this.messageManager.addMessage(user.getName(), Message.createSend(message));
+        this.serverConnection.sendMessageToUser(user, message);
+    }
+
     public void callAnswer() {
         Log.d(TAG, "callAnswer: Answer to call " + mSessionId);
         this.serverConnection.sendCallAnswer(mSessionId);
@@ -258,6 +272,22 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(activityIntent);
+    }
+
+    private void addNotification(String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setContentTitle(title)
+                .setContentText(message);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
     }
 
     // endregion
