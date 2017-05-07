@@ -17,91 +17,23 @@ import cn.jackq.messenger.network.ServerConnection;
 import cn.jackq.messenger.network.protocol.User;
 import cn.jackq.messenger.ui.CallActivity;
 
+/**
+ * Created on: 5/5/17.
+ * Creator: Jack Q <qiaobo@outlook.com>
+ */
+
 public class MainService extends Service implements MessengerAudio.MessengerAudioListener, ServerConnection.ServerConnectionListener, PeerTransmission.PeerTransmissionListener {
 
-    /**
-     * Created on: 5/5/17.
-     * Creator: Jack Q <qiaobo@outlook.com>
-     */
 
-    public enum MainServiceStatus{
+    public enum MainServiceStatus {
         IN_CALL, LOGIN_IDLE, NOT_LOGIN, NOT_CONNECTED
     }
 
     private static final String TAG = "MainService";
-    private MainServiceStatus status = MainServiceStatus.NOT_CONNECTED;
-
-    @Override
-    public void onPackageReceived(byte[] data, int size) {
-
-    }
-
-    @Override
-    public void onError() {
-
-    }
-
-    // region Server connection stage manage
-
-    @Override
-    public void onServerConnected(String string) {
-        this.status = MainServiceStatus.NOT_LOGIN;
-        this.notifyStateChange();
-    }
-
-    @Override
-    public void onUserAddResponse(boolean status, String message) {
-
-    }
-
-    @Override
-    public void onUserLoginResponse(boolean status, String message, String connectId) {
-
-    }
-
-    @Override
-    public void onServerUpdateBuddyList(List<User> buddyList) {
-
-    }
-
-    @Override
-    public void onServerMessageFromUser(String user, String connectId, String message) {
-
-    }
-
-    @Override
-    public void onServerCallInit(boolean status, String message, String connectId, String user, String address, int port) {
-
-    }
-
-    @Override
-    public void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port) {
-
-    }
-
-    @Override
-    public void onServerCallConnected(boolean status, String message, String sessionId) {
-
-    }
-
-    @Override
-    public void onServerCallEnd(boolean status, String message, String sessionId) {
-
-    }
-
-
-    // endregion
-
-    public MainServiceStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(MainServiceStatus status) {
-        this.status = status;
-    }
     // region binding management
 
     public class MainServiceBinder extends Binder {
+
         public MainService getService() {
             return MainService.this;
         }
@@ -119,13 +51,107 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     // endregion
 
     private final MessengerAudio audio = MessengerAudio.create(this);
+
     private final ServerConnection serverConnection = new ServerConnection(this);
     private final PeerTransmission peerTransmission = new PeerTransmission(this);
 
+    private String mConnectId = "";
+    private String mSessionId = "";
+    private String mUser = "";
+    private String mToken = "";
+    private List<User> buddyList = new ArrayList<>();
+    private MainServiceStatus mStatus = MainServiceStatus.NOT_CONNECTED;
+    private String mErrorMessage = "";
+
+    // region Server connection event handle
+
+    @Override
+    public void onServerConnected(String string) {
+        this.mStatus = MainServiceStatus.NOT_LOGIN;
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onUserAddResponse(boolean status, String message) {
+        if (status) {
+            Log.d(TAG, "onUserAddResponse: successfully registered, login automatically");
+            this.userLogin(mUser, mToken);
+        } else {
+            mErrorMessage = message;
+        }
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onUserLoginResponse(boolean status, String message, String connectId) {
+        if (status) {
+            Log.d(TAG, "onUserLoginResponse: login success, change stage");
+            this.mConnectId = connectId;
+            this.mStatus = MainServiceStatus.LOGIN_IDLE;
+        } else {
+            mErrorMessage = message;
+        }
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onServerUpdateBuddyList(List<User> buddyList) {
+        this.buddyList.clear();
+        this.buddyList.addAll(buddyList);
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onServerMessageFromUser(String user, String connectId, String message) {
+
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onServerCallInit(boolean status, String message, String connectId, String user, String address, int port) {
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port) {
+        this.notifyStateChange();
+    }
+
+    @Override
+    public void onServerCallConnected(boolean status, String message, String sessionId) {
+        this.notifyStateChange();
+
+    }
+
+    @Override
+    public void onServerCallEnd(boolean status, String message, String sessionId) {
+        this.notifyStateChange();
+    }
+
+
+    // endregion
+
+    // region audio thread event handle
 
     @Override
     public void onSendAudioFrame(ByteBuffer audioFrame) {
     }
+
+    // endregion
+
+    // region peer connection event handle
+
+    @Override
+    public void onPeerPackageReceived(byte[] data, int size) {
+
+    }
+
+    @Override
+    public void onPeerTransmissionError() {
+
+    }
+
+    // endregion
 
     // region service lifecycle management
 
@@ -141,7 +167,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         Log.d(TAG, "onCreate: create main service");
         try {
             this.audio.init();
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "onCreate: Audio Exception", e);
         }
     }
@@ -161,22 +187,44 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     // endregion
 
+    // region server connection method broker
+
     public void connectToServer(String host, int port) {
         Log.d(TAG, "connectToServer: Connect to server on response to client");
         this.serverConnection.connect(host, port);
     }
 
-    public void userLogin(String username, String token){
+    public void userLogin(String username, String token) {
         Log.d(TAG, "userLogin: login with " + username + " and token " + token);
         this.serverConnection.sendUserLogin(username, token);
     }
 
-    public void userRegister(String username, String token){
+    public void userRegister(String username, String token) {
         Log.d(TAG, "userRegister: register with " + username + " password " + token);
         this.serverConnection.sendUserAdd(username, token);
     }
 
+    public void callRequest(User user) {
+        Log.d(TAG, "callRequest: request call to " + user.getName());
+        this.serverConnection.sendCallRequest(user, mConnectId);
+    }
 
+    public void callAnswer() {
+        Log.d(TAG, "callAnswer: Answer to call " + mSessionId);
+        this.serverConnection.sendCallAnswer(mSessionId);
+    }
+
+    public void callPrepared() {
+        Log.d(TAG, "callPrepared: prepare call " + mSessionId);
+        this.serverConnection.sendCallPrepared(mSessionId);
+    }
+
+    public void callTerminate() {
+        Log.d(TAG, "callTerminate: terminal call " + mSessionId);
+        this.serverConnection.sendCallTerminate(mSessionId);
+    }
+
+    // endregion
 
     // region state management
     public interface MainServiceStateChangeListener {
@@ -201,10 +249,22 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     }
     // endregion
 
+    // region ui interpolation
+
     private void startCallActivity() {
         Intent activityIntent = new Intent(this, CallActivity.class);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(activityIntent);
+    }
+
+    // endregion
+
+    public MainServiceStatus getStatus() {
+        return mStatus;
+    }
+
+    public void setStatus(MainServiceStatus status) {
+        this.mStatus = status;
     }
 }

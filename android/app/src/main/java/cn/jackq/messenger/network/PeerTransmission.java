@@ -9,8 +9,6 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import cn.jackq.messenger.service.MainService;
-
 /**
  * Created on: 4/24/17.
  * Creator: Jack Q <qiaobo@outlook.com>
@@ -20,9 +18,9 @@ public class PeerTransmission implements Runnable {
     private static final String TAG = "PeerTransmission";
 
     public interface PeerTransmissionListener {
-        void onPackageReceived(byte[] data, int size);
+        void onPeerPackageReceived(byte[] data, int size);
 
-        void onError();
+        void onPeerTransmissionError();
     }
 
     public interface PeerConnectionCallback {
@@ -120,7 +118,7 @@ public class PeerTransmission implements Runnable {
             }
 
             if (this.listener != null)
-                listener.onPackageReceived(receivePacket.getData(), receivePacket.getLength());
+                listener.onPeerPackageReceived(receivePacket.getData(), receivePacket.getLength());
         }
 
         Log.d(TAG, "run: UDP receiving thread closed");

@@ -326,11 +326,11 @@ public class ServerProtocol {
     }
 
     @NonNull
-    public static byte[] packCallReqPacket(User user, String connectioId) {
+    public static byte[] packCallReqPacket(User user, String connectId) {
         JSONObject object = new JSONObject();
         try {
             object.put("u", user.getName());
-            object.put("c", user.getConnectId());
+            object.put("c", connectId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
