@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -36,9 +41,14 @@
         <service
             android:name=".service.MainService"
             android:description="@string/main_service_description"
+            android:enabled="true"
             android:exported="true"
-            android:label="Messenger Main Service"
-            android:enabled="true"/>
+            android:label="Messenger Main Service" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"></activity>
+        <activity android:name=".ui.LoginActivity" />
     </application>
 
 </manifest>

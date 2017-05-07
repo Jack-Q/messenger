@@ -16,13 +16,19 @@ import cn.jackq.messenger.network.PeerTransmission;
 import cn.jackq.messenger.network.ServerConnection;
 import cn.jackq.messenger.ui.CallActivity;
 
-/**
- * Created on: 5/5/17.
- * Creator: Jack Q <qiaobo@outlook.com>
- */
-
 public class MainService extends Service implements MessengerAudio.MessengerAudioListener, ServerConnection.ServerConnectionListener, PeerTransmission.PeerTransmissionListener {
+
+    /**
+     * Created on: 5/5/17.
+     * Creator: Jack Q <qiaobo@outlook.com>
+     */
+
+    public enum MainServiceStatus{
+        IN_CALL, LOGIN_IDLE, NOT_LOGIN, NOT_CONNECTED
+    }
+
     private static final String TAG = "MainService";
+    private MainServiceStatus status = MainServiceStatus.NOT_CONNECTED;
 
     @Override
     public void onPackageReceived(byte[] data, int size) {
@@ -36,7 +42,16 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onServerConnected(String string) {
+        this.status = MainServiceStatus.NOT_LOGIN;
+        this.notifyStateChange();
+    }
 
+    public MainServiceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MainServiceStatus status) {
+        this.status = status;
     }
 
     // region binding management
@@ -79,13 +94,11 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         }
         super.onCreate();
         Log.d(TAG, "onCreate: create main service");
-        Log.d(TAG, "onCreate: create main service repeat");
         try {
             this.audio.init();
         }catch (Exception e){
             Log.e(TAG, "onCreate: Audio Exception", e);
         }
-        Log.d(TAG, "onCreate: created");
     }
 
     @Override
@@ -106,6 +119,16 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void connectToServer(String host, int port) {
         Log.d(TAG, "connectToServer: Connect to server on response to client");
         this.serverConnection.connect(host, port);
+    }
+
+    public void userLogin(String username, String token){
+        Log.d(TAG, "userLogin: login with " + username + " and token " + token);
+        this.serverConnection.sendUserLogin(username, token);
+    }
+
+    public void userRegister(String username, String token){
+        Log.d(TAG, "userRegister: register with " + username + " password " + token);
+        this.serverConnection.sendUserAdd(username, token);
     }
 
     // region state management

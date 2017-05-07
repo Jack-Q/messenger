@@ -18,7 +18,7 @@ import cn.jackq.messenger.service.MainService;
  */
 
 public abstract class AbstractMessengerActivity extends AppCompatActivity implements MainService.MainServiceStateChangeListener {
-    private static final String TAG = "AbstractMessengerActivi";
+    private static final String TAG = "AbstractMessenger";
     private static final String mIsServiceBoundKey = "IS_SERVICE_BOUND";
     private boolean mIsServiceBound = false;
     private MainService mMainService = null;
@@ -28,6 +28,7 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
             mMainService = ((MainService.MainServiceBinder) service).getService();
             mMainService.subscribeStateChange(AbstractMessengerActivity.this);
             mIsServiceBound = true;
+            afterServiceBound();
         }
 
         @Override
@@ -35,8 +36,31 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
             mMainService.unSubscribeStateChange(AbstractMessengerActivity.this);
             mMainService = null;
             mIsServiceBound = false;
+
         }
     };
+
+    private void afterServiceBound() {
+        Log.d(TAG, "afterServiceBound: check status of service");
+        MainService.MainServiceStatus status = getMainService().getStatus();
+        switch (status){
+            case IN_CALL:
+                if(!this.getClass().getName().contains("CallActivity")){
+                    Intent intent = new Intent(this, CallActivity.class);
+                    this.startActivity(intent);
+                }
+                break;
+            case NOT_LOGIN: case NOT_CONNECTED:
+                if(!this.getClass().getName().contains("LoginActivity")){
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    this.startActivity(intent);
+                }
+                break;
+            case LOGIN_IDLE: default:
+                Log.d(TAG, "afterServiceBound: waiting for message");
+        }
+    }
 
     @Override
     protected void onStart() {
