@@ -2,6 +2,7 @@ package cn.jackq.messenger.ui;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -133,7 +134,9 @@ public class MainActivity extends AbstractMessengerActivity {
         buddyListAdapter = new BuddyListAdapter(this, R.layout.list_item_user, getMainService().getBuddyList());
         mBuddyList.setAdapter(buddyListAdapter);
         mBuddyList.setOnItemClickListener((parent, view, position, id) -> {
-            Log.d(TAG, "onCreate: click user " + getMainService().getBuddyList().get(position).getName());
+            Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("user", getMainService().getBuddyList().get(position).getName());
+            startActivity(intent);
         });
     }
 

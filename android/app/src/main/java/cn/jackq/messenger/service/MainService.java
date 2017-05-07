@@ -41,6 +41,16 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         return messageManager;
     }
 
+    @Nullable
+    public User getUserByName(String mUser) {
+        for(User u : this.buddyList){
+            if(u.getName().equals(mUser))
+                return u;
+        }
+        return null;
+    }
+
+
     public enum MainServiceStatus {
         IN_CALL, LOGIN_IDLE, LOGGING_IN, NOT_LOGIN, CONNECTING, NOT_CONNECTED
     }
@@ -250,6 +260,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         Log.d(TAG, "sendMessageToUser: send message to user");
         this.messageManager.addMessage(user.getName(), Message.createSend(message));
         this.serverConnection.sendMessageToUser(user, message);
+        notifyStateChange();
     }
 
     public void callAnswer() {
