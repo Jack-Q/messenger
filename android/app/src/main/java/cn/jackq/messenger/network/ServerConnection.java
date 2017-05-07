@@ -5,8 +5,10 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 import cn.jackq.messenger.network.protocol.ServerProtocol;
+import cn.jackq.messenger.network.protocol.ServerResponse;
 import cn.jackq.messenger.network.protocol.User;
 
 public class ServerConnection {
@@ -24,8 +26,22 @@ public class ServerConnection {
          * @param string the message returned from the server
          */
         void onServerConnected(String string);
+
         void onUserAddResponse(boolean status, String message);
+
         void onUserLoginResponse(boolean status, String message, String connectId);
+
+        void onServerUpdateBuddyList(List<User> buddyList);
+
+        void onServerMessageFromUser(String user, String connectId, String message);
+
+        void onServerCallInit(boolean status, String message, String connectId, String user, String address, int port);
+
+        void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port);
+
+        void onServerCallConnected(boolean status, String message, String sessionId);
+
+        void onServerCallEnd(boolean status, String message, String sessionId);
     }
 
     private final ServerConnectionListener mListener;
@@ -76,33 +92,40 @@ public class ServerConnection {
         send(ServerProtocol.packServerTestPacket());
     }
 
-    public void sendUserLogin(String username, String token){
+    public void sendUserLogin(String username, String token) {
         send(ServerProtocol.packLoginReqPacket(username, token));
     }
-    public void sendUserAdd(String username, String token){
+
+    public void sendUserAdd(String username, String token) {
         send(ServerProtocol.packUserAddReqPacket(username, token));
     }
-    public void sendBuddyListRequest(){
+
+    public void sendBuddyListRequest() {
         send(ServerProtocol.packBuddyListQueryPacket());
     }
-    public void sendMessageToUser(User user, String message){
+
+    public void sendMessageToUser(User user, String message) {
         send(ServerProtocol.packMsgSendPacket(user, message));
     }
-    public void sendCallRequest(User user, String connectId){
+
+    public void sendCallRequest(User user, String connectId) {
         send(ServerProtocol.packCallReqPacket(user, connectId));
     }
-    public void sendCallPrepared(String sessionId){
+
+    public void sendCallPrepared(String sessionId) {
         send(ServerProtocol.packCallPrepPacket(sessionId));
     }
-    public void sendCallAnswer(String sessionId){
+
+    public void sendCallAnswer(String sessionId) {
         send(ServerProtocol.packCallAnsPacket(sessionId));
     }
-    public void sendCallTerminate(String sessionId){
+
+    public void sendCallTerminate(String sessionId) {
         send(ServerProtocol.packCallTremPacket(sessionId));
     }
 
 
-    private void send(byte[] buffer){
+    private void send(byte[] buffer) {
         Log.d(TAG, "send: send data to server");
         try {
             this.socket.getOutputStream().write(buffer);
@@ -167,6 +190,7 @@ public class ServerConnection {
                 return;
             }
             int length = ServerProtocol.getPacketSize(readBuffer, posLow);
+            ServerResponse serverResponse = ServerProtocol.unpackJsonResponse(readBuffer, posLow);
             switch (packetType) {
                 case SERVER_STATUS:
                     // Connected to server
@@ -182,28 +206,67 @@ public class ServerConnection {
                 case USER_ADD_RESP:
                     Log.d(TAG, "handlePacket: user add response");
                     // user add response
-
+                    if (serverResponse != null) {
+                        mListener.onUserAddResponse(serverResponse.isStatus(), serverResponse.getMessage());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case USER_LOGIN_RESP:
                     Log.d(TAG, "handlePacket: login response");
+                    if (serverResponse != null) {
+                        mListener.onUserLoginResponse(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getConnectId());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case INFO_RESP:
                     Log.d(TAG, "handlePacket: information received from server");
+                    if (serverResponse != null && serverResponse.isStatus()) {
+                        mListener.onServerUpdateBuddyList(serverResponse.getBuddyList());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case MSG_RECV:
                     Log.d(TAG, "handlePacket: receive message from server");
+                    if (serverResponse != null) {
+                        mListener.onServerMessageFromUser(serverResponse.getUser(), serverResponse.getConnectId(), serverResponse.getMessage());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case CALL_INIT:
                     Log.d(TAG, "handlePacket: call initialized at server");
+                    if (serverResponse != null) {
+                        mListener.onServerCallInit(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getConnectId(), serverResponse.getUser(), serverResponse.getAddress(), serverResponse.getPort());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case CALL_ADDR:
                     Log.d(TAG, "handlePacket: call address acquired from server");
+                    if (serverResponse != null) {
+                        mListener.onServerCallPeerAddress(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getConnectId(), serverResponse.getAddress(), serverResponse.getPort());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case CALL_CONN:
                     Log.d(TAG, "handlePacket: call connect form server");
+                    if (serverResponse != null) {
+                        mListener.onServerCallConnected(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getSessionId());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 case CALL_END:
                     Log.d(TAG, "handlePacket: Call end from server");
+                    if (serverResponse != null) {
+                        mListener.onServerCallEnd(serverResponse.isStatus(), serverResponse.getMessage(), serverResponse.getSessionId());
+                    } else {
+                        Log.d(TAG, "handlePacket: no response returned from server");
+                    }
                     break;
                 default:
                     Log.d(TAG, "handlePacket: unknown packet type received from server" + packetType);

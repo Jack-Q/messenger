@@ -14,6 +14,7 @@ import java.util.List;
 import cn.jackq.messenger.audio.MessengerAudio;
 import cn.jackq.messenger.network.PeerTransmission;
 import cn.jackq.messenger.network.ServerConnection;
+import cn.jackq.messenger.network.protocol.User;
 import cn.jackq.messenger.ui.CallActivity;
 
 public class MainService extends Service implements MessengerAudio.MessengerAudioListener, ServerConnection.ServerConnectionListener, PeerTransmission.PeerTransmissionListener {
@@ -48,6 +49,49 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.notifyStateChange();
     }
 
+    @Override
+    public void onUserAddResponse(boolean status, String message) {
+
+    }
+
+    @Override
+    public void onUserLoginResponse(boolean status, String message, String connectId) {
+
+    }
+
+    @Override
+    public void onServerUpdateBuddyList(List<User> buddyList) {
+
+    }
+
+    @Override
+    public void onServerMessageFromUser(String user, String connectId, String message) {
+
+    }
+
+    @Override
+    public void onServerCallInit(boolean status, String message, String connectId, String user, String address, int port) {
+
+    }
+
+    @Override
+    public void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port) {
+
+    }
+
+    @Override
+    public void onServerCallConnected(boolean status, String message, String sessionId) {
+
+    }
+
+    @Override
+    public void onServerCallEnd(boolean status, String message, String sessionId) {
+
+    }
+
+
+    // endregion
+
     public MainServiceStatus getStatus() {
         return status;
     }
@@ -55,9 +99,6 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void setStatus(MainServiceStatus status) {
         this.status = status;
     }
-
-    // endregion
-
     // region binding management
 
     public class MainServiceBinder extends Binder {
