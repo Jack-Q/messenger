@@ -1,17 +1,21 @@
 package cn.jackq.messenger.network.protocol;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 public class ServerProtocol {
-    private static final String TAG = "ServerProtocol";
 
+    private static final String TAG = "ServerProtocol";
     private static final byte[] HEADER = new byte[]{0x4a, 0x51, 0x49, 0x4d};
     private static final int HEADER_LENGTH = HEADER.length;
+
     private static final byte PACKET_VERSION = (byte) 0x81;
 
     public static boolean isPartialPacket(byte[] readBuffer, int offset, int length) {
@@ -43,7 +47,6 @@ public class ServerProtocol {
 
         return true;
     }
-
 
     public enum PacketType {
         SERVER_CHECK(0x01),
@@ -89,6 +92,14 @@ public class ServerProtocol {
             return typeValue;
         }
 
+        @Nullable
+        static InfoType fromString(String value) {
+            for (InfoType i : InfoType.values()) {
+                if (i.typeValue.equals(value))
+                    return i;
+            }
+            return null;
+        }
     }
 
     private static final int VERSION_OFFSET = HEADER_LENGTH;
@@ -157,6 +168,79 @@ public class ServerProtocol {
 
     public static String unpackString(byte[] readBuffer, int posLow) {
         return new String(readBuffer, posLow + PAYLOAD_OFFSET, getPacketSize(readBuffer, posLow) - PAYLOAD_OFFSET);
+    }
+
+    public static ServerResponse unpackJsonResponse(byte[] readBuffer, int offset) {
+        String payload = unpackString(readBuffer, offset);
+        try {
+            JSONObject object = new JSONObject(payload);
+            ServerResponse resp = new ServerResponse();
+
+            // Status
+            if (object.has("s")) {
+                resp.setStatus(object.getBoolean("s"));
+            }
+
+            // Message
+            if (object.has("m")) {
+                resp.setMessage(object.getString("m"));
+            }
+
+            // connectId (k)
+            if (object.has("k")) {
+                resp.setConnectId(object.getString("k"));
+            }
+            if (object.has("c")) {
+                resp.setConnectId(object.getString("c"));
+            }
+
+            // Info Response Type
+            if (object.has("t")) {
+                resp.setInfoType(InfoType.fromString(object.getString("t")));
+            }
+
+            // Info Response Content
+            if (object.has("p")) {
+                resp.setJsonPayload(object.get("p"));
+                if (resp.getInfoType() == InfoType.BUDDY_LIST) {
+                    JSONArray p = object.getJSONArray("p");
+                    ArrayList<User> users = new ArrayList<>();
+                    for(int i = 0; i < p.length(); i++){
+                        JSONObject o = p.getJSONObject(i);
+                        users.add(new User(o.getString("name"), o.getString("id"), o.getString("ip")));
+                    }
+                    resp.setBuddyList(users);
+                }
+            }
+
+            // User (Peer[u], Current User[c])
+            if(object.has("u")){
+                resp.setUser(object.getString("u"));
+            }
+            if(object.has("f")){
+                resp.setUser(object.getString("f"));
+            }
+
+            // Session ID (for call session)
+            if(object.has("i")){
+                resp.setSessionId(object.getString("i"));
+            }
+
+            // Address
+            if(object.has("a")){
+                resp.setAddress(object.getString("a"));
+            }
+
+            // Port
+            if(object.has("i")){
+                resp.setPort(object.getInt("i"));
+            }
+
+            return resp;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return ServerResponse.PARSE_ERROR;
+        }
     }
 
 
