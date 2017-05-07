@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.jackq.messenger.audio.MessengerAudio;
+import cn.jackq.messenger.message.MessageManager;
 import cn.jackq.messenger.network.PeerTransmission;
 import cn.jackq.messenger.network.ServerConnection;
 import cn.jackq.messenger.network.protocol.User;
@@ -54,6 +55,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     private final ServerConnection serverConnection = new ServerConnection(this);
     private final PeerTransmission peerTransmission = new PeerTransmission(this);
+    private final MessageManager messageManager = MessageManager.get();
 
     private String mConnectId = "";
     private String mSessionId = "";
