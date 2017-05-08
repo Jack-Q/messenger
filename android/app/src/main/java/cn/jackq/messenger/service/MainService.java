@@ -25,11 +25,6 @@ import cn.jackq.messenger.network.protocol.User;
 import cn.jackq.messenger.ui.CallActivity;
 import cn.jackq.messenger.ui.MainActivity;
 
-/**
- * Created on: 5/5/17.
- * Creator: Jack Q <qiaobo@outlook.com>
- */
-
 public class MainService extends Service implements MessengerAudio.MessengerAudioListener, ServerConnection.ServerConnectionListener, PeerTransmission.PeerTransmissionListener {
 
 
@@ -40,16 +35,6 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public MessageManager getMessageManager() {
         return messageManager;
     }
-
-    @Nullable
-    public User getUserByName(String mUser) {
-        for(User u : this.buddyList){
-            if(u.getName().equals(mUser))
-                return u;
-        }
-        return null;
-    }
-
 
     public enum MainServiceStatus {
         IN_CALL, LOGIN_IDLE, LOGGING_IN, NOT_LOGIN, CONNECTING, NOT_CONNECTED
@@ -83,13 +68,12 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     private final MessageManager messageManager = MessageManager.get();
 
     private String mConnectId = "";
-    private String mSessionId = "";
     private String mUser = "";
     private String mToken = "";
     private List<User> buddyList = new ArrayList<>();
     private MainServiceStatus mStatus = MainServiceStatus.NOT_CONNECTED;
     private String mErrorMessage = "";
-    private User callPeer = null;
+    private ChatSession mChatSession = new ChatSession();
 
     // region Server connection event handle
 
@@ -141,7 +125,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void onServerCallInit(boolean status, String message, String sessionId, String user, String address, int port) {
 
         this.mStatus = MainServiceStatus.IN_CALL;
-        mSessionId = sessionId;
+        this.mChatSession.setId(sessionId);
         this.startCallActivity();
         this.notifyStateChange();
     }
@@ -256,7 +240,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void callRequest(User user) {
         Log.d(TAG, "callRequest: request call to " + user.getName());
         this.mStatus = MainServiceStatus.IN_CALL;
-        this.callPeer = user;
+        this.mChatSession.setPeer(user);
         this.serverConnection.sendCallRequest(user, user.getConnectId());
         notifyStateChange();
     }
@@ -269,20 +253,20 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     }
 
     public void callAnswer() {
-        Log.d(TAG, "callAnswer: Answer to call " + mSessionId);
-        this.serverConnection.sendCallAnswer(mSessionId);
+        Log.d(TAG, "callAnswer: Answer to call " + mChatSession.getId());
+        this.serverConnection.sendCallAnswer(mChatSession.getId());
         notifyStateChange();
     }
 
     public void callPrepared() {
-        Log.d(TAG, "callPrepared: prepare call " + mSessionId);
-        this.serverConnection.sendCallPrepared(mSessionId);
+        Log.d(TAG, "callPrepared: prepare call " + mChatSession.getId());
+        this.serverConnection.sendCallPrepared(mChatSession.getId());
         notifyStateChange();
     }
 
     public void callTerminate() {
-        Log.d(TAG, "callTerminate: terminal call " + mSessionId);
-        this.serverConnection.sendCallTerminate(mSessionId);
+        Log.d(TAG, "callTerminate: terminal call " + mChatSession.getId());
+        this.serverConnection.sendCallTerminate(mChatSession.getId());
         notifyStateChange();
     }
 
@@ -355,6 +339,20 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public String getErrorMessage() {
         return mErrorMessage;
     }
+
+    @Nullable
+    public User getUserByName(String mUser) {
+        for (User u : this.buddyList) {
+            if (u.getName().equals(mUser))
+                return u;
+        }
+        return null;
+    }
+
+    public ChatSession getChatSession() {
+        return this.mChatSession;
+    }
+
 
     // endregion
 }
