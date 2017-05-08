@@ -32,6 +32,7 @@ export default class OutFrameBuffer {
 
     while (this.frameList.length > minimumBufferFrame && this.frameList[0].index > this.next) {
       console.log('skip frame');
+      this.next = this.frameList[0].index;
       // wait for more frame
       this.sendConsequentialFrames();
     }
