@@ -127,12 +127,12 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void onServerCallInit(boolean status, String message, String sessionId, String user, String address, int port) {
         if (this.mStatus == MainServiceStatus.IN_CALL) {
             // caller
-            this.mChatSession.setCanAnswer(true);
+            this.mChatSession.setCanAnswer(false);
             this.mStatus = MainServiceStatus.IN_CALL;
             this.mChatSession.setStatusString("waiting response from " + user);
         } else {
             // callee
-            this.mChatSession.setCanAnswer(false);
+            this.mChatSession.setCanAnswer(true);
             User peer = this.getUserByConnectId(user);
             this.mChatSession.setPeer(peer);
             this.mChatSession.setStatusString("incoming call from " + user);
@@ -176,6 +176,10 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     public void onServerCallEnd(boolean status, String message, String sessionId) {
         this.mStatus = MainServiceStatus.LOGIN_IDLE;
         this.mErrorMessage = message;
+        this.mChatSession.setStatus(ChatSession.ChatStatus.NULL);
+        this.mChatSession.setCanAnswer(false);
+        this.mChatSession.setCanEnd(false);
+        this.mChatSession.setStatusString("call ended");
         this.notifyStateChange();
     }
 

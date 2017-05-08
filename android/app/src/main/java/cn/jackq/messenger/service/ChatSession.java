@@ -12,7 +12,7 @@ import cn.jackq.messenger.network.protocol.User;
 
 public class ChatSession {
     enum ChatStatus {
-        NULL, PREPARING, WAITING_ADDRESS, WAITING, PEER_CONNECTING, CHATTING, TERMINATING, END
+        NULL, PREPARING, WAITING_ADDRESS, WAITING, PEER_CONNECTING, CHATTING, TERMINATING
     }
 
     private String id;

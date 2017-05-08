@@ -356,18 +356,18 @@ public class ServerProtocol {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return pack(PacketType.CALL_PREP, object.toString());
+        return pack(PacketType.CALL_ANS, object.toString());
     }
 
     @NonNull
-    public static byte[] packCallTremPacket(String sessionId) {
+    public static byte[] packCallTermPacket(String sessionId) {
         JSONObject object = new JSONObject();
         try {
             object.put("i", sessionId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return pack(PacketType.CALL_PREP, object.toString());
+        return pack(PacketType.CALL_TERM, object.toString());
     }
     //endregion
 }

@@ -125,7 +125,7 @@ public class ServerConnection {
     }
 
     public void sendCallTerminate(String sessionId) {
-        send(ServerProtocol.packCallTremPacket(sessionId));
+        send(ServerProtocol.packCallTermPacket(sessionId));
     }
 
 

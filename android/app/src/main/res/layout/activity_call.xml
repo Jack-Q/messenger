@@ -18,9 +18,7 @@
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
         android:textSize="50sp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="467dp" />
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/chat_time"
@@ -36,6 +34,7 @@
 
     <TextView
         android:id="@+id/chat_status"
+        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
@@ -47,7 +46,10 @@
         android:layout_height="wrap_content"
         android:background="@color/black_overlay"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="80dp">
 
         <Button
             android:id="@+id/answer_button"
