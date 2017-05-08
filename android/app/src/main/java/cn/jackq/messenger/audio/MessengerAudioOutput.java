@@ -18,7 +18,7 @@ class MessengerAudioOutput {
     private AudioTrack mTrack;
     private OpusCodec.Decoder mDecoder;
 
-    private int sampleRateInHz = 8000;
+    private int sampleRateInHz = 44100;
     private int channelOutMono = AudioFormat.CHANNEL_OUT_MONO;
     private int encodingPcm16bit = AudioFormat.ENCODING_PCM_16BIT;
     private int minSize = AudioTrack.getMinBufferSize(sampleRateInHz, channelOutMono, encodingPcm16bit);
@@ -35,7 +35,7 @@ class MessengerAudioOutput {
         if (mDecoder == null)
             try {
                 Log.d(TAG, "init: create decoder");
-                mDecoder = new OpusCodec.Decoder(sampleRateInHz, 1);
+                mDecoder = new OpusCodec.Decoder(48000, 1);
             } catch (NativeAudioException e) {
                 e.printStackTrace();
             }
@@ -50,18 +50,20 @@ class MessengerAudioOutput {
 
     public void bufferPacket(int index, byte[] buffer, int offset, int size) {
         // ignore packet when current mode is muted
-        if(isMuted)
+        if (isMuted)
             return;
 
         // use decode short to create 16bit sample
-        short[] decoderBuffer = new short[320];
+        short[] decoderBuffer = new short[1920];
         int decodeSize;
         try {
-            decodeSize = mDecoder.decodeShort(ByteBuffer.wrap(buffer, offset, size), size, decoderBuffer, 320);
+            Log.d(TAG, "bufferPacket: size of received data " + index + " : " + size);
+            decodeSize = mDecoder.decodeShort(ByteBuffer.wrap(buffer, offset, size), size, decoderBuffer, 1920);
             mTrack.write(decoderBuffer, 0, decodeSize);
+            Log.d(TAG, "bufferPacket: add to buffers " + decodeSize);
         } catch (NativeAudioException e) {
             e.printStackTrace();
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.e(TAG, "bufferPacket: Threads un-synchronized and null pointer exception occurred", e);
         }
     }

@@ -189,6 +189,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mChatSession.setCanAnswer(false);
         this.mChatSession.setCanEnd(false);
         this.mChatSession.setStatusString("call ended");
+        this.peerTransmission.terminate();
+        this.audio.endSession();
         this.notifyStateChange();
     }
 
@@ -206,7 +208,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onSendAudioFrame(ByteBuffer audioFrame) {
-        if(this.mChatSession.getStatus() == ChatSession.ChatStatus.CHATTING){
+        if (this.mChatSession.getStatus() == ChatSession.ChatStatus.CHATTING) {
             this.peerTransmission.sendAudioToPeer(audioFrame);
         }
     }
@@ -217,7 +219,8 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onPeerAudioFrameReceived(ByteBuffer buffer) {
-
+//        if (this.mStatus == MainServiceStatus.IN_CALL && this.mChatSession.getStatus() == ChatSession.ChatStatus.CHATTING)
+            audio.receiveAudioFrame(buffer);
     }
 
     @Override
@@ -411,6 +414,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         Log.d(TAG, "getUserByName: failed to find user with name " + name);
         return null;
     }
+
     @Nullable
     public User getUserByConnectId(String connectId) {
         for (User u : this.buddyList) {

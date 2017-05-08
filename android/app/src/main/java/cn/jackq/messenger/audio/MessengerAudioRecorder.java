@@ -34,9 +34,9 @@ class MessengerAudioRecorder implements Runnable {
     // As the Opus codec requires, the bufferSize, which also determines the frame size, ought to be some selected discrete value
     // Feasible value including: 400, 200, 100, 50, 25, 50/3. 50/4 (12.5), 10, 50/6;
     private int packageRate = 25;
-    private int encoderFrameSize =  sampleRate / packageRate;
+    private int encoderFrameSize =  1920;
     // The objective bit rate of the audio message to be encoded
-    private int bitrate = 8 * 1024;
+    private int bitrate = 80 * 1024;
 
     private AudioRecord mRecord;
     private IEncoder mEncoder;
@@ -66,12 +66,12 @@ class MessengerAudioRecorder implements Runnable {
             try {
                 int framesPerPacket = 1;
                 int channels = 1;
-                mEncoder = new OpusCodec.Encoder(sampleRate,
+                mEncoder = new OpusCodec.Encoder(48000,
                         channels, // Current use single channel mode only
                         encoderFrameSize,
                         framesPerPacket,
                         bitrate,
-                        encoderFrameSize * framesPerPacket);
+                        480);
             } catch (NativeAudioException e) {
                 e.printStackTrace();
                 throw e;

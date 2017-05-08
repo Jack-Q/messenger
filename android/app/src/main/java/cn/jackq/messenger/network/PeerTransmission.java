@@ -106,12 +106,14 @@ public class PeerTransmission implements Runnable {
         }
         thread.interrupt();
         try {
-            thread.join(0);
+            thread.join(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         socket.close();
+        socket = null;
+        thread = null;
     }
 
     @Override
@@ -123,6 +125,7 @@ public class PeerTransmission implements Runnable {
 
             ByteBuffer byteBuffer = PeerProtocol.packServerAddr(this.sessionId, this.connectId);
 
+            Log.d(TAG, "run: send address to server:" + serverAddr.getHostName() + ":" + serverPort);
             this.sendPacket(serverAddr, serverPort, byteBuffer.array(), byteBuffer.position(), byteBuffer.limit() - byteBuffer.position());
 
             if (createCallback != null)
@@ -144,6 +147,7 @@ public class PeerTransmission implements Runnable {
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
 
             try {
+                Log.d(TAG, "run: waiting for packet");
                 socket.receive(receivePacket);
                 this.processPacket(receivePacket.getAddress(), receivePacket.getPort(), receivePacket.getData(), receivePacket.getLength());
             } catch (IOException e) {
@@ -170,7 +174,7 @@ public class PeerTransmission implements Runnable {
                     // syn from peer, send ack back
                     ByteBuffer peerAck = PeerProtocol.packPeerAck(sessionId);
                     sendPacket(this.peerAddr, this.peerPort, peerAck.array(), peerAck.position(), peerAck.limit() - peerAck.position());
-                    ;
+                    Log.d(TAG, "processPacket: syn received");
                 }
                 break;
             case U_ACK:
@@ -180,10 +184,11 @@ public class PeerTransmission implements Runnable {
                 }
                 break;
             case U_DAT:
-                PeerData peerData = PeerProtocol.unpackPeerData(ByteBuffer.wrap(data, 0, length));
-                if (peerData != null && Objects.equals(peerData.getSessionId(), sessionId)) {
+                PeerData peerData = PeerProtocol.unpackPeerData(data, length);
+                if (peerData != null && Objects.equals(peerData.getSessionId(), sessionId) && peerData.getType() != null) {
                     switch (peerData.getType()) {
                         case AUDIO:
+                            Log.d(TAG, "processPacket: receive data packet from peer");
                             listener.onPeerAudioFrameReceived(peerData.getBuffer());
                             break;
                     }
