@@ -27,8 +27,8 @@ public class PeerTransmission implements Runnable {
 
     public interface PeerTransmissionListener {
 
-
         void onPeerAudioFrameReceived(ByteBuffer buffer);
+
 
         void onPeerTransmissionError();
 
@@ -39,23 +39,24 @@ public class PeerTransmission implements Runnable {
     public interface PeerConnectionCallback {
 
         void finish(String errorMessage);
+
     }
 
     private int localPort;
 
     private DatagramSocket socket;
+
     private Thread thread;
     private final Object runLock = new Object();
-
     private boolean running = false;
+
     private PeerTransmissionListener listener;
-
     private PeerConnectionCallback createCallback;
+
     private InetAddress peerAddr;
-
     private int peerPort;
-    private InetAddress serverAddr;
 
+    private InetAddress serverAddr;
     private int serverPort;
 
     public PeerTransmission(PeerTransmissionListener listener) {
@@ -215,5 +216,11 @@ public class PeerTransmission implements Runnable {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendAudioToPeer(ByteBuffer audioFrame) {
+        PeerData data = new PeerData(this.sessionId, PeerData.DataType.AUDIO, audioFrame);
+        ByteBuffer byteBuffer = PeerProtocol.packPeerData(data);
+        this.sendPacket(peerAddr, peerPort, byteBuffer.array(), byteBuffer.position(), byteBuffer.limit() - byteBuffer.position());
     }
 }

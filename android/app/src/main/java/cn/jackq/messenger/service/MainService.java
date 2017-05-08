@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.jackq.messenger.R;
+import cn.jackq.messenger.audio.AudioException;
 import cn.jackq.messenger.audio.MessengerAudio;
 import cn.jackq.messenger.message.Message;
 import cn.jackq.messenger.message.MessageManager;
@@ -141,11 +142,19 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mChatSession.setCanEnd(true);
         this.mChatSession.setStatus(ChatSession.ChatStatus.WAITING_ADDRESS);
 
+        // start peer transfer session
         try {
             InetAddress name = InetAddress.getByName(address);
             this.peerTransmission.create(name, port, mConnectId, mChatSession.getId(), errorMessage -> {
             });
         } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        // start audio session
+        try {
+            this.audio.startSession();
+        } catch (AudioException e) {
             e.printStackTrace();
         }
 
@@ -197,6 +206,9 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onSendAudioFrame(ByteBuffer audioFrame) {
+        if(this.mChatSession.getStatus() == ChatSession.ChatStatus.CHATTING){
+            this.peerTransmission.sendAudioToPeer(audioFrame);
+        }
     }
 
     // endregion
@@ -301,6 +313,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mChatSession.setStatusString("connecting ...");
         this.mChatSession.setStatus(ChatSession.ChatStatus.PEER_CONNECTING);
         this.serverConnection.sendCallAnswer(mChatSession.getId());
+
         notifyStateChange();
     }
 

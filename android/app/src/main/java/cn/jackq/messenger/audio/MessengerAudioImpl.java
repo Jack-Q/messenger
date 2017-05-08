@@ -1,6 +1,5 @@
 package cn.jackq.messenger.audio;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 /**
@@ -28,7 +27,8 @@ class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorde
 
     @Override
     public void endSession(){
-
+        this.mRecorder.stop();
+        this.mOutput.stop();
     }
 
     @Override
