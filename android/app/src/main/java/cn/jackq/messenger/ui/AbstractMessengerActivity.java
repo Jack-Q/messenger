@@ -104,8 +104,6 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
         Log.d(TAG, "onServerStateChange: Service State Change");
     }
 
-
-
     protected MainService getMainService(){
         return mMainService;
     }

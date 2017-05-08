@@ -11,20 +11,28 @@ import cn.jackq.messenger.network.protocol.User;
 
 
 public class ChatSession {
+    enum ChatStatus {
+        NULL, PREPARING, WAITING_ADDRESS, WAITING, PEER_CONNECTING, CHATTING, TERMINATING, END
+    }
+
     private String id;
     private User peer;
-    private String status;
+    private ChatStatus status;
+    private String statusString;
     private int timeLength;
     private boolean canAnswer;
     private boolean canEnd;
+    private String peerAddress;
+    private int peerPort;
 
     public void reset() {
         this.id = "";
         this.peer = null;
-        this.status = "";
+        this.statusString = "";
         this.timeLength = 0;
         this.canAnswer = false;
         this.canEnd = false;
+        this.status = ChatStatus.NULL;
     }
 
     public String getId() {
@@ -43,12 +51,12 @@ public class ChatSession {
         this.peer = peer;
     }
 
-    public String getStatus() {
-        return status;
+    public String getStatusString() {
+        return statusString;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatusString(String statusString) {
+        this.statusString = statusString;
     }
 
     public String getTimeString() {
@@ -56,10 +64,6 @@ public class ChatSession {
             return String.format(Locale.ENGLISH, "%d:%02d", timeLength / 60, timeLength % 60);
         else
             return "";
-    }
-
-    public void setTimeLength(int time) {
-        this.timeLength = time;
     }
 
     public boolean isCanAnswer() {
@@ -76,5 +80,37 @@ public class ChatSession {
 
     public void setCanEnd(boolean canEnd) {
         this.canEnd = canEnd;
+    }
+
+    public ChatStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ChatStatus status) {
+        this.status = status;
+    }
+
+    public int getTimeLength() {
+        return timeLength;
+    }
+
+    public void setTimeLength(int timeLength) {
+        this.timeLength = timeLength;
+    }
+
+    public String getPeerAddress() {
+        return peerAddress;
+    }
+
+    public void setPeerAddress(String peerAddress) {
+        this.peerAddress = peerAddress;
+    }
+
+    public int getPeerPort() {
+        return peerPort;
+    }
+
+    public void setPeerPort(int peerPort) {
+        this.peerPort = peerPort;
     }
 }

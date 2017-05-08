@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,22 +125,51 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
 
     @Override
     public void onServerCallInit(boolean status, String message, String sessionId, String user, String address, int port) {
-
-        this.mStatus = MainServiceStatus.IN_CALL;
+        if (this.mStatus == MainServiceStatus.IN_CALL) {
+            // caller
+            this.mChatSession.setCanAnswer(true);
+            this.mStatus = MainServiceStatus.IN_CALL;
+            this.mChatSession.setStatusString("waiting response from " + user);
+        } else {
+            // callee
+            this.mChatSession.setCanAnswer(false);
+            User peer = this.getUserByConnectId(user);
+            this.mChatSession.setPeer(peer);
+            this.mChatSession.setStatusString("incoming call from " + user);
+        }
         this.mChatSession.setId(sessionId);
+        this.mChatSession.setCanEnd(true);
+        this.mChatSession.setStatus(ChatSession.ChatStatus.WAITING_ADDRESS);
+
+        try {
+            InetAddress name = InetAddress.getByName(address);
+            this.peerTransmission.create(name, port, mConnectId, mChatSession.getId(), errorMessage -> {
+            });
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
         this.startCallActivity();
         this.notifyStateChange();
     }
 
     @Override
     public void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port) {
+        this.peerTransmission.sendSynToPeer(address, port);
+        this.mChatSession.setCanEnd(true);
+        this.mChatSession.setStatusString("waiting");
+        Log.d(TAG, "onServerCallPeerAddress: send syn to peer");
         this.notifyStateChange();
     }
 
     @Override
     public void onServerCallConnected(boolean status, String message, String sessionId) {
+        this.mChatSession.setStatus(ChatSession.ChatStatus.CHATTING);
+        this.mChatSession.setCanAnswer(false);
+        this.mChatSession.setCanEnd(true);
+        this.mChatSession.setTimeLength(0);
+        this.mChatSession.setStatusString("chatting");
         this.notifyStateChange();
-
     }
 
     @Override
@@ -169,13 +200,20 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     // region peer connection event handle
 
     @Override
-    public void onPeerPackageReceived(byte[] data, int size) {
+    public void onPeerAudioFrameReceived(ByteBuffer buffer) {
 
     }
 
     @Override
     public void onPeerTransmissionError() {
 
+    }
+
+    @Override
+    public void onPeerAddressReceived() {
+        if (this.mStatus == MainServiceStatus.IN_CALL) {
+            this.callPrepared();
+        }
     }
 
     // endregion
@@ -237,14 +275,6 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.serverConnection.sendUserAdd(username, token);
     }
 
-    public void callRequest(User user) {
-        Log.d(TAG, "callRequest: request call to " + user.getName());
-        this.mStatus = MainServiceStatus.IN_CALL;
-        this.mChatSession.setPeer(user);
-        this.serverConnection.sendCallRequest(user, user.getConnectId());
-        notifyStateChange();
-    }
-
     public void sendMessageToUser(User user, String message) {
         Log.d(TAG, "sendMessageToUser: send message to user");
         this.messageManager.addMessage(user.getName(), Message.createSend(message));
@@ -252,20 +282,35 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         notifyStateChange();
     }
 
+    public void callRequest(User user) {
+        Log.d(TAG, "callRequest: request call to " + user.getName());
+        this.mStatus = MainServiceStatus.IN_CALL;
+        this.mChatSession.setPeer(user);
+        this.mChatSession.setStatus(ChatSession.ChatStatus.PREPARING);
+        this.mChatSession.setStatusString("preparing session");
+        this.serverConnection.sendCallRequest(user, user.getConnectId());
+        notifyStateChange();
+    }
+
     public void callAnswer() {
         Log.d(TAG, "callAnswer: Answer to call " + mChatSession.getId());
+        this.mChatSession.setStatusString("connecting ...");
+        this.mChatSession.setStatus(ChatSession.ChatStatus.PEER_CONNECTING);
         this.serverConnection.sendCallAnswer(mChatSession.getId());
         notifyStateChange();
     }
 
     public void callPrepared() {
         Log.d(TAG, "callPrepared: prepare call " + mChatSession.getId());
+        this.mChatSession.setStatus(ChatSession.ChatStatus.WAITING);
         this.serverConnection.sendCallPrepared(mChatSession.getId());
         notifyStateChange();
     }
 
     public void callTerminate() {
-        Log.d(TAG, "callTerminate: terminal call " + mChatSession.getId());
+        Log.d(TAG, "callTerminate: terminating call " + mChatSession.getId());
+        this.mChatSession.setStatus(ChatSession.ChatStatus.TERMINATING);
+        this.mChatSession.setStatusString("ending ...");
         this.serverConnection.sendCallTerminate(mChatSession.getId());
         notifyStateChange();
     }
@@ -341,11 +386,21 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     }
 
     @Nullable
-    public User getUserByName(String mUser) {
+    public User getUserByName(String name) {
         for (User u : this.buddyList) {
-            if (u.getName().equals(mUser))
+            if (u.getName().equals(name))
                 return u;
         }
+        Log.d(TAG, "getUserByName: failed to find user with name " + name);
+        return null;
+    }
+    @Nullable
+    public User getUserByConnectId(String connectId) {
+        for (User u : this.buddyList) {
+            if (u.getConnectId().equals(connectId))
+                return u;
+        }
+        Log.d(TAG, "getUserByName: failed to find user with connectId " + connectId);
         return null;
     }
 

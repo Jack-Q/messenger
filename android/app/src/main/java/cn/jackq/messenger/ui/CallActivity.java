@@ -2,6 +2,7 @@ package cn.jackq.messenger.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -14,6 +15,8 @@ import cn.jackq.messenger.R;
 import cn.jackq.messenger.service.ChatSession;
 
 public class CallActivity extends AbstractMessengerActivity {
+
+    private static final String TAG = "CallActivity";
 
     @BindView(R.id.content_view)
     LinearLayout mContentView;
@@ -31,12 +34,12 @@ public class CallActivity extends AbstractMessengerActivity {
 
     @OnClick(R.id.answer_button)
     void onAnswerCall() {
-
+        getMainService().callAnswer();
     }
 
     @OnClick(R.id.end_button)
     void onCancelCall() {
-
+        getMainService().callTerminate();
     }
 
     @Override
@@ -71,7 +74,7 @@ public class CallActivity extends AbstractMessengerActivity {
     private void updateUi() {
         ChatSession session = this.getMainService().getChatSession();
         this.mChatPeerView.setText(session.getPeer().getName());
-        this.mChatStatusView.setText(session.getStatus());
+        this.mChatStatusView.setText(session.getStatusString());
         this.mChatTimeView.setText(session.getTimeString());
 
         this.mAnswerButton.setEnabled(session.isCanAnswer());
@@ -79,6 +82,8 @@ public class CallActivity extends AbstractMessengerActivity {
 
         this.mEndButton.setEnabled(session.isCanEnd());
         this.mEndButton.setVisibility(session.isCanEnd() ? View.VISIBLE : View.GONE);
+
+        Log.d(TAG, "updateUi: answer:" + session.isCanAnswer() + ", visibility:" + session.isCanEnd());
     }
 
     @Override
