@@ -8,10 +8,10 @@ import java.nio.ByteBuffer;
  */
 
 
-
 class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorder.MessengerAudioPackageListener {
     private MessengerAudioOutput mOutput = new MessengerAudioOutput();
     private MessengerAudioRecorder mRecorder = new MessengerAudioRecorder(this);
+    private int recorderFrameIindex = 0;
 
     @Override
     public void init() {
@@ -26,18 +26,22 @@ class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorde
     }
 
     @Override
-    public void endSession(){
+    public void endSession() {
         this.mRecorder.stop();
         this.mOutput.stop();
     }
 
     @Override
-    public void receiveAudioFrame(ByteBuffer audioFrame){
+    public void receiveAudioFrame(ByteBuffer audioFrame) {
+        // this will change the position (pointer) of the audio frame to the initial position of compressed audio
+        int index = MessengerAudioPacker.unpackAudioFrame(audioFrame);
 
+        this.mOutput.bufferPacket(index, audioFrame.array(), audioFrame.position(), audioFrame.limit() - audioFrame.position());
     }
 
     @Override
     public void onAudioPackage(ByteBuffer buffer) {
-        this.onSendAudioFrame(buffer);
+        ByteBuffer packedFrame = MessengerAudioPacker.packAudioFrame(recorderFrameIindex++, buffer);
+        this.onSendAudioFrame(packedFrame);
     }
 }

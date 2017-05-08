@@ -42,8 +42,9 @@ public class PeerProtocol {
         ByteBuffer buffer = ByteBuffer.allocate(1 + header.length() + data.getBuffer().limit());
         buffer.put(PacketType.U_DAT.value);
         byte[] headerBytes = header.getBytes();
-        buffer.put(headerBytes, 1, headerBytes.length);
+        buffer.put(headerBytes);
         buffer.put(data.getBuffer());
+        buffer.position(0);
         return buffer;
     }
 

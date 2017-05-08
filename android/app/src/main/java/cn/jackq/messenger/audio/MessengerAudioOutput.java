@@ -48,7 +48,7 @@ class MessengerAudioOutput {
         isMuted = false;
     }
 
-    public void bufferPacket(byte[] buffer, int offset, int size) {
+    public void bufferPacket(int index, byte[] buffer, int offset, int size) {
         // ignore packet when current mode is muted
         if(isMuted)
             return;
