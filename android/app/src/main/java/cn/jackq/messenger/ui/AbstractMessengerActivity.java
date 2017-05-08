@@ -48,10 +48,10 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
         MainService.MainServiceStatus status = getMainService().getStatus();
         switch (status){
             case IN_CALL:
-                if(!this.getClass().getName().contains("CallActivity")){
-                    Intent intent = new Intent(this, CallActivity.class);
-                    this.startActivity(intent);
-                }
+//                if(!this.getClass().getName().contains("CallActivity")){
+//                    Intent intent = new Intent(this, CallActivity.class);
+//                    this.startActivity(intent);
+//                }
                 break;
             case NOT_LOGIN: case NOT_CONNECTED:
                 if(!this.getClass().getName().contains("LoginActivity")){

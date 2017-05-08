@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorder.MessengerAudioPackageListener {
     private MessengerAudioOutput mOutput = new MessengerAudioOutput();
     private MessengerAudioRecorder mRecorder = new MessengerAudioRecorder(this);
-    private int recorderFrameIindex = 0;
+    private int recorderFrameIndex = 0;
 
     @Override
     public void init() {
@@ -21,6 +21,7 @@ class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorde
 
     @Override
     public void startSession() throws AudioException {
+        recorderFrameIndex = 0;
         this.mOutput.start();
         this.mRecorder.start();
     }
@@ -41,7 +42,7 @@ class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorde
 
     @Override
     public void onAudioPackage(ByteBuffer buffer) {
-        ByteBuffer packedFrame = MessengerAudioPacker.packAudioFrame(recorderFrameIindex++, buffer);
+        ByteBuffer packedFrame = MessengerAudioPacker.packAudioFrame(recorderFrameIndex++, buffer);
         this.onSendAudioFrame(packedFrame);
     }
 }

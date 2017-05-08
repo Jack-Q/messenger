@@ -1,6 +1,7 @@
 package cn.jackq.messenger.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -84,6 +85,9 @@ public class CallActivity extends AbstractMessengerActivity {
         this.mEndButton.setVisibility(session.isCanEnd() ? View.VISIBLE : View.GONE);
 
         Log.d(TAG, "updateUi: answer:" + session.isCanAnswer() + ", visibility:" + session.isCanEnd());
+        if(session.getStatus() == ChatSession.ChatStatus.NULL){
+            new Handler().postDelayed(CallActivity.this::finish, 2000);
+        }
     }
 
     @Override
