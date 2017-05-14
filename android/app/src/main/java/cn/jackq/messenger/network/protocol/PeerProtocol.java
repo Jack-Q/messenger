@@ -2,7 +2,6 @@ package cn.jackq.messenger.network.protocol;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 
@@ -97,9 +96,7 @@ public class PeerProtocol {
         String sessionId = new String(bytes, 1, sep[0] - 1);
         String typeString = new String(bytes, sep[0] + 1, sep[1] - sep[0] - 1);
 
-        ByteBuffer data = ByteBuffer.wrap(bytes, sep[1] + 1, length - sep[1]);
-
-        Log.d(TAG, "unpackPeerData: " + sessionId + " " + typeString + " buffer: " + (length - sep[1]));
+        ByteBuffer data = ByteBuffer.wrap(bytes, sep[1] + 1, length - sep[1] - 1);
         return new PeerData(sessionId, PeerData.DataType.fromString(typeString), data);
     }
 

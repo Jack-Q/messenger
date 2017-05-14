@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 
 class MessengerAudioOutput {
     private static final String TAG = "MessengerAudioOutput";
+    private static final int CODEC_SAMPLE_RATE = 48000;
 
     private AudioTrack mTrack;
     private OpusCodec.Decoder mDecoder;
@@ -25,6 +26,11 @@ class MessengerAudioOutput {
 
     private boolean isMuted = true;
 
+    // single byte array for network transfer
+    private byte[] inDataBuffer = new byte[10240];
+    // use decode short to create 16bit sample
+    private short[] outDataBuffer = new short[10240];
+
     public MessengerAudioOutput() {
     }
 
@@ -35,7 +41,7 @@ class MessengerAudioOutput {
         if (mDecoder == null)
             try {
                 Log.d(TAG, "init: create decoder");
-                mDecoder = new OpusCodec.Decoder(48000, 1);
+                mDecoder = new OpusCodec.Decoder(CODEC_SAMPLE_RATE, 1);
             } catch (NativeAudioException e) {
                 e.printStackTrace();
             }
@@ -53,17 +59,21 @@ class MessengerAudioOutput {
         if (isMuted)
             return;
 
-        // use decode short to create 16bit sample
-        short[] decoderBuffer = new short[1920];
-        int decodeSize;
+        byte[] rawData = buffer;
+        if(offset != 0) {
+            // The native binding of decoder required the audio frame
+            // of data is started from the initial position of the array.
+            // Thus an array copy id required for an frame with offset
+            rawData = inDataBuffer;
+            System.arraycopy(buffer, offset, inDataBuffer, 0, size);
+        }
+
         try {
-            Log.d(TAG, "bufferPacket: size of received data " + index + " : " + size);
-            decodeSize = mDecoder.decodeShort(ByteBuffer.wrap(buffer, offset, size), size, decoderBuffer, 1920);
-            mTrack.write(decoderBuffer, 0, decodeSize);
-            Log.d(TAG, "bufferPacket: add to buffers " + decodeSize);
+            int decodeSize;
+            decodeSize = mDecoder.decodeShort(ByteBuffer.wrap(rawData, 0, size), size, outDataBuffer, outDataBuffer.length);
+            mTrack.write(outDataBuffer, 0, decodeSize);
         } catch (NativeAudioException e) {
             e.printStackTrace();
-        } catch (NullPointerException e) {
             Log.e(TAG, "bufferPacket: Threads un-synchronized and null pointer exception occurred", e);
         }
     }

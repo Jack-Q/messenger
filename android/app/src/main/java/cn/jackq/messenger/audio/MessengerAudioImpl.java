@@ -1,5 +1,7 @@
 package cn.jackq.messenger.audio;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -9,6 +11,7 @@ import java.nio.ByteBuffer;
 
 
 class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorder.MessengerAudioPackageListener {
+    private static final String TAG = "MessengerAudioImpl";
     private MessengerAudioOutput mOutput = new MessengerAudioOutput();
     private MessengerAudioRecorder mRecorder = new MessengerAudioRecorder(this);
     private int recorderFrameIndex = 0;
@@ -36,7 +39,7 @@ class MessengerAudioImpl extends MessengerAudio implements MessengerAudioRecorde
     public void receiveAudioFrame(ByteBuffer audioFrame) {
         // this will change the position (pointer) of the audio frame to the initial position of compressed audio
         int index = MessengerAudioPacker.unpackAudioFrame(audioFrame);
-
+        Log.d(TAG, "receiveAudioFrame: pos " + audioFrame.position() + " limit " + audioFrame.limit() + " length " + (audioFrame.limit() - audioFrame.position()));
         this.mOutput.bufferPacket(index, audioFrame.array(), audioFrame.position(), audioFrame.limit() - audioFrame.position());
     }
 

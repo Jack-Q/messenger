@@ -23,6 +23,7 @@ class MessengerAudioRecorder implements Runnable {
          *               should not be changed.
          */
         void onAudioPackage(ByteBuffer buffer);
+
     }
 
     private static final String TAG = "MessengerAudioRecorder";

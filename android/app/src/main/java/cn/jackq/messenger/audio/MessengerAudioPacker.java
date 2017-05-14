@@ -1,7 +1,5 @@
 package cn.jackq.messenger.audio;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -20,14 +18,17 @@ public class MessengerAudioPacker {
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         byteBuffer.putShort((short) index);
         System.arraycopy(buffer.array(), buffer.position(), buf, 2, size - 2);
-//        Log.d(TAG, "packAudioFrame: send packet " + index);
         return ByteBuffer.wrap(buf, 0, size);
     }
 
+    /**
+     * read the payload index (sequential number)
+     * and move the position of byte buffer to initial position of data payload
+     * @param buffer the packed data buffer with a leading sequential number
+     * @return packet index
+     */
     static int unpackAudioFrame(ByteBuffer buffer){
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        short i = buffer.getShort();
-        Log.d(TAG, "unpackAudioFrame: receive packet " + i);
-        return i;
+        return (int) buffer.getShort();
     }
 }
