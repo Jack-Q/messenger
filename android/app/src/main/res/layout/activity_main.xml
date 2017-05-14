@@ -35,40 +35,15 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-            <ViewAnimator
-                android:inAnimation="@android:anim/fade_in"
-                android:outAnimation="@android:anim/fade_out"
-                android:id="@+id/view_animator"
+
+            <android.support.v7.widget.ListViewCompat
+                android:id="@+id/buddy_list"
+                tools:listitem="@layout/list_item_user"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <include layout="@layout/activity_main_home" />
+            </android.support.v7.widget.ListViewCompat>
 
-                <android.support.v7.widget.ListViewCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/buddy_list"
-                    >
-
-                </android.support.v7.widget.ListViewCompat>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:text="@string/title_dashboard" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:text="@string/title_notifications" />
-            </ViewAnimator>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/floatingActionButton"
@@ -80,14 +55,6 @@
                 app:fabSize="normal" />
         </FrameLayout>
 
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:elevation="2dp"
-            android:background="?android:attr/windowBackground"
-            app:menu="@menu/navigation" />
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

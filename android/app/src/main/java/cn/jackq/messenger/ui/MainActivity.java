@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -19,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ViewAnimator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,15 +30,8 @@ import cn.jackq.messenger.network.protocol.User;
 public class MainActivity extends AbstractMessengerActivity {
     private static final String TAG = "MainActivity";
 
-    @BindView(R.id.view_animator)
-    ViewAnimator mViewAnimator;
-    @BindView(R.id.navigation)
-    BottomNavigationView navigation;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @BindView(R.id.main_home_page)
-    View mHomePageView;
-    private MainActivityHomePage mHomePage;
 
     @BindView(R.id.buddy_list)
     ListViewCompat mBuddyList;
@@ -61,23 +52,6 @@ public class MainActivity extends AbstractMessengerActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_dashboard_black_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        navigation.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mViewAnimator.setDisplayedChild(0);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mViewAnimator.setDisplayedChild(1);
-                    return true;
-                case R.id.navigation_notifications:
-                    mViewAnimator.setDisplayedChild(2);
-                    return true;
-            }
-            return false;
-        });
-
-        mHomePage = new MainActivityHomePage(this, mHomePageView);
 
         checkPermission();
 
