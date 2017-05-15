@@ -1,6 +1,6 @@
 /**
  * packet format: [index][content]
- *                ^ 2 byte
+ *                ^ 2 byte, little endian
  */
 export default class AudioPacker {
   static pack(data) {

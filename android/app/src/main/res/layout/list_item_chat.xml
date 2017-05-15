@@ -2,27 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ff09caff"
+    android:weightSum="10"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="15dp"
     android:orientation="horizontal">
-    <View
-        android:background="@drawable/ic_notifications_black_24dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp" />
+    <ImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_gravity="center|center_horizontal"
+        android:src="@drawable/ic_user_circle"
+        android:layout_margin="10dp"
+        />
     <LinearLayout
+
         android:id="@+id/message_view_layout"
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="7"
+        android:paddingBottom="0dp"
+        android:background="@drawable/ic_message_background"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/message_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textSize="18sp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="20dp"
+            android:text="Sample message form peer within the same environment and same status "/>
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/message_time"
+            android:textColor="#999"
+            android:textAlignment="center"
+            android:text="2017-05-02 19:33"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
 </LinearLayout>
