@@ -43,16 +43,17 @@
             android:description="@string/main_service_description"
             android:enabled="true"
             android:exported="true"
-            android:label="Messenger Main Service" />
+            android:label="Messenger Main Service"
+            android:permission="" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.ChatActivity"
             android:label="@string/title_activity_chat"
-            android:theme="@style/AppTheme"></activity>
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -60,7 +61,7 @@ public class ChatActivity extends AbstractMessengerActivity {
 
     @OnClick(R.id.fab)
     void onFabClick(View view) {
-        if(this.getMainService() == null)
+        if (this.getMainService() == null)
             return;
 
         getMainService().callRequest(getMainService().getUserByName(mUser));
@@ -82,47 +83,65 @@ public class ChatActivity extends AbstractMessengerActivity {
 
     }
 
+    interface IMessageViewHolder {
+        void setMessageContent(Message message);
+    }
+
     class MessageListAdapter extends ArrayAdapter<Message> {
+        private Message.MessageType[] supportedTypes = new Message.MessageType[]{
+                Message.MessageType.SEND, Message.MessageType.RECEIVE, Message.MessageType.SYSTEM};
+
 
         public MessageListAdapter(@NonNull Context context, int resource, @NonNull List<Message> objects) {
             super(context, resource, objects);
         }
 
+        @Override
+        public int getItemViewType(int position) {
+            return getItemTypeIndex(mMessages.get(position).getType());
+        }
+
+        private int getItemTypeIndex(Message.MessageType type) {
+            return Arrays.binarySearch(supportedTypes, type);
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return supportedTypes.length;
+        }
+
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            ViewHolder holder;
+            IMessageViewHolder holder;
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) ChatActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item_chat, parent, false);
-                holder = new ViewHolder(convertView);
+                switch (mMessages.get(position).getType()){
+                    case SEND:
+                        convertView = inflater.inflate(R.layout.list_item_chat_send, parent, false);
+                        holder = new MessageViewHolder(convertView);
+                        break;
+                    case RECEIVE:
+                        convertView = inflater.inflate(R.layout.list_item_chat_receive, parent, false);
+                        holder = new MessageViewHolder(convertView);
+                        break;
+                    case SYSTEM:
+                    default:
+                        convertView = inflater.inflate(R.layout.list_item_chat_system, parent, false);
+                        holder = new SystemMessageViewHolder(convertView);
+                        break;
+                }
                 convertView.setTag(holder);
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                holder = (IMessageViewHolder) convertView.getTag();
             }
 
-            Message message = mMessages.get(position);
-            holder.content.setText(message.getContent());
-            holder.time.setText(message.getDate().toString());
-            switch (message.getType()){
-                case SEND:
-                    holder.layout.setPadding(35, 5, 5, 5);
-                    break;
-
-                case RECEIVE:
-                    holder.layout.setPadding(5, 5, 35, 5);
-                    break;
-
-                case SYSTEM:
-                    holder.layout.setPadding(35, 5, 35, 5);
-                    break;
-
-            }
+            holder.setMessageContent(mMessages.get(position));
 
             return convertView;
         }
 
-        class ViewHolder {
+        class MessageViewHolder implements IMessageViewHolder{
             @BindView(R.id.message_view_layout)
             LinearLayout layout;
             @BindView(R.id.message_content)
@@ -130,8 +149,28 @@ public class ChatActivity extends AbstractMessengerActivity {
             @BindView(R.id.message_time)
             AppCompatTextView time;
 
-            ViewHolder(View view) {
+            MessageViewHolder(View view) {
                 ButterKnife.bind(this, view);
+            }
+
+            @Override
+            public void setMessageContent(Message message) {
+                this.content.setText(message.getContent());
+                this.time.setText(message.getDate().toString());
+            }
+        }
+
+        class SystemMessageViewHolder implements IMessageViewHolder {
+            @BindView(R.id.message_view_system_text)
+            AppCompatTextView content;
+
+            SystemMessageViewHolder(View view) {
+                ButterKnife.bind(this, view);
+            }
+
+            @Override
+            public void setMessageContent(Message message) {
+                this.content.setText(message.getContent());
             }
         }
     }
@@ -142,13 +181,13 @@ public class ChatActivity extends AbstractMessengerActivity {
     protected void onServiceBound() {
         super.onServiceBound();
         mMessages = getMainService().getMessageManager().getMessages(mUser);
-        mListAdapter = new MessageListAdapter(this, R.layout.list_item_chat, mMessages);
+        mListAdapter = new MessageListAdapter(this, R.layout.list_item_chat_receive, mMessages);
         mChatMessageList.setAdapter(mListAdapter);
     }
 
     @Override
     public void onServerStateChange() {
         super.onServerStateChange();
-        this.runOnUiThread(()-> this.mListAdapter.notifyDataSetChanged());
+        this.runOnUiThread(() -> this.mListAdapter.notifyDataSetChanged());
     }
 }
