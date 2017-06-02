@@ -4,7 +4,12 @@ Messenger is a simple chat application for desktop platform (Windows, Mac OS, Li
 which supports both text based chatting and audio based chatting.
 
 
-DEMO: ![Screen Record](./docs/demo.webm)
+## Screenshots
+
+![01](./docs/01.png)
+![02](./docs/02.png)
+![03](./docs/03.png)
+![04](./docs/04.png)
 
 ## Network
 
