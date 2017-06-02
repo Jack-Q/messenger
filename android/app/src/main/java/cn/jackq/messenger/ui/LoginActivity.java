@@ -2,7 +2,9 @@ package cn.jackq.messenger.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.TextInputEditText;
@@ -44,6 +46,8 @@ public class LoginActivity extends AbstractMessengerActivity {
         setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
+
+        loadInformation();
     }
 
     @Override
@@ -119,7 +123,8 @@ public class LoginActivity extends AbstractMessengerActivity {
         String username = mUserNameEdit.getText().toString();
         String password = mPasswordEdit.getText().toString();
         String host = mHostEdit.getText().toString();
-        int port = Integer.parseInt(mPortEdit.getText().toString());
+        String portString = mPortEdit.getText().toString();
+        int port = 0;
 
         boolean cancel = false;
         View focusView = null;
@@ -139,13 +144,32 @@ public class LoginActivity extends AbstractMessengerActivity {
             focusView = mUserNameEdit;
             cancel = true;
         }
-        // Check for a valid username.
-        if (port < 1 || port > 65535) {
-            mPortEdit.setError("port should in range of 1 to 65535");
+        // Check for a valid port number.
+        if (TextUtils.isEmpty(portString)) {
+            mPortEdit.setError("port should not be empty");
             focusView = mPortEdit;
             cancel = true;
+        } else if (!TextUtils.isDigitsOnly(portString)) {
+            mPortEdit.setError("port should be consisted of digits only");
+            focusView = mPortEdit;
+            cancel = true;
+
+        } else {
+            try {
+                port = Integer.parseInt(portString);
+                if (port < 1 || port > 65535) {
+                    mPortEdit.setError("port should be in range of 1 to 65535");
+                    focusView = mPortEdit;
+                    cancel = true;
+                }
+            } catch (Exception e) {
+                mPortEdit.setError("port should be an valid number");
+                focusView = mPortEdit;
+                cancel = true;
+            }
         }
-        // Check for a valid username.
+
+        // Check for a valid host name.
         if (TextUtils.isEmpty(host)) {
             mHostEdit.setError(getString(R.string.error_field_required));
             focusView = mHostEdit;
@@ -156,6 +180,7 @@ public class LoginActivity extends AbstractMessengerActivity {
             focusView.requestFocus();
         } else {
             showProgress(true);
+            persistInformation(host, port, username, password);
             mConnecting = true;
             if (state == 0) {
                 state = 1;
@@ -189,5 +214,22 @@ public class LoginActivity extends AbstractMessengerActivity {
         });
     }
 
+    private void persistInformation(String host, int port, String user, String token) {
+        SharedPreferences loginInformation = getSharedPreferences("login_information", Context.MODE_PRIVATE);
+        loginInformation.edit()
+                .putString("host", host)
+                .putInt("port", port)
+                .putString("user", user)
+                .putString("token", token)
+                .apply();
+    }
+
+    private void loadInformation() {
+        SharedPreferences loginInformation = getSharedPreferences("login_information", Context.MODE_PRIVATE);
+        this.mHostEdit.setText(loginInformation.getString("host", ""));
+        this.mPortEdit.setText(String.valueOf(loginInformation.getInt("port", 12121)));
+        this.mUserNameEdit.setText(loginInformation.getString("user", ""));
+        this.mPasswordEdit.setText(loginInformation.getString("token", ""));
+    }
 }
 
