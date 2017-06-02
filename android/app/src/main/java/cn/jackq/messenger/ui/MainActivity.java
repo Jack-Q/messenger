@@ -15,6 +15,8 @@ import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -46,16 +48,15 @@ public class MainActivity extends AbstractMessengerActivity {
 
 
         setSupportActionBar(mToolbar);
-        final ActionBar actionBar = getSupportActionBar();
 
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_dashboard_black_24dp);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+//        if (actionBar != null) {
+//            actionBar.setHomeAsUpIndicator(R.drawable.ic_dashboard_black_24dp);
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }
 
         checkPermission();
 
-
+        mBuddyList.setEmptyView(findViewById(R.id.empty_view));
     }
 
     class BuddyListAdapter extends ArrayAdapter<User> {
@@ -77,10 +78,16 @@ public class MainActivity extends AbstractMessengerActivity {
             }
 
             User item = getMainService().getBuddyList().get(position);
-
+            holder.item = item;
             holder.name.setText(item.getName());
             holder.ip.setText(item.getIp());
-            holder.unread.setText(String.valueOf(getMainService().getMessageManager().getUnread(item.getName())));
+            int unread = getMainService().getMessageManager().getUnread(item.getName());
+            if(unread > 0) {
+                holder.unread.setText(String.valueOf(unread));
+                holder.unread.setVisibility(View.VISIBLE);
+            }else {
+                holder.unread.setVisibility(View.GONE);
+            }
 
             return convertView;
         }
@@ -93,8 +100,17 @@ public class MainActivity extends AbstractMessengerActivity {
             @BindView(R.id.user_unread)
             AppCompatTextView unread;
 
+            User item = null;
+
             ViewHolder(View view) {
                 ButterKnife.bind(this, view);
+                view.setOnClickListener( e -> {
+                    if(this.item != null){
+                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                        intent.putExtra("user", item.getName());
+                        startActivity(intent);
+                    }
+                });
             }
         }
     }
@@ -107,11 +123,13 @@ public class MainActivity extends AbstractMessengerActivity {
 
         buddyListAdapter = new BuddyListAdapter(this, R.layout.list_item_user, getMainService().getBuddyList());
         mBuddyList.setAdapter(buddyListAdapter);
-        mBuddyList.setOnItemClickListener((parent, view, position, id) -> {
-            Intent intent = new Intent(this, ChatActivity.class);
-            intent.putExtra("user", getMainService().getBuddyList().get(position).getName());
-            startActivity(intent);
-        });
+
+
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(getText(R.string.app_name) + ": " + getMainService().getUser());
+        }
+
     }
 
     @Override
@@ -119,6 +137,24 @@ public class MainActivity extends AbstractMessengerActivity {
         super.onServerStateChange();
         this.runOnUiThread(() ->
                 this.buddyListAdapter.notifyDataSetChanged());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_list_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.menu_quit:
+                // TODO: QUIT
+                this.getMainService();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkPermission() {

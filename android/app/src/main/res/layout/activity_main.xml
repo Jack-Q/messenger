@@ -39,20 +39,37 @@
             <android.support.v7.widget.ListViewCompat
                 android:id="@+id/buddy_list"
                 tools:listitem="@layout/list_item_user"
+                android:dividerHeight="15dp"
+                android:padding="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
             </android.support.v7.widget.ListViewCompat>
-
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/floatingActionButton"
+            <LinearLayout
+                android:id="@+id/empty_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="20dp"
-                android:clickable="true"
-                app:fabSize="normal" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:text="You're kind of alone.."
+                    android:textAlignment="center"
+                    android:textSize="28sp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="#accc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!--<android.support.design.widget.FloatingActionButton-->
+                <!--android:id="@+id/floatingActionButton"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="bottom|end"-->
+                <!--android:layout_margin="20dp"-->
+                <!--android:clickable="true"-->
+                <!--android:focusable="true"-->
+                <!---->
+                <!--app:fabSize="normal" />-->
         </FrameLayout>
 
     </LinearLayout>

@@ -13,12 +13,19 @@
 
     <!-- Login progress -->
     <TextView
-        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="33sp"
         android:layout_margin="20dp"
+        android:text="Messenger" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:textColor="#a777"
         android:text="Server &amp; Login" />
 
     <ProgressBar
