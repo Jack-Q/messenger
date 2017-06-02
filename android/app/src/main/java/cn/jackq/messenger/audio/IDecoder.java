@@ -26,7 +26,7 @@ public interface IDecoder {
     int decodeShort(ByteBuffer input, int inputSize, short[] output, int frameSize) throws NativeAudioException;
 
     /**
-     * Deallocates native resources. The decoder must no longer be called after this.
+     * De-allocates native resources. The decoder must no longer be called after this.
      */
     void destroy();
 }

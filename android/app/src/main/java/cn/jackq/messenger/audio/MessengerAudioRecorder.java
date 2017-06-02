@@ -28,16 +28,16 @@ class MessengerAudioRecorder implements Runnable {
 
     private static final String TAG = "MessengerAudioRecorder";
 
-    private int source = MediaRecorder.AudioSource.MIC;
-    private int sampleRate = 44100;
-    private int channelConfig = AudioFormat.CHANNEL_IN_MONO;
-    private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int source = MediaRecorder.AudioSource.MIC;
+    private static final int sampleRate = 44100;
+    private static final int channelConfig = AudioFormat.CHANNEL_IN_MONO;
+    private static final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     // As the Opus codec requires, the bufferSize, which also determines the frame size, ought to be some selected discrete value
     // Feasible value including: 400, 200, 100, 50, 25, 50/3. 50/4 (12.5), 10, 50/6;
-    private int packageRate = 25;
-    private int encoderFrameSize =  1920;
+    private static final int packageRate = 25;
+    private static final int encoderFrameSize =  1920;
     // The objective bit rate of the audio message to be encoded
-    private int bitrate = 80 * 1024;
+    private static final int bitrate = 80 * 1024;
 
     private AudioRecord mRecord;
     private IEncoder mEncoder;

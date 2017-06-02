@@ -5,8 +5,6 @@
     <string name="title_notifications">Notifications</string>
 
     <string name="title_activity_call">CallActivity</string>
-    <string name="dummy_button">hang up</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="main_service_description">Main Service for Messenger to exchange data and control audio</string>
     <string name="title_activity_login">Sign in</string>
 
@@ -19,4 +17,15 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="answer_call">answer</string>
+    <string name="end_call">end</string>
+    <string name="port_number">Port</string>
+    <string name="user_name">User Name</string>
+    <string name="host_name">Host Name</string>
+    <string name="login_view_title"><![CDATA[Server & Login]]></string>
+    <string name="empty_user_list_prompt">You\'re kind of alone..</string>
+    <string name="sample_message_text">Sample message form peer within the same environment and same status</string>
+    <string name="sample_message_time">2017-05-02 19:33</string>
+    <string name="sample_system_information">System information</string>
+    <string name="main_menu_quit_app">Quit</string>
 </resources>

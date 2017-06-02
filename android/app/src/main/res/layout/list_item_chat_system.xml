@@ -20,5 +20,5 @@
         android:textAlignment="center"
         android:textColor="#777"
 
-        android:text="Missed call from Ijvdsavijdfsnif "/>
+        android:text="@string/sample_system_information"/>
 </LinearLayout>

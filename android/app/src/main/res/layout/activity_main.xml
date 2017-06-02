@@ -51,7 +51,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 <TextView
-                    android:text="You're kind of alone.."
+                    android:text="@string/empty_user_list_prompt"
                     android:textAlignment="center"
                     android:textSize="28sp"
                     android:layout_gravity="center_vertical"

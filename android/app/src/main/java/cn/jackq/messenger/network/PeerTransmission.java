@@ -42,8 +42,6 @@ public class PeerTransmission implements Runnable {
 
     }
 
-    private int localPort;
-
     private DatagramSocket socket;
 
     private Thread thread;
@@ -121,7 +119,7 @@ public class PeerTransmission implements Runnable {
         try {
             socket = new DatagramSocket();
 
-            this.localPort = socket.getPort();
+            int localPort = socket.getPort();
 
             ByteBuffer byteBuffer = PeerProtocol.packServerAddr(this.sessionId, this.connectId);
 

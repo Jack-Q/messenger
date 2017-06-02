@@ -18,7 +18,7 @@
         android:textAlignment="center"
         android:textSize="33sp"
         android:layout_margin="20dp"
-        android:text="Messenger" />
+        android:text="@string/app_name" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
         android:textSize="18sp"
         android:layout_margin="10dp"
         android:textColor="#a777"
-        android:text="Server &amp; Login" />
+        android:text="@string/login_view_title" />
 
     <ProgressBar
         android:id="@+id/login_progress"
@@ -59,7 +59,7 @@
                         android:id="@+id/host"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Host Name"
+                        android:hint="@string/host_name"
                         android:inputType="text"
                         android:maxLines="1"
                         android:textColorHint="#555"
@@ -84,7 +84,7 @@
                         android:id="@+id/port"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Port"
+                        android:hint="@string/port_number"
                         android:inputType="number"
                         android:maxLines="1"
                         android:textColorHint="#555"
@@ -99,7 +99,7 @@
                     android:id="@+id/user_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="User Name"
+                    android:hint="@string/user_name"
                     android:inputType="text"
                     android:maxLines="1"
                     android:textColorHint="#555"

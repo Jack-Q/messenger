@@ -15,7 +15,6 @@
         android:layout_weight="1"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:text="@string/dummy_content"
         android:textColor="#33b5e5"
         android:textSize="50sp"
         android:textStyle="bold"/>
@@ -28,7 +27,6 @@
         android:layout_marginBottom="32dp"
         android:layout_marginEnd="32dp"
         android:fontFamily="monospace"
-        android:text="00:21:00"
         android:textSize="28sp" />
 
 
@@ -57,7 +55,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="answer" />
+            android:text="@string/answer_call" />
 
         <Button
             android:id="@+id/end_button"
@@ -65,7 +63,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="end" />
+            android:text="@string/end_call" />
 
     </LinearLayout>
 
