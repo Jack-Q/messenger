@@ -132,12 +132,14 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
             this.mChatSession.setCanAnswer(false);
             this.mStatus = MainServiceStatus.IN_CALL;
             this.mChatSession.setStatusString("waiting response from " + user);
+            this.messageManager.addMessage(mChatSession.getPeer().getName(), Message.createSystem("call initiated"));
         } else {
             // callee
             this.mChatSession.setCanAnswer(true);
             User peer = this.getUserByConnectId(user);
             this.mChatSession.setPeer(peer);
             this.mChatSession.setStatusString("incoming call from " + user);
+            this.messageManager.addMessage(mChatSession.getPeer().getName(), Message.createSystem("call request from peer"));
         }
         this.mChatSession.setId(sessionId);
         this.mChatSession.setCanEnd(true);
@@ -190,6 +192,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mChatSession.setCanAnswer(false);
         this.mChatSession.setCanEnd(false);
         this.mChatSession.setStatusString("call ended");
+        this.messageManager.addMessage(mChatSession.getPeer().getName(), Message.createSystem("call ended"));
         this.peerTransmission.terminate();
         this.audio.endSession();
         this.notifyStateChange();

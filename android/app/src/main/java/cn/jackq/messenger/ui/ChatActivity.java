@@ -183,11 +183,15 @@ public class ChatActivity extends AbstractMessengerActivity {
         mMessages = getMainService().getMessageManager().getMessages(mUser);
         mListAdapter = new MessageListAdapter(this, R.layout.list_item_chat_receive, mMessages);
         mChatMessageList.setAdapter(mListAdapter);
+        getMainService().getMessageManager().readAll(mUser);
     }
 
     @Override
     public void onServerStateChange() {
         super.onServerStateChange();
-        this.runOnUiThread(() -> this.mListAdapter.notifyDataSetChanged());
+        this.runOnUiThread(() -> {
+            this.mListAdapter.notifyDataSetChanged();
+            getMainService().getMessageManager().readAll(mUser);
+        });
     }
 }

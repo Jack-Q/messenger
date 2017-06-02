@@ -24,6 +24,7 @@ class MessageList {
 
     void addMessage(Message message){
         this.list.add(message);
+        this.unread++;
     }
 
     List<Message> getList() {
