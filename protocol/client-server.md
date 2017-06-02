@@ -1,4 +1,4 @@
-# Client Server Communication Protocol 
+# Client-Server Communication Protocol 
 
 This document list the package format and behavior of applications
 during the communication of the client and server.
@@ -371,6 +371,56 @@ are encapsulated by standard JSON format with extra defined schemas.
         {"s":true,"m":"ok","i":"ByP-O-kGZ"}
         ```
 
+## UDP Packet Format
 
-## Timeline and Sequential Convention
+For connection establishment of peer-to-peer audio session over 
+UDP, the server is responsible for UDP address exchange of 
+peers. Each client send a UDP packet to server conforming the following format:
 
+```txt
+[Packet type][Audio session identifier][separator][Client connection identifier]
+    1 byte          string (utf8)         1 byte         string(utf-8)
+     0xa1                                  0x3a
+```
+
+
+### Audio Session Process
+* a normal flow without exception
+```
+ Client A                      Client B
+----------       Server       ----------
+  Caller                        Callee
+=========================================
+1. requestCall
+   (CALL_REQ)
+              2. createSession
+                 initCall
+                 (CALL_INIT)
+3. createUdpSock             3. createUdpSock
+   (U_SRV_ADDR)                 (U_SRV_ADDR)
+              4. passPeerAddr
+                 (CALL_ADDR)
+5. synPeer                   5. synPeer
+   (U_SYN)                      (U_SYN)
+6. ackPeer                   6. ackPeer
+   updateAddr                   updateAddr
+   (U_ACK)                      (U_ACK)
+7. prepCall                  7. prepCall
+   (CALL_PREP)                  (CALL_PREP)
+...........................................
+                 [WAITING]
+...........................................
+                             8. ansCall
+                                (CALL_ANS)
+              9. connectCall
+                 (CALL_CONN)
+...........................................
+                 [CHATTING]
+                  (U_DAT)
+...........................................
+                            10. termCall
+                                (CALL_TERM)
+                                (U_TERM)
+              11. endCall
+                  (CALL_END)
+```
