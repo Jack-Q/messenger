@@ -4,7 +4,7 @@ Messenger is a simple chat application for desktop platform (Windows, Mac OS, Li
 which supports both text based chatting and audio based chatting.
 
 
-
+DEMO: ![Screen Record](./docs/demo.webm)
 
 ## Network
 
@@ -94,3 +94,6 @@ InFrameBuffer |         OutFrameBuffer |
 ### Build native module in node
 Since `electron` is generally bundled a different version of `v8` than nodejs, the native node module requires recompiling to work correctly.
 Use the `electron-rebuild` package for this task.
+
+****
+MIT Licence. Copyright (c) 2017 Jack Q
