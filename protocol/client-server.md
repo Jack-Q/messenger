@@ -1,13 +1,13 @@
 # Client-Server Communication Protocol 
 
-This document list the package format and behavior of applications
+This document list the packet format and behavior of applications
 during the communication of the client and server.
 
 As a developing draft, this document is unstable.
 
-## General Package Type
+## General Packet Type
 
-All of the package following the same basic format for checking
+All of the packet following the same basic format.
 
 ```
             0               8              15
@@ -424,3 +424,8 @@ peers. Each client send a UDP packet to server conforming the following format:
               11. endCall
                   (CALL_END)
 ```
+
+### Implementation
+
+* JavaScript: [protocol.js](../server/src/lib/protocol.js)
+* Java: [ServerProtocol.java](../android/app/src/main/java/cn/jackq/messenger/network/protocol/ServerProtocol.java)
