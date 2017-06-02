@@ -163,7 +163,7 @@ export default class SessionManager {
     
     // only callee can answer the call
     if (session.callee.id !== userId) {
-      console.log('the user who try to answer the call is not the callee');
+      console.log('the user who tries to answer the call is not the callee');
       return;
     }
 
