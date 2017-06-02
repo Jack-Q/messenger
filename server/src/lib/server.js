@@ -24,7 +24,7 @@ export default class Server {
     this.port = port;
     this.server = net.createServer();
     this.connections = [];
-    this.sessionManager = new SessionManager();
+    this.sessionManager = new SessionManager(host);
   }
 
   // start server

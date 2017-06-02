@@ -35,8 +35,9 @@ class Session{
 }
 
 export default class SessionManager {
-  constructor() {
+  constructor(host) {
     this.sessionList = {};
+    this.host = host;
     this.serverAddress = {
       address: '',
       port: 0,
@@ -66,7 +67,7 @@ export default class SessionManager {
       status: true,
       message: 'ok',
       sessionId: sessionId,
-      address: '192.168.1.102', // this.serverAddress.address,
+      address: host ? host : this.serverAddress.address,
       port: this.serverAddress.port,
     };
     caller.connection.send(protocol.packetType.CALL_INIT, initPacket);
