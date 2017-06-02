@@ -55,6 +55,8 @@ class MessengerAudioOutput {
     }
 
     public void bufferPacket(int index, byte[] buffer, int offset, int size) {
+        // TODO: handle out of order packet by buffering
+
         // ignore packet when current mode is muted
         if (isMuted)
             return;

@@ -54,7 +54,7 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
 //                }
                 break;
             case NOT_LOGIN: case NOT_CONNECTED:
-                if(!this.getClass().getName().contains("LoginActivity")){
+                if(!this.getClass().getName().contains("LoginActivity") && !this.isFinishing() && !isDestroyed()){
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
                             | Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -20,6 +20,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:immersive="true"
+            android:launchMode="singleTask"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +29,7 @@
         </activity>
         <activity
             android:name=".ui.CallActivity"
+            android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_call"
             android:parentActivityName=".ui.MainActivity"

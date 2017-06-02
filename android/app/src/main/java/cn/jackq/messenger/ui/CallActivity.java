@@ -101,4 +101,9 @@ public class CallActivity extends AbstractMessengerActivity {
         super.onServiceBound();
         this.runOnUiThread(this::updateUi);
     }
+
+    @Override
+    public void onBackPressed() {
+        // suppress default back button action
+    }
 }

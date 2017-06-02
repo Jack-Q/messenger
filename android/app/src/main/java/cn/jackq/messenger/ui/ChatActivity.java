@@ -64,8 +64,8 @@ public class ChatActivity extends AbstractMessengerActivity {
         if (this.getMainService() == null)
             return;
 
+        // by requesting call, the backend service will start new activity
         getMainService().callRequest(getMainService().getUserByName(mUser));
-        startActivity(new Intent(this, CallActivity.class));
     }
 
     @Override

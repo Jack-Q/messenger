@@ -66,8 +66,10 @@ public class LoginActivity extends AbstractMessengerActivity {
             case LOGIN_IDLE:
                 // login success, redirect activity
                 mConnecting = false;
-                startActivity(new Intent(this, MainActivity.class));
-                this.finish(); // terminate current activity
+                if(!this.isFinishing() && !isDestroyed()){
+                    startActivity(new Intent(this, MainActivity.class));
+                    this.finish(); // terminate current activity
+                }
                 return;
             case NOT_LOGIN:
                 if (state > 1) {
