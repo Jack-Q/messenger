@@ -85,8 +85,19 @@ public class ServerConnection {
             this.mConnectionThread.interrupt();
             try {
                 this.mConnectionThread.join(100);
+                Log.d(TAG, "disconnect: joined");
             } catch (InterruptedException e) {
+                Log.d(TAG, "disconnect: interrupted");
                 e.printStackTrace();
+            }
+            if(this.socket != null && this.socket.isConnected()){
+                try {
+                    this.socket.close();
+                } catch (IOException err) {
+                    err.printStackTrace();
+                } finally {
+                    this.socket = null;
+                }
             }
             this.mStatus = ServerStatus.NOT_CONNECT;
         }
@@ -159,9 +170,7 @@ public class ServerConnection {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d(TAG, "run: failed to connect to server " + e.getMessage());
-                socket = null;
-                mStatus = ServerStatus.NOT_CONNECT;
-                mListener.onServerDisconnected("failed to connect to server " + e.getMessage());
+                endConnection("failed to connect to server " + e.getMessage());
                 return;
             }
             try {
@@ -169,6 +178,19 @@ public class ServerConnection {
                 while (true) {
                     Log.d(TAG, "run: wait for data from server");
                     int read = socket.getInputStream().read(readBuffer, posHigh, readBuffer.length - posHigh);
+
+                    if (read < 0) {
+                        endConnection("Connection error");
+                        break;
+                    }
+
+                    if(read ==  0){
+                        if (mStatus == ServerStatus.DISCONNECTING || mStatus == ServerStatus.NOT_CONNECT) {
+                            endConnection("Disconnected");
+                            break;
+                        }
+                    }
+
                     posHigh += read;
                     Log.d(TAG, "run: receive " + read + " bytes from server");
                     // parse all of packet in buffer
@@ -190,15 +212,26 @@ public class ServerConnection {
                         posLow = 0;
                     }
 
-                    if (mStatus == ServerStatus.DISCONNECTING) {
-                        break;
-                    }
                 }
 
                 Log.d(TAG, "run: finish network thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        private void endConnection(String message) {
+            try{
+                Log.d(TAG, "endConnection: check and terminate connection");
+                if(socket.isConnected()){
+                    socket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mListener.onServerDisconnected(message);
+            socket = null;
+            mStatus = ServerStatus.NOT_CONNECT;
         }
 
         private void handlePacket() {

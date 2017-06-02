@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -335,6 +336,15 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         notifyStateChange();
     }
 
+    public void disconnectFromServer() {
+        serverConnection.disconnect();
+        this.mStatus = MainServiceStatus.NOT_CONNECTED;
+        this.mChatSession.reset();
+        this.mErrorMessage = "";
+        Toast.makeText(this, "you've quit from the community", Toast.LENGTH_LONG).show();
+        notifyStateChange();
+    }
+    
     // endregion
 
     // region state management

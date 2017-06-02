@@ -150,8 +150,7 @@ public class MainActivity extends AbstractMessengerActivity {
         int id = item.getItemId();
         switch (id){
             case R.id.menu_quit:
-                // TODO: QUIT
-                this.getMainService();
+                this.getMainService().disconnectFromServer();
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -28,7 +28,7 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
             mMainService = ((MainService.MainServiceBinder) service).getService();
             mMainService.subscribeStateChange(AbstractMessengerActivity.this);
             mIsServiceBound = true;
-            afterServiceBound();
+            checkServiceStatus();
             onServiceBound();
         }
 
@@ -43,8 +43,8 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
 
     protected void onServiceBound(){}
 
-    private void afterServiceBound() {
-        Log.d(TAG, "afterServiceBound: check status of service");
+    private void checkServiceStatus() {
+        Log.d(TAG, "checkServiceStatus: check status of service");
         MainService.MainServiceStatus status = getMainService().getStatus();
         switch (status){
             case IN_CALL:
@@ -56,12 +56,16 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
             case NOT_LOGIN: case NOT_CONNECTED:
                 if(!this.getClass().getName().contains("LoginActivity")){
                     Intent intent = new Intent(this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            | Intent.FLAG_ACTIVITY_TASK_ON_HOME
+                            | Intent.FLAG_ACTIVITY_NEW_TASK);
                     this.startActivity(intent);
+                    this.finish();
                 }
                 break;
             case LOGIN_IDLE: default:
-                Log.d(TAG, "afterServiceBound: waiting for message");
+                Log.d(TAG, "checkServiceStatus: waiting for message");
         }
     }
 
@@ -102,6 +106,7 @@ public abstract class AbstractMessengerActivity extends AppCompatActivity implem
     @Override
     public void onServerStateChange() {
         Log.d(TAG, "onServerStateChange: Service State Change");
+        checkServiceStatus();
     }
 
     protected MainService getMainService(){
