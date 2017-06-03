@@ -116,6 +116,7 @@ export default {
   background: rgba(240,240,240,0.3);
   width: 60%;
   max-width: 500px;
+  word-wrap:  break-word;
   font-size: 0.8em;
   border-radius: 10px;
   text-align: left;

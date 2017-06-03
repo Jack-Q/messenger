@@ -1,6 +1,12 @@
 const makeSuccess = msg => ({ status: true, message: msg || 'ok' });
 const makeError = msg => ({ status: false, message: msg || 'server error' });
 
+/**
+ * UserStorage provided in this file is a demonstrative in-memory storage.
+ * For more serious usage, an alternative storage provider should be used to provide
+ * scalability and persistence support.
+ */
+
 class UserStorage {
   constructor() {
     this.store = [];

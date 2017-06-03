@@ -4,7 +4,7 @@
   "description": "Server for Messenger",
   "main": "index.js",
   "author": "Jack Q",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "test": "jest",
     "start": "babel-node src/index.js",

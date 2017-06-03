@@ -7,7 +7,7 @@
 
 ### Prep
 Before performing the following build commands, the environment ought to be configured with the following components:
-`wine-1.8`, `mono`
+`wine-1.8`, `mono` (these components are required for building installer package for Windows)
 
 ```bash
 # Basic
