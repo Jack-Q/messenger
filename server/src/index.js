@@ -3,8 +3,8 @@ import dgram from 'dgram';
 
 import Server from './lib/server';
 
-import { host, port } from './server-config';
+import { publicHostname, host, port } from './server-config';
 
-const server = new Server(host, port);
+const server = new Server(publicHostname, host, port);
 
 server.initServer();
