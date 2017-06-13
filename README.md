@@ -72,8 +72,8 @@ For desktop client, the audio data is recorded by Web API, while for mobile clie
 Audio data collected via platform specific API is sliced and encoded before transmission over network.
 The encoding method used by `messenger` is OPUS encoding.
 
-* Implementation [http://opus-codec.org]()
-* RFC 6176 [https://tools.ietf.org/html/rfc6716]()
+* Implementation [http://opus-codec.org](http://opus-codec.org)
+* RFC 6176 [https://tools.ietf.org/html/rfc6716](https://tools.ietf.org/html/rfc6716)
 
 ### Desktop Client Audio Processing Flow
 ```
