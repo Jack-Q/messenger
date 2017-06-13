@@ -15,7 +15,7 @@ const createBuffer = () => ({
 export default class ServerConnection {
   static createSock(host, port) {
     return new Promise((res, rej) => {
-      const sock = net.createConnection({ port, host }, (err) => {
+      const sock = net.createConnection({ port, host, timeout: 5000 }, (err) => {
         if (err) {
           console.log('failed to connect to server', err);
           rej(err);

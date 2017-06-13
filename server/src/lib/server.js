@@ -19,12 +19,12 @@ const packConnection = conn => ({
 });
 
 export default class Server {
-  constructor(publicHostname, host, port) {
+  constructor(publicHostname, host, port, udpPort) {
     this.host = host;
     this.port = port;
     this.server = net.createServer();
     this.connections = [];
-    this.sessionManager = new SessionManager(publicHostname);
+    this.sessionManager = new SessionManager(publicHostname, udpPort);
   }
 
   // start server

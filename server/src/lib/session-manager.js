@@ -35,9 +35,10 @@ class Session{
 }
 
 export default class SessionManager {
-  constructor(host) {
+  constructor(host, port) {
     this.sessionList = {};
     this.host = host;
+    this.port = port;
     this.serverAddress = {
       address: '',
       port: 0,
@@ -49,6 +50,7 @@ export default class SessionManager {
     this.udpSocket.on('message', this.onMessage.bind(this));
     this.udpSocket.on('error', this.onError.bind(this));
     this.udpSocket.bind({
+      port: this.port ? this.port : 0,
       exclusive: true
     }, () => {
       this.serverAddress.address = this.udpSocket.address().address;
