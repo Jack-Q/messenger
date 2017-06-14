@@ -73,6 +73,16 @@ const rendererConfig = {
         },
       },
       {
+        test: /\.(wav|mp3)(\?.*)?$/,
+        use: {
+          loader: 'file-loader',
+          query: {
+            limit: 10000,
+            name: 'resource/[name].[ext]',
+          },
+        },
+      },
+      {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         use: {
           loader: 'url-loader',

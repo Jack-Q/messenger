@@ -2,6 +2,7 @@ import ServerConnection from '../network/server-connection';
 import PeerSocket from '../network/peer-socket';
 import Audio from '../audio';
 import MessageManager from './message-manager';
+import RingtoneManager from './ringtone-manager';
 
 class AppState {
   constructor() {
@@ -25,6 +26,7 @@ class AppState {
     this.audio = new Audio();
     this.updateCallback = [];
     this.messageManager = new MessageManager(() => this.update());
+    this.ringtone = new RingtoneManager();
   }
 
   connect(host, port) {
@@ -130,6 +132,7 @@ class AppState {
     this.audioCall.phase = 0;
     this.update();
     this.serverConnection.answerCall(this.audioCall.sessionId);
+    this.ringtone.stop();
   }
 
   terminateCall() {
@@ -143,6 +146,7 @@ class AppState {
     this.audioCall.phase = 3;
     this.update();
     this.serverConnection.terminateCall(this.audioCall.sessionId);
+    this.ringtone.stop();
   }
 
   bindCallMessageHandler() {
@@ -196,6 +200,7 @@ class AppState {
         this.audioCall.answerMode = true;
         this.audioCall.terminateMode = true;
         this.audioCall.phase = 1;
+        this.ringtone.play();
       } else {
         // Caller
         this.audioCall.answerMode = false;
@@ -249,6 +254,7 @@ class AppState {
       this.audioCall.status = 'enjoy chatting';
       this.audioCall.phase = 2;
       this.update();
+      this.ringtone.stop();
     });
     this.serverConnection.on('call-end', (msg) => {
       if (!msg.status) {
@@ -257,6 +263,7 @@ class AppState {
       } else {
         endAudioMode('call ended');
       }
+      this.ringtone.stop();
     });
   }
 
@@ -283,6 +290,7 @@ class AppState {
     this.username = '';
     this.buddyList = [];
     this.serverConnection = null;
+    this.ringtone.stop();
     this.update();
   }
 }
