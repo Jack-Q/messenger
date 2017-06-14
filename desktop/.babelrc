@@ -6,10 +6,11 @@
     },
     "renderer": {
       "presets": [
+        "env",
         ["es2015", { "modules": false }],
         "stage-0"
       ]
     }
   },
-  "plugins": ["transform-runtime"]
+  "plugins": ["transform-runtime", "transform-class-properties"]
 }

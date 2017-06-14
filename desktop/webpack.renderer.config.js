@@ -32,8 +32,14 @@ const rendererConfig = {
       },
       {
         test: /\.js$/,
-        use: 'babel-loader',
-        include: [path.resolve(__dirname, 'app/src/renderer')],
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env'],
+            plugins: ['transform-class-properties'],
+          },
+        },
+        include: [path.resolve(__dirname, 'app/src/renderer'), path.resolve(__dirname, '../server/src')],
         exclude: /node_modules/,
       },
       {
@@ -87,7 +93,7 @@ const rendererConfig = {
         ? path.resolve(__dirname, 'app/node_modules')
         : false,
     }),
-    new webpack.NoEmitOnErrorsPlugin(),
+    // new webpack.NoEmitOnErrorsPlugin(),
   ],
   output: {
     filename: '[name].js',
@@ -124,7 +130,7 @@ if (process.env.NODE_ENV !== 'production') {
             formatter: require('eslint-friendly-formatter'),
           },
         },
-      }
+      },
     );
   }
 }
@@ -141,7 +147,7 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
-    })// ,
+    }), // ,
     // new webpack.optimize.UglifyJsPlugin({
     //   compress: {
     //     warnings: false,
