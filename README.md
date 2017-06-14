@@ -73,7 +73,7 @@ Audio data collected via platform specific API is sliced and encoded before tran
 The encoding method used by `messenger` is OPUS encoding.
 
 * Implementation [http://opus-codec.org](http://opus-codec.org)
-* RFC 6176 [https://tools.ietf.org/html/rfc6716](https://tools.ietf.org/html/rfc6716)
+* RFC 6716 [https://tools.ietf.org/html/rfc6716](https://tools.ietf.org/html/rfc6716)
 
 ### Desktop Client Audio Processing Flow
 ```
