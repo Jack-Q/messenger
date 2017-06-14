@@ -1,6 +1,7 @@
 package cn.jackq.messenger.audio;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 
@@ -10,6 +11,7 @@ import java.nio.ByteBuffer;
  */
 
 public abstract class MessengerAudio {
+    private static final String TAG = "MessengerAudio";
     public interface MessengerAudioListener {
         void onSendAudioFrame(ByteBuffer audioFrame);
     }
@@ -33,8 +35,9 @@ public abstract class MessengerAudio {
     }
 
     void onSendAudioFrame(ByteBuffer audioFrame) {
-        if (this.getListener() != null)
+        if (this.getListener() != null){
             this.getListener().onSendAudioFrame(audioFrame);
+        }
     }
 
     @NonNull

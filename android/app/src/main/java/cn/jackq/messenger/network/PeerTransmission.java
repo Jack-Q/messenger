@@ -204,7 +204,7 @@ public class PeerTransmission implements Runnable {
     }
 
     private void updatePeerAddr(InetAddress address, int port) {
-        if (this.peerAddr == null && address != null) {
+        if (address != null) {
             this.peerAddr = address;
             this.peerPort = port;
             this.listener.onPeerAddressReceived();

@@ -61,6 +61,9 @@ class MessengerAudioRecorder implements Runnable {
             Log.d(TAG, "start: create new record instance");
             Log.d(TAG, "start: buffer size " + encoderFrameSize);
             mRecord = new AudioRecord(source, sampleRate, channelConfig, audioFormat, encoderFrameSize);
+            if(mRecord.getState() != AudioRecord.STATE_INITIALIZED){
+                Log.e(TAG, "start: failed to initialize recorder");
+            }
         }
         if(mEncoder == null){
             Log.d(TAG, "start: create new encoder instance");
@@ -106,6 +109,7 @@ class MessengerAudioRecorder implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                this.shutdown();
                 mThread = null;
             }else{
                 Log.w(TAG, "stop: failed to stop recording when no running task in ongoing");
@@ -116,6 +120,8 @@ class MessengerAudioRecorder implements Runnable {
 
     public void shutdown() {
         if (mRecord != null) {
+            Log.d(TAG, "shutdown: release recorder");
+            mRecord.stop();
             mRecord.release();
             mRecord = null;
         }
@@ -161,8 +167,7 @@ class MessengerAudioRecorder implements Runnable {
             e.printStackTrace();
         }
         sendAudioPack(encodedDataBuffer);
-        this.mRecord.stop();
-
+        this.shutdown();
         Log.d(TAG, "run: quit record thread");
     }
 
