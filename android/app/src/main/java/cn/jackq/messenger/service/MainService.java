@@ -5,6 +5,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -78,6 +81,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
     private MainServiceStatus mStatus = MainServiceStatus.NOT_CONNECTED;
     private String mErrorMessage = "";
     private ChatSession mChatSession = new ChatSession();
+    private Ringtone ringtone = null;
 
     // region Server connection event handle
 
@@ -140,6 +144,12 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
             this.mChatSession.setPeer(peer);
             this.mChatSession.setStatusString("incoming call from " + user);
             this.messageManager.addMessage(mChatSession.getPeer().getName(), Message.createSystem("call request from peer"));
+
+            stopRingtone();
+
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            this.ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            this.ringtone.play();
         }
         this.mChatSession.setId(sessionId);
         this.mChatSession.setCanEnd(true);
@@ -165,6 +175,13 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.notifyStateChange();
     }
 
+    private void stopRingtone() {
+        if(this.ringtone != null && this.ringtone.isPlaying()){
+            this.ringtone.stop();
+            this.ringtone = null;
+        }
+    }
+
     @Override
     public void onServerCallPeerAddress(boolean status, String message, String connectId, String address, int port) {
         this.peerTransmission.sendSynToPeer(address, port);
@@ -181,6 +198,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mChatSession.setCanEnd(true);
         this.mChatSession.setTimeLength(0);
         this.mChatSession.setStatusString("chatting");
+        this.stopRingtone();
         this.notifyStateChange();
     }
 
@@ -196,6 +214,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.peerTransmission.terminate();
         this.audio.endSession();
         this.notifyStateChange();
+        this.stopRingtone();
     }
 
     @Override
@@ -203,6 +222,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mStatus = MainServiceStatus.NOT_CONNECTED;
         this.mErrorMessage = message;
         this.notifyStateChange();
+        this.stopRingtone();
     }
 
 
@@ -320,7 +340,7 @@ public class MainService extends Service implements MessengerAudio.MessengerAudi
         this.mChatSession.setStatusString("connecting ...");
         this.mChatSession.setStatus(ChatSession.ChatStatus.PEER_CONNECTING);
         this.serverConnection.sendCallAnswer(mChatSession.getId());
-
+        this.stopRingtone();
         notifyStateChange();
     }
 
