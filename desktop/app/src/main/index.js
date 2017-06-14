@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import { app, BrowserWindow } from 'electron';
 
 let mainWindow;

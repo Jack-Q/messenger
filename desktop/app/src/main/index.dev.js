@@ -19,6 +19,7 @@ require('babel-register')({
 // require('electron-debug')({ showDevTools: true });
 
 // Install `vue-devtools`
+// eslint-disable-next-line
 require('electron').app.on('ready', () => {
   const installExtension = require('electron-devtools-installer');
   installExtension.default(installExtension.VUEJS_DEVTOOLS)

@@ -1,10 +1,10 @@
-import '../resource/ringtone.mp3';
+import audioFile from '../resource/ringtone.mp3';
 
 export default class RingtoneManager {
   constructor() {
     // load audio file
     const player = new Audio();
-    player.src = '../resource/ringtone.mp3';
+    player.src = audioFile;
     player.loop = true;
     player.autoplay = false;
     player.preload = true;

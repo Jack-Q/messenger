@@ -22,7 +22,6 @@
     "productName": "Messenger",
     "appId": "cn.jackq.messenger",
     "copyright": "Copyright 2017 (c) Jack Q",
-    "category": "Network.Chat",
     "dmg": {
       "contents": [
         {
