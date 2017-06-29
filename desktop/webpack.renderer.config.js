@@ -129,19 +129,17 @@ if (process.env.NODE_ENV !== 'production') {
    * Apply ESLint
    */
   if (settings.eslint) {
-    rendererConfig.module.rules.push(
-      {
-        test: /\.(js|vue)$/,
-        enforce: 'pre',
-        exclude: /node_modules/,
-        use: {
-          loader: 'eslint-loader',
-          options: {
-            formatter: require('eslint-friendly-formatter'),
-          },
+    rendererConfig.module.rules.push({
+      test: /\.(js|vue)$/,
+      enforce: 'pre',
+      exclude: /node_modules/,
+      use: {
+        loader: 'eslint-loader',
+        options: {
+          formatter: require('eslint-friendly-formatter'),
         },
       },
-    );
+    });
   }
 }
 
