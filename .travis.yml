@@ -2,7 +2,15 @@ language: node_js
 node_js:
   - node
   - 7
+os:
+  - linux
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
 env:
-  - CXX=g++-4.8 TEST_DIR=server
-  - CXX=g++-4.8 TEST_DIR=desktop
+  - CXX=g++-5 TEST_DIR=server
+  - CXX=g++-5 TEST_DIR=desktop
 script: cd $TEST_DIR && npm install && npm run run:ci
