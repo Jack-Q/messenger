@@ -5,4 +5,4 @@ node_js:
 env:
   - CXX=g++-4.8 TEST_DIR=server
   - CXX=g++-4.8 TEST_DIR=desktop
-script: cd $TEST_DIR && npm run run:ci
+script: cd $TEST_DIR && npm install && npm run run:ci
