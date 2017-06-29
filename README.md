@@ -1,5 +1,7 @@
 # Messenger, Chat on multiple platforms
 
+[![Build Status](https://travis-ci.org/Jack-Q/messenger.svg?branch=master)](https://travis-ci.org/Jack-Q/messenger)
+
 Messenger is a simple chat application for desktop platform (Windows, Mac OS, Linux) and mobile platform (Android),
 which supports both text based chatting and audio based chatting.
 

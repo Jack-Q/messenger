@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - node
+  - 7
+env:
+  - CXX=g++-4.8
+  - TEST_DIR=server
+  - TEST_DIR=desktop
+script: cd $TEST_DIR && npm run run:ci

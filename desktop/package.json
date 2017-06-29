@@ -16,7 +16,8 @@
     "pack:renderer": "cross-env NODE_ENV=production webpack -p --progress --colors --config webpack.renderer.config.js",
     "pack:main:dev": "webpack -p --progress --colors --config webpack.main.config.js",
     "pack:renderer:dev": "webpack -p --progress --colors --config webpack.renderer.config.js",
-    "postinstall": "npm run lint:fix && cd app && npm install"
+    "postinstall": "npm run lint:fix && cd app && npm install",
+    "run:ci": "npm run build"
   },
   "build": {
     "productName": "Messenger",
