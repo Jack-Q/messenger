@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="left-aside">
       <div class="left-header">
-        <div class="left-header-close" @click="closeWindow">x</div>
+        <div class="left-header-close" @click="closeWindow"></div>
         <span>Messenger</span>
       </div>
       <div class="left-status">
@@ -190,10 +190,15 @@ export default {
   transition: all ease 400ms;
   flex: 0;
   border: solid 1px #666;
-  font-family: monospace;
+  font-family: sans-serif;
   font-size: 18px;
   /*let left header aside to be dragable*/
   -webkit-app-region: no-drag;
+}
+
+.left-header-close::before {
+  /* Unicode for &times; HTML entity, the corss signature */
+  content: '\D7'; 
 }
 
 .left-header-close:hover {

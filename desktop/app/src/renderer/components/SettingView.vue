@@ -99,6 +99,7 @@ export default {
 
 .form {
   width: 40%;
+  min-width: 240px;
   margin: 0 auto;
 }
 
@@ -113,6 +114,7 @@ export default {
 
 .port {
   flex: 1;
+  min-width: 55px;
 }
 
 .form-row span {
